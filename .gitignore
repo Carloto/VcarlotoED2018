@@ -51,3 +51,4 @@ Module.symvers
 dkms.conf
 
 *vgcore.*
+*.pdf
