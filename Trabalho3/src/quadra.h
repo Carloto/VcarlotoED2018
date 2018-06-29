@@ -9,7 +9,7 @@
 
 /* Este módulo define as funções referentes às quadras */
 
-/* Struct que guarda as informaçõesde uma quadra */
+/* Struct que guarda as informaçõesde uma quadra  */
 typedef struct quadra {
   char *cep;
   float x;
