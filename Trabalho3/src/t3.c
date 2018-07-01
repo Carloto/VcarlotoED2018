@@ -11,127 +11,154 @@
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
-  /* Declarar variaveis */
-  int     limite        = 1000;
-  int     controle      = 1;
-  int     count_lim     = 0;
-  float   distancia     = 0;
-  char   *input_line    = NULL;
-  char   *resposta      = NULL;
-  Arqs   *MainPaths     = criar_arqs();
-  FILE   *GeoInput      = NULL;
-  FILE   *OutputSvgStd  = NULL;
-  FILE   *OutputTxtStd  = NULL;
-  Circle *Circulos      = NULL;
-  Circle *CircFim       = NULL;
-  Rectangle *Retangulos = NULL;
-  Rectangle *RetFim     = NULL;
 
-  /* Inicializar variaveis */
-  MainPaths = ler_argv(argc, argv, MainPaths);
+	/* Declarar variaveis */
 
-  /*print_arqs(MainPaths);*/
+	/* Variaveis */
+	int limite        = 1000;
+	int controle      = 1;
+	int count_lim     = 0;
+	float distancia     = 0;
+	char   *input_line    = NULL;
+	char   *resposta      = NULL;
 
-  GeoInput = fopen(MainPaths->input_path, "r");
+	/* Arquivos */
+	Arqs   *MainPaths     = criar_arqs();
+	FILE   *GeoInput      = NULL;
+	FILE   *OutputSvgStd  = NULL;
+	FILE   *OutputTxtStd  = NULL;
 
-  if (!GeoInput) {
-    printf("\n Erro! Arquivo não encontrado! \n");
-    destruir_arqs(MainPaths);
-    return -1;
-  }
+	/* Figuras */
+	Circle *Circulos      = NULL;
+	Circle *CircFim       = NULL;
+	Rectangle *Retangulos = NULL;
+	Rectangle *RetFim     = NULL;
 
-  OutputSvgStd = cria_svg(OutputSvgStd, MainPaths);
-  OutputTxtStd = cria_txt(OutputTxtStd, MainPaths);
-  input_line   = (char *)calloc(M_BUFFER, sizeof(char));
+	/* Equipamentos e quadras */
+	Cores* MainColors = create_colors();
 
-  /* Loop de leitura */
-  while (controle) {
-    get_linha(input_line, GeoInput);
+	/* Inicializar variaveis */
+	MainPaths = ler_argv(argc, argv, MainPaths);
 
-    if (feof(GeoInput)) {
-      break;
-    }
+	/*print_arqs(MainPaths);*/
 
-    switch (input_line[0]) {
-    case 'c':
+	GeoInput = fopen(MainPaths->input_path, "r");
 
-      if (count_lim + 1 > limite) {
-        printf("\n VOCE CHEGOU NO LIMITE");
-        break;
-      }
-      count_lim++;
+	if (!GeoInput) {
+		printf("\n Erro! Arquivo não encontrado! \n");
+		destruir_arqs(MainPaths);
+		return -1;
+	}
 
-      /*printf("\n %s", input_line);*/
-      new_cnode(&Circulos, &CircFim, input_line);
-      rtprint_svg(&OutputSvgStd, CircFim, NULL);
-      break;
+	OutputSvgStd = cria_svg(OutputSvgStd, MainPaths);
+	OutputTxtStd = cria_txt(OutputTxtStd, MainPaths);
+	input_line   = (char *)calloc(M_BUFFER, sizeof(char));
 
-    case 'r':
+	/* Loop de leitura */
+	while (controle) {
+		get_linha(input_line, GeoInput);
 
-      if (count_lim + 1 > limite) {
-        printf("\n VOCE CHEGOU NO LIMITE");
-        break;
-      }
-      count_lim++;
+		if (feof(GeoInput)) {
+			break;
+		}
 
-      /*printf("\n %s", input_line);*/
-      new_rnode(&Retangulos, &RetFim, input_line);
-      rtprint_svg(&OutputSvgStd, NULL, RetFim);
-      break;
+		switch (input_line[0]) {
+		case 'c':
 
-    case 'o':
-      rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
-      resposta = sobrepoe(Circulos, Retangulos, input_line, &OutputSvgStd);
-      rtprint_txt(&OutputTxtStd, resposta, NULL,       -1);
-      free_string(&resposta);
-      break;
+			switch (input_line[1]) {
 
-    case 'i':
-      rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
-      resposta = pto_int(Circulos, Retangulos, input_line);
-      rtprint_txt(&OutputTxtStd, resposta, NULL,       -1);
-      free_string(&resposta);
-      break;
+			case 'q':
+			case 'h':
+			case 's':
+			case 't':
 
-    case 'd':
-      rtprint_txt(&OutputTxtStd, NULL, input_line,  -1);
-      distancia = dist(Circulos, Retangulos, input_line);
-      rtprint_txt(&OutputTxtStd, NULL, NULL, distancia);
-      distancia = -1;
-      break;
+				MainColors = get_colors(input_line, MainColors);
 
-    case 'a':
-      cmd_a(Circulos, Retangulos, input_line, MainPaths);
+				break;
 
-    case 'n':
+			default:
 
-      if (input_line[1] == 'x') {
-        limite = update_lim(input_line);
-      }
-      break;
+				if (count_lim + 1 > limite) {
+					printf("\n VOCE CHEGOU NO LIMITE");
+					break;
+				}
+				count_lim++;
 
-    case '#':
-      controle = 0;
-      break;
+				/*printf("\n %s", input_line);*/
+				new_cnode(&Circulos, &CircFim, input_line);
+				rtprint_svg(&OutputSvgStd, CircFim, NULL);
+				break;
 
-    default:
-      break;
-    }
-  }
+			}
+			break;
 
-  /*print_circle(Circulos);*/
+		case 'r':
 
-  /*print_rect(Retangulos);*/
+			if (count_lim + 1 > limite) {
+				printf("\n VOCE CHEGOU NO LIMITE");
+				break;
+			}
+			count_lim++;
 
-  /* Liberar variaveis */
-  fclose(GeoInput);
-  destroi_svg(&OutputSvgStd);
-  destroi_txt(&OutputTxtStd);
-  destruir_arqs(MainPaths);
-  free_cstruct(Circulos);
-  free_rstruct(Retangulos);
-  free_string(&resposta);
-  free_string(&input_line);
+			/*printf("\n %s", input_line);*/
+			new_rnode(&Retangulos, &RetFim, input_line);
+			rtprint_svg(&OutputSvgStd, NULL, RetFim);
+			break;
 
-  return 0;
+		case 'o':
+			rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
+			resposta = sobrepoe(Circulos, Retangulos, input_line, &OutputSvgStd);
+			rtprint_txt(&OutputTxtStd, resposta, NULL,       -1);
+			free_string(&resposta);
+			break;
+
+		case 'i':
+			rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
+			resposta = pto_int(Circulos, Retangulos, input_line);
+			rtprint_txt(&OutputTxtStd, resposta, NULL,       -1);
+			free_string(&resposta);
+			break;
+
+		case 'd':
+			rtprint_txt(&OutputTxtStd, NULL, input_line,  -1);
+			distancia = dist(Circulos, Retangulos, input_line);
+			rtprint_txt(&OutputTxtStd, NULL, NULL, distancia);
+			distancia = -1;
+			break;
+
+		case 'a':
+			cmd_a(Circulos, Retangulos, input_line, MainPaths);
+
+		case 'n':
+
+			if (input_line[1] == 'x') {
+				limite = update_lim(input_line);
+			}
+			break;
+
+		case '#':
+			controle = 0;
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	/*print_circle(Circulos);*/
+
+	/*print_rect(Retangulos);*/
+
+	/* Liberar variaveis */
+	fclose(GeoInput);
+	destroi_svg(&OutputSvgStd);
+	destroi_txt(&OutputTxtStd);
+	destruir_arqs(MainPaths);
+	free_cstruct(Circulos);
+	free_rstruct(Retangulos);
+	destruir_colors(MainColors);
+	free_string(&resposta);
+	free_string(&input_line);
+
+	return 0;
 }
