@@ -2,7 +2,7 @@
 # Matrícula : 201600560546 #
 # Makefile #
 
-deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o quadra.o semaforo.o hidrante.o
+deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o quadra.o semaforo.o hidrante.o torre.o
 cc = gcc -fstack-protector-all -std=c99 -pedantic -g -lm -Wall
 
 siguel : $(deps_t2)
@@ -31,6 +31,9 @@ semaforo.o : semaforo.c
 
 hidrante.o : hidrante.c
 	$(cc) -c hidrante.c -lm
+
+torre.o : torre.c
+	$(cc) -c torre.c -lm
 
 clean :
 	rm -f *.o

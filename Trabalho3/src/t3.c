@@ -11,6 +11,7 @@
 #include "quadra.h"
 #include "semaforo.h"
 #include "hidrante.h"
+#include "torre.h"
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
@@ -51,6 +52,10 @@ int main(int argc, char *argv[]) {
 	/* Hidrantes */
 	ListaGenerica *Hidrantes = NULL;
 	ListaGenerica *HidFim = NULL;
+
+	/* Torre */
+	ListaGenerica *Torres = NULL;
+	ListaGenerica *TorFim = NULL;
 
 	/* Inicializar variaveis */
 	MainPaths = ler_argv(argc, argv, MainPaths);
@@ -135,6 +140,11 @@ int main(int argc, char *argv[]) {
 			rthid_svg(&OutputSvgStd, HidFim);
 			break;
 
+		case 't':
+			new_torre(&Torres, &TorFim, input_line, MainColors);
+			rttor_svg(&OutputSvgStd, TorFim);
+			break;
+
 		case 'o':
 			rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
 			resposta = sobrepoe(Circulos, Retangulos, input_line, &OutputSvgStd);
@@ -195,6 +205,7 @@ int main(int argc, char *argv[]) {
 	free_quadra(Quadras);
 	free_semaforo(Semaforos);
 	free_hidrante(Hidrantes);
+	free_torre(Torres);
 	destruir_colors(MainColors);
 	free_string(&resposta);
 	free_string(&input_line);
