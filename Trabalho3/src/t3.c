@@ -9,6 +9,7 @@
 #include "geometricas.h"
 #include "functions.h"
 #include "quadra.h"
+#include "semaforo.h"
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
@@ -41,6 +42,10 @@ int main(int argc, char *argv[]) {
 	/* Quadras */
 	ListaGenerica *Quadras = NULL;
 	ListaGenerica *QuadFim = NULL;
+
+	/* Semaforos */
+	ListaGenerica *Semaforos = NULL;
+	ListaGenerica *SemFim = NULL;
 
 	/* Inicializar variaveis */
 	MainPaths = ler_argv(argc, argv, MainPaths);
@@ -115,6 +120,11 @@ int main(int argc, char *argv[]) {
 			rtquad_svg(&OutputSvgStd, QuadFim);
 			break;
 
+		case 's':
+			new_semaforo(&Semaforos, &SemFim, input_line, MainColors);
+			rtsem_svg(&OutputSvgStd, SemFim);
+			break;
+
 		case 'o':
 			rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
 			resposta = sobrepoe(Circulos, Retangulos, input_line, &OutputSvgStd);
@@ -161,6 +171,8 @@ int main(int argc, char *argv[]) {
 
 	print_quadra(Quadras);
 
+	print_semaforo(Semaforos);
+
 	/* Liberar variaveis */
 	fclose(GeoInput);
 	destroi_svg(&OutputSvgStd);
@@ -169,6 +181,7 @@ int main(int argc, char *argv[]) {
 	free_cstruct(Circulos);
 	free_rstruct(Retangulos);
 	free_quadra(Quadras);
+	free_semaforo(Semaforos);
 	destruir_colors(MainColors);
 	free_string(&resposta);
 	free_string(&input_line);
