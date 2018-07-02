@@ -8,6 +8,7 @@
 #include "arquivo.h"
 #include "geometricas.h"
 #include "functions.h"
+#include "quadra.h"
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
@@ -34,8 +35,12 @@ int main(int argc, char *argv[]) {
 	Rectangle *Retangulos = NULL;
 	Rectangle *RetFim     = NULL;
 
-	/* Equipamentos e quadras */
+	/* Cores */
 	Cores* MainColors = create_colors();
+
+	/* Quadras */
+	ListaGenerica *Quadras = NULL;
+	ListaGenerica *QuadFim = NULL;
 
 	/* Inicializar variaveis */
 	MainPaths = ler_argv(argc, argv, MainPaths);
@@ -58,9 +63,9 @@ int main(int argc, char *argv[]) {
 	while (controle) {
 		get_linha(input_line, GeoInput);
 
-		if (feof(GeoInput)) {
-			break;
-		}
+		/*	if (feof(GeoInput)) {
+		                break;
+		        }*/
 
 		switch (input_line[0]) {
 		case 'c':
@@ -105,6 +110,10 @@ int main(int argc, char *argv[]) {
 			rtprint_svg(&OutputSvgStd, NULL, RetFim);
 			break;
 
+		case 'q':
+			new_quadra(&Quadras, &QuadFim, input_line, MainColors);
+			break;
+
 		case 'o':
 			rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
 			resposta = sobrepoe(Circulos, Retangulos, input_line, &OutputSvgStd);
@@ -145,9 +154,11 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	/*print_circle(Circulos);*/
+	print_circle(Circulos);
 
-	/*print_rect(Retangulos);*/
+	print_rect(Retangulos);
+
+	print_quadra(Quadras);
 
 	/* Liberar variaveis */
 	fclose(GeoInput);
@@ -156,6 +167,7 @@ int main(int argc, char *argv[]) {
 	destruir_arqs(MainPaths);
 	free_cstruct(Circulos);
 	free_rstruct(Retangulos);
+	free_quadra(Quadras);
 	destruir_colors(MainColors);
 	free_string(&resposta);
 	free_string(&input_line);

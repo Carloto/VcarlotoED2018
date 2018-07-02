@@ -2,7 +2,7 @@
 # Matrícula : 201600560546 #
 # Makefile #
 
-deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o
+deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o quadra.o
 cc = gcc -ansi -pedantic -g -lm -Wall
 
 siguel : $(deps_t2)
@@ -22,6 +22,9 @@ geometricas.o : geometricas.c
 
 functions.o : functions.c
 	$(cc) -c functions.c -lm
+
+quadra.o : quadra.c
+	$(cc) -c quadra.c -lm
 
 clean :
 	rm -f *.o
