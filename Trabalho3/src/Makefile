@@ -3,7 +3,7 @@
 # Makefile #
 
 deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o quadra.o
-cc = gcc -ansi -pedantic -g -lm -Wall
+cc = gcc -fstack-protector-all -std=c99 -pedantic -g -lm -Wall
 
 siguel : $(deps_t2)
 	$(cc) $(deps_t2) -lm -o siguel

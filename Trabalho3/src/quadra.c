@@ -67,6 +67,33 @@ void free_quadra(ListaGenerica *temp_struct) {
 	}
 }
 
+/* Imprimir a ultima quadra lida no svg */
+void rtquad_svg(FILE **OutputFile, ListaGenerica *QuadFim) {
+
+	float x;
+	float y;
+
+	fprintf(*OutputFile,
+	        "\t<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" ",
+	        ((Quadra *)QuadFim->data)->x,
+	        ((Quadra *)QuadFim->data)->y,
+	        ((Quadra *)QuadFim->data)->width,
+	        ((Quadra *)QuadFim->data)->height);
+
+	fprintf(*OutputFile,
+	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3\" />\n",
+	        ((Quadra *)QuadFim->data)->cor1,
+	        ((Quadra *)QuadFim->data)->cor2);
+
+	x = (((Quadra *)QuadFim->data)->width/2) + ((Quadra *)QuadFim->data)->x;
+	y = (((Quadra *)QuadFim->data)->height/2) + ((Quadra *)QuadFim->data)->y;
+
+	fprintf(*OutputFile,
+	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" style=\"stroke-width: 0.5\" >%s</text>\n",
+	        x, y, ((Quadra *)QuadFim->data)->cep);
+
+}
+
 /* Função teste para imprimir lista */
 void print_quadra(ListaGenerica *lista_quadra) {
 

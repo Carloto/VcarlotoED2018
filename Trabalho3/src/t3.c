@@ -112,6 +112,7 @@ int main(int argc, char *argv[]) {
 
 		case 'q':
 			new_quadra(&Quadras, &QuadFim, input_line, MainColors);
+			rtquad_svg(&OutputSvgStd, QuadFim);
 			break;
 
 		case 'o':

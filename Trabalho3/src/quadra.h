@@ -2,6 +2,7 @@
 #define QUADRA__H
 
 #include "misc.h"
+#include "arquivo.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -25,6 +26,9 @@ void new_quadra(ListaGenerica **quad_head, ListaGenerica **quad_end, char *input
 
 /* Free na struct e seus elementos */
 void free_quadra(ListaGenerica *temp_struct);
+
+/* Imprimir a ultima quadra lida no svg */
+void rtquad_svg(FILE **OutputFile, ListaGenerica *QuadFim);
 
 /* Função teste para imprimir lista */
 void print_quadra(ListaGenerica *lista_quadra);
