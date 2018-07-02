@@ -10,6 +10,7 @@
 #include "functions.h"
 #include "quadra.h"
 #include "semaforo.h"
+#include "hidrante.h"
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
@@ -46,6 +47,10 @@ int main(int argc, char *argv[]) {
 	/* Semaforos */
 	ListaGenerica *Semaforos = NULL;
 	ListaGenerica *SemFim = NULL;
+
+	/* Hidrantes */
+	ListaGenerica *Hidrantes = NULL;
+	ListaGenerica *HidFim = NULL;
 
 	/* Inicializar variaveis */
 	MainPaths = ler_argv(argc, argv, MainPaths);
@@ -125,6 +130,11 @@ int main(int argc, char *argv[]) {
 			rtsem_svg(&OutputSvgStd, SemFim);
 			break;
 
+		case 'h':
+			new_hidrante(&Hidrantes, &HidFim, input_line, MainColors);
+			rthid_svg(&OutputSvgStd, HidFim);
+			break;
+
 		case 'o':
 			rtprint_txt(&OutputTxtStd, NULL,     input_line, -1);
 			resposta = sobrepoe(Circulos, Retangulos, input_line, &OutputSvgStd);
@@ -173,6 +183,8 @@ int main(int argc, char *argv[]) {
 
 	print_semaforo(Semaforos);
 
+	print_hidrante(Hidrantes);
+
 	/* Liberar variaveis */
 	fclose(GeoInput);
 	destroi_svg(&OutputSvgStd);
@@ -182,6 +194,7 @@ int main(int argc, char *argv[]) {
 	free_rstruct(Retangulos);
 	free_quadra(Quadras);
 	free_semaforo(Semaforos);
+	free_hidrante(Hidrantes);
 	destruir_colors(MainColors);
 	free_string(&resposta);
 	free_string(&input_line);

@@ -86,7 +86,7 @@ void rtsem_svg(FILE **OutputFile, ListaGenerica *SemFim) {
 	y = (((Semaforo *)SemFim->data)->height/2) + ((Semaforo *)SemFim->data)->y;
 
 	fprintf(*OutputFile,
-	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
+	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
 	        x, y, "S");
 
 }
