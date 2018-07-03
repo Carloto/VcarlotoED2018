@@ -22,6 +22,7 @@ typedef struct arq{
   char *output_path;
   char *input_path;
   char *input_name;
+  char *input_qry;
 } Arqs;
 
 /* Retorna uma struct contendo os parametros recebidos por argv */

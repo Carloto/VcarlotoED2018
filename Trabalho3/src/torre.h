@@ -29,6 +29,9 @@ void free_torre(ListaGenerica *temp_struct);
 /* Imprimir a ultima torre lida no svg */
 void rttor_svg(FILE **OutputFile, ListaGenerica *TorFim);
 
+/* Imprimir toda a lista de torres na saida svg */
+void ptor_svg(FILE **OutputFile, ListaGenerica *lista_torre);
+
 /* Função teste para imprimir lista */
 void print_torre(ListaGenerica *lista_torre);
 

@@ -30,6 +30,9 @@ void free_semaforo(ListaGenerica *temp_struct);
 /* Imprimir o ultimo semaforo lido no svg */
 void rtsem_svg(FILE **OutputFile, ListaGenerica *SemFim);
 
+/* Imprimir toda a lista de semaforos na saida svg */
+void psem_svg(FILE **OutputFile, ListaGenerica *lista_semaforo);
+
 /* Função teste para imprimir lista */
 void print_semaforo(ListaGenerica *lista_semaforo);
 

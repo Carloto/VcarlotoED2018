@@ -35,6 +35,13 @@ Arqs* ler_argv(int argc, char *argv[], Arqs *la_argv) {
       la_argv->output_path = (char *)calloc(len + 1, sizeof(char));
       strcpy(la_argv->output_path, argv[i]);
     }
+
+    if (strcmp("-q", argv[i]) == 0) {
+      i++;
+      len                = strlen(argv[i]);
+      la_argv->input_qry = (char *)calloc(len + 1, sizeof(char));
+      strcpy(la_argv->input_qry, argv[i]);
+    }
   }
 
   /* Verificar a presença de "." no -f */
@@ -142,6 +149,7 @@ Arqs* criar_arqs() {
   ca_ret->input_path  = NULL;
   ca_ret->output_path = NULL;
   ca_ret->input_name  = NULL;
+  ca_ret->input_qry   = NULL;
   return ca_ret;
 }
 
@@ -150,6 +158,7 @@ void destruir_arqs(Arqs *da_kill) {
   free_string(&(da_kill->input_path));
   free_string(&(da_kill->output_path));
   free_string(&(da_kill->input_name));
+  free_string(&(da_kill->input_qry));
   free(da_kill);
 }
 
@@ -158,6 +167,7 @@ void print_arqs(Arqs *pa_arq) {
   print_this(pa_arq->input_path);
   print_this(pa_arq->output_path);
   print_this(pa_arq->input_name);
+  print_this(pa_arq->input_qry);
 }
 
 /* Inicializar arquivo svg */

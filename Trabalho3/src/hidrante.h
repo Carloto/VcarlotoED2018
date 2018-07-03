@@ -29,6 +29,9 @@ void free_hidrante(ListaGenerica *temp_struct);
 /* Imprimir o ultimo hidrante lido no svg */
 void rthid_svg(FILE **OutputFile, ListaGenerica *HidFim);
 
+/* Imprimir toda a lista de hidarantes na saida svg */
+void phid_svg(FILE **OutputFile, ListaGenerica *lista_hidrante);
+
 /* Função teste para imprimir lista */
 void print_hidrante(ListaGenerica *lista_hidrante);
 

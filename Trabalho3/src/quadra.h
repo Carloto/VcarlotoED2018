@@ -30,6 +30,9 @@ void free_quadra(ListaGenerica *temp_struct);
 /* Imprimir a ultima quadra lida no svg */
 void rtquad_svg(FILE **OutputFile, ListaGenerica *QuadFim);
 
+/* Imprimir toda a lista de quadras na saida svg */
+void pquad_svg(FILE **OutputFile, ListaGenerica *lista_quadra);
+
 /* Função teste para imprimir lista */
 void print_quadra(ListaGenerica *lista_quadra);
 
