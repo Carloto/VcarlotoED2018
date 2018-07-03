@@ -38,7 +38,7 @@ void destruir_arqs (Arqs* da_kill);
 void print_arqs (Arqs *pa_arq);
 
 /* Inicializar arquivo svg */
-FILE *cria_svg (FILE *OutputFile, Arqs *temp_arq);
+FILE *cria_svg (FILE *OutputFile, Arqs *temp_arq, char *after);
 
 /* Fechar arquivo svg */
 void destroi_svg (FILE **OutputFile);

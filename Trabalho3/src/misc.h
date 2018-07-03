@@ -34,6 +34,12 @@ void free_string(char **temp_free);
 /* Atualiza o valor do limite */
 int update_lim (char *input_line);
 
+/* Isola o nome de um arquivo */
+char *cut_name(char *nome);
+
+/* Concatenar nome de arquivo com dada extensão */
+char *concat_file(char *before, char *after);
+
 /* Inicializa a struct de cores */
 Cores *create_colors();
 

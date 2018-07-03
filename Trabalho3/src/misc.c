@@ -27,6 +27,65 @@ int update_lim(char *input_line) {
 	return ret;
 }
 
+/* Isola o nome de um arquivo */
+char *cut_name(char *nome) {
+	int i = 0;
+	int j = 0;
+	int len = 0;
+	char *aux = NULL;
+
+	/* Isolar nome do arquivo */
+	len = strlen(nome);
+
+	for (i = len; i > -1; i--) {
+		if (nome[i] == '/') {
+			break;
+		}
+	}
+
+	/* O loop chegou no final, logo, não há path */
+	if (i == -1) {
+		aux = (char *)calloc(len + 1, sizeof(char));
+		i   = 0;
+
+		for (j = 0; j < len - 4; j++, i++) {
+			aux[j] = nome[i];
+		}
+		aux[len - 4] = '\0';
+		free_string(&(nome));
+		nome = (char *)calloc(len + 1, sizeof(char));
+		strcpy(nome, aux);
+		free_string(&aux);
+	} else {
+		/* O loop não chegou no final, logo, há path */
+		len = len - i;
+		aux = (char *)calloc(len + 1, sizeof(char));
+		i++;
+
+		for (j = 0; j < len - 5; j++, i++) {
+			aux[j] = nome[i];
+		}
+		aux[len - 5] = '\0';
+		free_string(&(nome));
+		nome = (char *)calloc(len + 1, sizeof(char));
+		strcpy(nome, aux);
+		free_string(&aux);
+	}
+	return nome;
+}
+
+/* Concatenar nome de arquivo com dada extensão */
+char *concat_file(char *before, char *after) {
+	int len = 0;
+	char *aux = NULL;
+
+	len = strlen(before) + strlen(after);
+	aux = (char *) calloc(len+6, sizeof(char));
+	sprintf(aux, "%s-%s", before,  after);
+
+	return aux;
+}
+
 /* Inicializa a struct de cores */
 Cores *create_colors() {
 	Cores* temp_colors  = (Cores *)calloc(1, sizeof(Cores));
@@ -68,13 +127,13 @@ Cores *get_colors(char *input_line, Cores* temp_colors) {
 		free_string(&(temp_colors->quad_stroke));
 		temp_colors->quad_stroke = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->quad_stroke, token);
-		printf("\n%s", temp_colors->quad_stroke);
+		/*printf("\n%s", temp_colors->quad_stroke);*/
 
 		token      = strtok(NULL, " ");
 		free_string(&(temp_colors->quad_fill));
 		temp_colors->quad_fill = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->quad_fill, token);
-		printf("\n%s", temp_colors->quad_fill);
+		/*printf("\n%s", temp_colors->quad_fill);*/
 		break;
 
 	case 'h':
@@ -84,13 +143,13 @@ Cores *get_colors(char *input_line, Cores* temp_colors) {
 		free_string(&(temp_colors->hid_stroke));
 		temp_colors->hid_stroke = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->hid_stroke, token);
-		printf("\n%s", temp_colors->hid_stroke);
+		/*printf("\n%s", temp_colors->hid_stroke);*/
 
 		token      = strtok(NULL, " ");
 		free_string(&(temp_colors->hid_fill));
 		temp_colors->hid_fill = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->hid_fill, token);
-		printf("\n%s", temp_colors->hid_fill);
+		/*printf("\n%s", temp_colors->hid_fill);*/
 		break;
 
 	case 't':
@@ -100,13 +159,13 @@ Cores *get_colors(char *input_line, Cores* temp_colors) {
 		free_string(&(temp_colors->tor_stroke));
 		temp_colors->tor_stroke = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->tor_stroke, token);
-		printf("\n%s", temp_colors->tor_stroke);
+		/*printf("\n%s", temp_colors->tor_stroke);*/
 
 		token      = strtok(NULL, " ");
 		free_string(&(temp_colors->tor_fill));
 		temp_colors->tor_fill = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->tor_fill, token);
-		printf("\n%s", temp_colors->tor_fill);
+		/*printf("\n%s", temp_colors->tor_fill);*/
 		break;
 
 	case 's':
@@ -116,13 +175,13 @@ Cores *get_colors(char *input_line, Cores* temp_colors) {
 		free_string(&(temp_colors->sem_stroke));
 		temp_colors->sem_stroke = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->sem_stroke, token);
-		printf("\n%s", temp_colors->sem_stroke);
+		/*printf("\n%s", temp_colors->sem_stroke);*/
 
 		token      = strtok(NULL, " ");
 		free_string(&(temp_colors->sem_fill));
 		temp_colors->sem_fill = (char *)calloc(strlen(token) + 1, sizeof(char));
 		strcpy(temp_colors->sem_fill, token);
-		printf("\n%s", temp_colors->sem_fill);
+		/*printf("\n%s", temp_colors->sem_fill);*/
 		break;
 
 	default:
