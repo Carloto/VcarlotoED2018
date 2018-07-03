@@ -206,36 +206,6 @@ void destroi_svg(FILE **OutputFile) {
   fclose(*OutputFile);
 }
 
-/* Imprime a figura geometrica no arquivo de saida */
-void rtprint_svg(FILE **OutputFile, Circle *rs_circ, Rectangle *rs_rect) {
-  /* Imprimir Circulo */
-  if (rs_rect == NULL) {
-    fprintf(*OutputFile,
-            "\t<circle cx=\"%f\" cy=\"%f\" r=\"%f\" ",
-            rs_circ->x,
-            rs_circ->y,
-            rs_circ->raio);
-    fprintf(*OutputFile,
-            "stroke=\"%s\" fill=\"%s\" />\n",
-            rs_circ->cor1,
-            rs_circ->cor2);
-  } else
-
-  /* Imprimir retangulo */
-  if (rs_circ == NULL) {
-    fprintf(*OutputFile,
-            "\t<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" ",
-            rs_rect->x,
-            rs_rect->y,
-            rs_rect->width,
-            rs_rect->height);
-    fprintf(*OutputFile,
-            "stroke=\"%s\" fill=\"%s\" />\n",
-            rs_rect->cor1,
-            rs_rect->cor2);
-  }
-}
-
 /* Imprime a sobreposição */
 void sbprint_svg(float  x,
                  float  y,

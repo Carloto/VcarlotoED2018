@@ -66,4 +66,11 @@ void new_rnode (Rectangle **temp_struct, Rectangle **temp_end, char *input_line)
 /* Encontra a figura dado um id */
 int find_id_rect(Rectangle **rnode, Rectangle *Retangulos, int id);
 
+/* Imprime a figura geometrica no arquivo de saida */
+void rtprint_svg (FILE **OutputFile, Circle *rs_circ, Rectangle *rs_rect);
+
+/* Imprimir as figuras */
+void print_geometricas(FILE **OutputFile, Circle *Circulos,
+                       Rectangle *Retangulos);
+
 #endif

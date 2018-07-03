@@ -43,9 +43,6 @@ FILE *cria_svg (FILE *OutputFile, Arqs *temp_arq);
 /* Fechar arquivo svg */
 void destroi_svg (FILE **OutputFile);
 
-/* Imprime a figura geometrica no arquivo de saida */
-void rtprint_svg (FILE **OutputFile, Circle *rs_circ, Rectangle *rs_rect);
-
 /* Imprime a sobreposição */
 void sbprint_svg(float x, float y, float width, float height, char *cor1, FILE **OutputFile);
 

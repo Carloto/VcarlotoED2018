@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
   FILE *GeoInput     = NULL;
   FILE *OutputSvgStd = NULL;
   FILE *OutputTxtStd = NULL;
+  FILE *OutputSvgQry = NULL;
 
   /* Figuras */
   Circle *Circulos      = NULL;
@@ -104,6 +105,7 @@ int main(int argc, char *argv[]) {
 
         /*printf("\n %s", input_line);*/
         new_cnode(&Circulos, &CircFim, input_line);
+
         rtprint_svg(&OutputSvgStd, CircFim, NULL);
         break;
       }
@@ -119,27 +121,32 @@ int main(int argc, char *argv[]) {
 
       /*printf("\n %s", input_line);*/
       new_rnode(&Retangulos, &RetFim, input_line);
+
       rtprint_svg(&OutputSvgStd, NULL, RetFim);
       break;
 
     case 'q':
       new_quadra(&Quadras, &QuadFim, input_line, MainColors);
-      rtquad_svg(&OutputSvgStd, QuadFim);
+
+      /*rtquad_svg(&OutputSvgStd, QuadFim);*/
       break;
 
     case 's':
       new_semaforo(&Semaforos, &SemFim, input_line, MainColors);
-      rtsem_svg(&OutputSvgStd, SemFim);
+
+      /*rtsem_svg(&OutputSvgStd, SemFim);*/
       break;
 
     case 'h':
       new_hidrante(&Hidrantes, &HidFim, input_line, MainColors);
-      rthid_svg(&OutputSvgStd, HidFim);
+
+      /*rthid_svg(&OutputSvgStd, HidFim);*/
       break;
 
     case 't':
       new_torre(&Torres, &TorFim, input_line, MainColors);
-      rttor_svg(&OutputSvgStd, TorFim);
+
+      /*rttor_svg(&OutputSvgStd, TorFim);*/
       break;
 
     case 'o':
@@ -187,10 +194,12 @@ int main(int argc, char *argv[]) {
   print_rect(Retangulos);
 
   print_quadra(Quadras);
-
   print_semaforo(Semaforos);
-
   print_hidrante(Hidrantes);
+  pquad_svg(&OutputSvgStd, Quadras);
+  phid_svg(&OutputSvgStd, Hidrantes);
+  ptor_svg(&OutputSvgStd, Torres);
+  psem_svg(&OutputSvgStd, Semaforos);
 
   /* Liberar variaveis */
   fclose(GeoInput);
