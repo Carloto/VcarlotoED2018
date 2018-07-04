@@ -32,6 +32,9 @@ void rttor_svg(FILE **OutputFile, ListaGenerica *TorFim);
 /* Imprimir toda a lista de torres na saida svg */
 void ptor_svg(FILE **OutputFile, ListaGenerica *lista_torre);
 
+/* Encontra a figura dado um id */
+int find_id_torre(ListaGenerica **tor_node, ListaGenerica *Torres, char *id);
+
 /* Função teste para imprimir lista */
 void print_torre(ListaGenerica *lista_torre);
 

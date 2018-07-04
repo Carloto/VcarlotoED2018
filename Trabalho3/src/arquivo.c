@@ -265,6 +265,21 @@ void destroi_txt(FILE **OutputFile) {
 	fclose(*OutputFile);
 }
 
+/* Imprimir figura traçejada */
+void vazado_svg(FILE **OutputFile, float x, float y, float width, float height) {
+	if (width > -1) {
+		fprintf(*OutputFile,
+		        "\t<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" \n",
+		        x,
+		        y,
+		        width,
+		        height);
+		fprintf(*OutputFile,
+		        "\t\tstyle=\"stroke: %s;\n\t\t\tstroke-dasharray: 10 5;\n\t\t\tstroke-width: 3;\n\t\t\tfill: none;\n\t\t\"\n\t/>",
+		        "black");
+	}
+}
+
 /* Imprime a linha de resposta no txt de saida */
 void rtprint_txt(FILE **OutputFile, char *resposta, char *linha,
                  float distancia) {

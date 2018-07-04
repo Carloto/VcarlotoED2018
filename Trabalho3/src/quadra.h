@@ -33,6 +33,9 @@ void rtquad_svg(FILE **OutputFile, ListaGenerica *QuadFim);
 /* Imprimir toda a lista de quadras na saida svg */
 void pquad_svg(FILE **OutputFile, ListaGenerica *lista_quadra);
 
+/* Encontra a figura dado um id */
+int find_id_quadra(ListaGenerica **quad_node, ListaGenerica *Quadras, char *id);
+
 /* Função teste para imprimir lista */
 void print_quadra(ListaGenerica *lista_quadra);
 

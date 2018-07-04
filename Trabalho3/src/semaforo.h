@@ -33,6 +33,9 @@ void rtsem_svg(FILE **OutputFile, ListaGenerica *SemFim);
 /* Imprimir toda a lista de semaforos na saida svg */
 void psem_svg(FILE **OutputFile, ListaGenerica *lista_semaforo);
 
+/* Encontra a figura dado um id */
+int find_id_semaforo(ListaGenerica **sem_node, ListaGenerica *Semaforos, char *id);
+
 /* Função teste para imprimir lista */
 void print_semaforo(ListaGenerica *lista_semaforo);
 

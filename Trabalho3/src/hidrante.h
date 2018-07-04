@@ -32,6 +32,9 @@ void rthid_svg(FILE **OutputFile, ListaGenerica *HidFim);
 /* Imprimir toda a lista de hidarantes na saida svg */
 void phid_svg(FILE **OutputFile, ListaGenerica *lista_hidrante);
 
+/* Encontra a figura dado um id */
+int find_id_hidrante(ListaGenerica **hid_node, ListaGenerica *Hidrantes, char *id);
+
 /* Função teste para imprimir lista */
 void print_hidrante(ListaGenerica *lista_hidrante);
 

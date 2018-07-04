@@ -52,6 +52,9 @@ FILE *cria_txt (FILE *OutputFile, Arqs *temp_arq);
 /* Fechar arquivo txt */
 void destroi_txt (FILE **OutputFile);
 
+/* Imprimir figura traçejada */
+void vazado_svg(FILE **OutputFile, float x, float y, float width, float height);
+
 /* Imprime a linha de resposta no txt de saida */
 void rtprint_txt(FILE **OutputFile, char *resposta, char *linha, float distancia);
 

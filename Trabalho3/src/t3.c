@@ -12,6 +12,7 @@
 #include "semaforo.h"
 #include "hidrante.h"
 #include "torre.h"
+#include "qryfunctions.h"
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
@@ -227,16 +228,45 @@ int main(int argc, char *argv[]) {
 		OutputSvgQry = cria_svg(OutputSvgQry, MainPaths, qry_svg_name);
 		print_geometricas(&OutputSvgQry, Circulos, Retangulos);
 		pquad_svg(&OutputSvgQry, Quadras);
-		phid_svg(&OutputSvgQry, Hidrantes);
-		ptor_svg(&OutputSvgQry, Torres);
-		psem_svg(&OutputSvgQry, Semaforos);
 	}
 
 	/* Loop de leitura qry */
+	while (controle) {
+
+		get_linha(input_line, QryInput);
+		if (feof(QryInput)) {
+			break;
+		}
+
+		print_this(input_line);
+
+		switch (input_line[0]) {
+		case 'c':
+
+			switch (input_line[1]) {
+			case 'c':
+				change_color(&OutputSvgQry, Hidrantes, Torres, Semaforos, Quadras, input_line);
+				break;
+			}
+
+			break;
+
+		case 'q':
+			interno_retangulo(&OutputSvgQry, Hidrantes, Torres, Semaforos, Quadras, input_line);
+			break;
+
+		default:
+			break;
+		}
+
+	}
 
 
 	/* Fechar o arquivo svg do qry */
 	if (controle == 1) {
+		phid_svg(&OutputSvgQry, Hidrantes);
+		ptor_svg(&OutputSvgQry, Torres);
+		psem_svg(&OutputSvgQry, Semaforos);
 		destroi_svg(&OutputSvgQry);
 		fclose(QryInput);
 	}
