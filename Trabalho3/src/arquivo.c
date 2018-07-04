@@ -277,6 +277,15 @@ void vazado_svg(FILE **OutputFile, float x, float y, float width, float height) 
 		fprintf(*OutputFile,
 		        "\t\tstyle=\"stroke: %s; stroke-dasharray: 10 5; stroke-width: 3; fill: none;\"\n\t/>",
 		        "black");
+	} else {
+		fprintf(*OutputFile,
+		        "\t<circle cx=\"%f\" cy=\"%f\" r=\"%f\" \n",
+		        x,
+		        y,
+		        height);
+		fprintf(*OutputFile,
+		        "\t\tstyle=\"stroke: %s; stroke-dasharray: 10 5; stroke-width: 3; fill: none;\"\n\t/>",
+		        "black");
 	}
 }
 

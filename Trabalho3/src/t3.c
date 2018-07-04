@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
 	char *input_line = NULL;
 	char *resposta   = NULL;
 	char *qry_svg_name = NULL;
-	char c;
 
 	/* Arquivos */
 	Arqs *MainPaths    = criar_arqs();
@@ -256,6 +255,11 @@ int main(int argc, char *argv[]) {
 			interno_retangulo(&OutputSvgQry, &OutputTxtStd, Hidrantes, Torres, Semaforos, Quadras, input_line);
 			break;
 
+		case 'Q':
+			rtprint_txt(&OutputTxtStd, NULL, input_line, -1);
+			interno_circulo(&OutputSvgQry, &OutputTxtStd, Hidrantes, Torres, Semaforos, Quadras, input_line);
+			break;
+
 		default:
 			break;
 		}
@@ -269,7 +273,6 @@ int main(int argc, char *argv[]) {
 		phid_svg(&OutputSvgQry, Hidrantes);
 		ptor_svg(&OutputSvgQry, Torres);
 		psem_svg(&OutputSvgQry, Semaforos);
-		while((c = fgetc(OutputSvgQry)) != EOF);
 		destroi_svg(&OutputSvgQry);
 		fclose(QryInput);
 	}

@@ -18,4 +18,6 @@ void change_color(FILE** OutputFile, ListaGenerica *Hidrantes, ListaGenerica *To
 /* Executa o comando q? */
 void interno_retangulo(FILE **OutputFile, FILE **OutputTxtStd, ListaGenerica *Hidrantes, ListaGenerica *Torres, ListaGenerica *Semaforos, ListaGenerica *Quadras, char *input_line);
 
+/* Executa o comando Q? */
+void interno_circulo(FILE **OutputFile, FILE **OutputTxtStd, ListaGenerica *Hidrantes, ListaGenerica *Torres, ListaGenerica *Semaforos, ListaGenerica *Quadras, char *input_line);
 #endif
