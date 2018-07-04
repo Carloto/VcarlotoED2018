@@ -78,7 +78,7 @@ void rthid_svg(FILE **OutputFile, ListaGenerica *HidFim) {
 	        ((Hidrante *)HidFim->data)->raio);
 
 	fprintf(*OutputFile,
-	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
+	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
 	        ((Hidrante *)HidFim->data)->cor1,
 	        ((Hidrante *)HidFim->data)->cor2);
 

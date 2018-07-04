@@ -70,15 +70,21 @@ void change_color(FILE** OutputFile, ListaGenerica *Hidrantes, ListaGenerica *To
 }
 
 /* Executa o comando q? */
-void interno_retangulo(FILE **OutputFile, ListaGenerica *Hidrantes, ListaGenerica *Torres, ListaGenerica *Semaforos, ListaGenerica *Quadras, char *input_line) {
+void interno_retangulo(FILE **OutputFile, FILE **OutputTxtStd, ListaGenerica *Hidrantes, ListaGenerica *Torres, ListaGenerica *Semaforos, ListaGenerica *Quadras, char *input_line) {
 
 	char *token;
 	float x = 0;
 	float y = 0;
 	float width = 0;
 	float height = 0;
+	char space[2] = " ";
+	ListaGenerica *sem_head = Semaforos;
+	ListaGenerica *quad_head = Quadras;
+	ListaGenerica *hid_head = Hidrantes;
+	ListaGenerica *tor_head = Torres;
 	/*long size = 0;*/
 
+	space[2] = '\0';
 	token = strtok(input_line, " ");
 	token = strtok(NULL, " ");
 	x = atof(token);
@@ -89,8 +95,54 @@ void interno_retangulo(FILE **OutputFile, ListaGenerica *Hidrantes, ListaGeneric
 	token = strtok(NULL, " ");
 	height = atof(token);
 
-/*	size = ftell (*OutputFile);*/
+	/*size = ftell (*OutputFile);*/
+/*	printf("\n%ld", size);*/
 	vazado_svg(OutputFile, x, y, width, height);
-/*	fseek (*OutputFile, size, SEEK_SET);*/
+	/*fseek (*OutputFile, size, SEEK_SET);*/
+
+
+	while (sem_head != NULL) {
+		if (x < (((Semaforo *)sem_head->data)->x) && (x + width) > (((Semaforo *)sem_head->data)->x /*+ ((Semaforo *)sem_head->data)->width*/) &&
+		    y < ((((Semaforo *)sem_head->data)->y)) && (y + height) > (((Semaforo *)sem_head->data)->y) /*+ ((Semaforo *)sem_head->data)->height*/) {
+			rtprint_txt(OutputTxtStd, NULL, (((Semaforo *)sem_head->data)->id), -2);
+			rtprint_txt(OutputTxtStd, (((Semaforo *)sem_head->data)->id), (((Semaforo *)sem_head->data)->id), (((Semaforo *)sem_head->data)->x));
+			rtprint_txt(OutputTxtStd, (((Semaforo *)sem_head->data)->id), (((Semaforo *)sem_head->data)->id), (((Semaforo *)sem_head->data)->y));
+			rtprint_txt(OutputTxtStd, NULL, space, -1);
+		}
+		sem_head = sem_head->next;
+	}
+
+	while (quad_head != NULL) {
+		if (x < (((Quadra *)quad_head->data)->x) && (x + width) > (((Quadra *)quad_head->data)->x + ((Quadra *)quad_head->data)->width) &&
+		    y < ((((Quadra *)quad_head->data)->y)) && (y + height) > (((Quadra *)quad_head->data)->y) + ((Quadra *)quad_head->data)->height) {
+			rtprint_txt(OutputTxtStd, NULL, (((Quadra *)quad_head->data)->cep), -2);
+			rtprint_txt(OutputTxtStd, (((Quadra *)quad_head->data)->cep), (((Quadra *)quad_head->data)->cep), (((Quadra *)quad_head->data)->x));
+			rtprint_txt(OutputTxtStd, (((Quadra *)quad_head->data)->cep), (((Quadra *)quad_head->data)->cep), (((Quadra *)quad_head->data)->y));
+			rtprint_txt(OutputTxtStd, NULL, space, -1);
+		}
+		quad_head = quad_head->next;
+	}
+
+	while (hid_head != NULL) {
+		if (x < (((Hidrante *)hid_head->data)->x) && (x + width) > (((Hidrante *)hid_head->data)->x /*+ ((Hidrante *)hid_head->data)->width*/) &&
+		    y < ((((Hidrante *)hid_head->data)->y)) && (y + height) > (((Hidrante *)hid_head->data)->y) /*+ ((Hidrante *)hid_head->data)->height*/) {
+			rtprint_txt(OutputTxtStd, NULL, (((Hidrante *)hid_head->data)->id), -2);
+			rtprint_txt(OutputTxtStd, (((Hidrante *)hid_head->data)->id), (((Hidrante *)hid_head->data)->id), (((Hidrante *)hid_head->data)->x));
+			rtprint_txt(OutputTxtStd, (((Hidrante *)hid_head->data)->id), (((Hidrante *)hid_head->data)->id), (((Hidrante *)hid_head->data)->y));
+			rtprint_txt(OutputTxtStd, NULL, space, -1);
+		}
+		hid_head = hid_head->next;
+	}
+
+	while (tor_head != NULL) {
+		if (x < (((Torre *)tor_head->data)->x) && (x + width) > (((Torre *)tor_head->data)->x /*+ ((Torre *)tor_head->data)->width*/) &&
+		    y < ((((Torre *)tor_head->data)->y)) && (y + height) > (((Torre *)tor_head->data)->y) /*+ ((Torre *)tor_head->data)->height*/) {
+			rtprint_txt(OutputTxtStd, NULL, (((Torre *)tor_head->data)->id), -2);
+			rtprint_txt(OutputTxtStd, (((Torre *)tor_head->data)->id), (((Torre *)tor_head->data)->id), (((Torre *)tor_head->data)->x));
+			rtprint_txt(OutputTxtStd, (((Torre *)tor_head->data)->id), (((Torre *)tor_head->data)->id), (((Torre *)tor_head->data)->y));
+			rtprint_txt(OutputTxtStd, NULL, space, -1);
+		}
+		tor_head = tor_head->next;
+	}
 
 }

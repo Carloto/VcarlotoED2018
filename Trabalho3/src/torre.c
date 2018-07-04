@@ -78,7 +78,7 @@ void rttor_svg(FILE **OutputFile, ListaGenerica *TorFim) {
 	        ((Torre *)TorFim->data)->raio);
 
 	fprintf(*OutputFile,
-	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
+	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
 	        ((Torre *)TorFim->data)->cor1,
 	        ((Torre *)TorFim->data)->cor2);
 
@@ -86,7 +86,7 @@ void rttor_svg(FILE **OutputFile, ListaGenerica *TorFim) {
 	y = ((Torre *)TorFim->data)->y + ((Torre *)TorFim->data)->raio / 2;
 
 	fprintf(*OutputFile,
-	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
+	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
 	        x,
 	        y,
 	        "T");

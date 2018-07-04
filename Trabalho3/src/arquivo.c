@@ -275,7 +275,7 @@ void vazado_svg(FILE **OutputFile, float x, float y, float width, float height) 
 		        width,
 		        height);
 		fprintf(*OutputFile,
-		        "\t\tstyle=\"stroke: %s;\n\t\t\tstroke-dasharray: 10 5;\n\t\t\tstroke-width: 3;\n\t\t\tfill: none;\n\t\t\"\n\t/>",
+		        "\t\tstyle=\"stroke: %s; stroke-dasharray: 10 5; stroke-width: 3; fill: none;\"\n\t/>",
 		        "black");
 	}
 }
@@ -289,7 +289,13 @@ void rtprint_txt(FILE **OutputFile, char *resposta, char *linha,
 	if ((linha == NULL) && (distancia == -1)) {
 		fprintf(*OutputFile, "%s\n", resposta);
 	} else
-	if ((linha == NULL) && (distancia != -1)) {
+	if ((linha == NULL) && (distancia > -1)) {
 		fprintf(*OutputFile, "%.2f\n", distancia);
+	} else
+	if ((resposta == NULL) && (distancia == -2) && (linha != NULL)) {
+		fprintf(*OutputFile, "%s ", linha);
+	} else
+	if (strcmp(linha, resposta) == 0) {
+		fprintf(*OutputFile, "%f ", distancia);
 	}
 }

@@ -80,7 +80,7 @@ void rtsem_svg(FILE **OutputFile, ListaGenerica *SemFim) {
 	        ((Semaforo *)SemFim->data)->height);
 
 	fprintf(*OutputFile,
-	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3\" />\n",
+	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n",
 	        ((Semaforo *)SemFim->data)->cor1,
 	        ((Semaforo *)SemFim->data)->cor2);
 

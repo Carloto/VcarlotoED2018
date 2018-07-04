@@ -83,7 +83,7 @@ void rtquad_svg(FILE **OutputFile, ListaGenerica *QuadFim) {
 	        ((Quadra *)QuadFim->data)->height);
 
 	fprintf(*OutputFile,
-	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3\" />\n",
+	        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n",
 	        ((Quadra *)QuadFim->data)->cor1,
 	        ((Quadra *)QuadFim->data)->cor2);
 
@@ -91,7 +91,7 @@ void rtquad_svg(FILE **OutputFile, ListaGenerica *QuadFim) {
 	y = (((Quadra *)QuadFim->data)->height / 2) + ((Quadra *)QuadFim->data)->y;
 
 	fprintf(*OutputFile,
-	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" >%s</text>\n",
+	        "\t<text x=\"%f\" y=\"%f\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5;\" >%s</text>\n",
 	        x,
 	        y,
 	        ((Quadra *)QuadFim->data)->cep);

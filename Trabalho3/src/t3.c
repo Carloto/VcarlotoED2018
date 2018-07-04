@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
 	char *input_line = NULL;
 	char *resposta   = NULL;
 	char *qry_svg_name = NULL;
+	char c;
 
 	/* Arquivos */
 	Arqs *MainPaths    = criar_arqs();
@@ -227,7 +228,6 @@ int main(int argc, char *argv[]) {
 		qry_svg_name = concat_file(MainPaths->input_name, MainPaths->input_qry);
 		OutputSvgQry = cria_svg(OutputSvgQry, MainPaths, qry_svg_name);
 		print_geometricas(&OutputSvgQry, Circulos, Retangulos);
-		pquad_svg(&OutputSvgQry, Quadras);
 	}
 
 	/* Loop de leitura qry */
@@ -252,7 +252,8 @@ int main(int argc, char *argv[]) {
 			break;
 
 		case 'q':
-			interno_retangulo(&OutputSvgQry, Hidrantes, Torres, Semaforos, Quadras, input_line);
+			rtprint_txt(&OutputTxtStd, NULL, input_line, -1);
+			interno_retangulo(&OutputSvgQry, &OutputTxtStd, Hidrantes, Torres, Semaforos, Quadras, input_line);
 			break;
 
 		default:
@@ -264,9 +265,11 @@ int main(int argc, char *argv[]) {
 
 	/* Fechar o arquivo svg do qry */
 	if (controle == 1) {
+		pquad_svg(&OutputSvgQry, Quadras);
 		phid_svg(&OutputSvgQry, Hidrantes);
 		ptor_svg(&OutputSvgQry, Torres);
 		psem_svg(&OutputSvgQry, Semaforos);
+		while((c = fgetc(OutputSvgQry)) != EOF);
 		destroi_svg(&OutputSvgQry);
 		fclose(QryInput);
 	}
