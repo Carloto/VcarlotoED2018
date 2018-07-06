@@ -20,4 +20,14 @@ void interno_retangulo(FILE **OutputFile, FILE **OutputTxtStd, ListaGenerica *Hi
 
 /* Executa o comando Q? */
 void interno_circulo(FILE **OutputFile, FILE **OutputTxtStd, ListaGenerica *Hidrantes, ListaGenerica *Torres, ListaGenerica *Semaforos, ListaGenerica *Quadras, char *input_line);
+
+/* Executa a destruição de figuras dentro de retangulos */
+void kill_inside(FILE          **OutputFile,
+                 FILE          **OutputTxtStd,
+                 ListaGenerica  *Hidrantes,
+                 ListaGenerica  *Torres,
+                 ListaGenerica  *Semaforos,
+                 ListaGenerica **Quadras,
+                 char           *input_line) ;
+
 #endif
