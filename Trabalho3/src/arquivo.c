@@ -14,7 +14,7 @@ Arqs* ler_argv(int argc, char *argv[], Arqs *la_argv) {
 	char *aux;
 
 	/* Encontrar os parametros */
-	for (i = 1; i < argc; i++) {
+	for (i = 0; i < argc; i++) {
 		if (strcmp("-e", argv[i]) == 0) {
 			i++;
 			len                 = strlen(argv[i]);
