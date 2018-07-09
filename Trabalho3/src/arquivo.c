@@ -342,6 +342,17 @@ void vazado_svg(FILE **OutputFile, float x, float y, float width, float height) 
 	}
 }
 
+/* Imprime a lsita de figuras traçejadas */
+void vazado_list(FILE **OutputFile, Circle *head) {
+
+	Circle *temp_node = head;
+	while(temp_node != NULL) {
+		vazado_svg(OutputFile, temp_node->x, temp_node->y, -1, temp_node->raio);
+		temp_node = temp_node->next;
+	}
+
+}
+
 /* Imprime a linha de resposta no txt de saida */
 void rtprint_txt(FILE **OutputFile, char *resposta, char *linha,
                  float distancia) {

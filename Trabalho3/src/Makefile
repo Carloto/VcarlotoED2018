@@ -2,7 +2,7 @@
 # Matrícula : 201600560546 #
 # Makefile #
 
-deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o quadra.o semaforo.o hidrante.o torre.o qryfunctions.o
+deps_t2 = t3.o arquivo.o misc.o geometricas.o functions.o quadra.o semaforo.o hidrante.o torre.o qryfunctions.o mergesort.o
 cc = gcc -fstack-protector-all -std=c99 -pedantic -g -lm -Wall
 
 siguel : $(deps_t2)
@@ -37,6 +37,9 @@ torre.o : torre.c
 
 qryfunctions.o : qryfunctions.c
 	$(cc) -c qryfunctions.c -lm
+
+mergesort.o : mergesort.c
+	$(cc) -c mergesort.c -lm
 
 clean :
 	rm -f *.o

@@ -13,6 +13,7 @@
 #include "hidrante.h"
 #include "torre.h"
 #include "qryfunctions.h"
+#include "mergesort.h"
 
 /* Função main para execução da leitura dos arquivos */
 int main(int argc, char *argv[]) {
@@ -37,7 +38,9 @@ int main(int argc, char *argv[]) {
 
 	/* Figuras */
 	Circle *Circulos      = NULL;
+	Circle *CircDash = NULL;
 	Circle *CircFim       = NULL;
+	Circle *CircDashFim = NULL;
 	Rectangle *Retangulos = NULL;
 	Rectangle *RetFim     = NULL;
 
@@ -263,6 +266,11 @@ int main(int argc, char *argv[]) {
 					           input_line);
 					break;
 
+				case 'b':
+					rtprint_txt(&OutputTxtStd, NULL, input_line, -1);
+					crb(&OutputTxtStd, &Torres, &CircDash, &CircDashFim);
+					break;
+
 				default:
 					break;
 				}
@@ -320,6 +328,7 @@ int main(int argc, char *argv[]) {
 		phid_svg(&OutputSvgQry, Hidrantes);
 		ptor_svg(&OutputSvgQry, Torres);
 		psem_svg(&OutputSvgQry, Semaforos);
+		vazado_list(&OutputSvgQry, CircDash);
 		destroi_svg(&OutputSvgQry);
 		fclose(QryInput);
 	}
@@ -335,6 +344,7 @@ int main(int argc, char *argv[]) {
 	free_semaforo(Semaforos);
 	free_hidrante(Hidrantes);
 	free_torre(Torres);
+	free_cstruct(CircDash);
 	destruir_colors(MainColors);
 	free_string(&qry_svg_name);
 	free_string(&resposta);

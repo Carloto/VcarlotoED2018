@@ -79,6 +79,27 @@ void new_cnode(Circle **temp_struct, Circle **temp_end, char *input_line) {
 	}
 }
 
+/* Adiciona um nó na lista de circulos dash */
+void new_dash_node(Circle **temp_struct, Circle **temp_end, float x, float y, float raio) {
+	Circle *Node  = NULL;
+
+	Node  = create_cnode(Node);
+	Node->id = 0;
+	Node->raio = raio;
+	Node->x = x;
+	Node->y = y;
+
+	if (*temp_struct == NULL) {
+		*temp_struct      = Node;
+		*temp_end         = *temp_struct;
+		(*temp_end)->next = NULL;
+	} else {
+		(*temp_end)->next = Node;
+		(*temp_end)       = (*temp_end)->next;
+		(*temp_end)->next = NULL;
+	}
+}
+
 /* Encontra a figura dado um id */
 int find_id_circle(Circle **cnode, Circle *Circulos, int id) {
 	Circle *temp_node = Circulos;

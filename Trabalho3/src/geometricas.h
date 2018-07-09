@@ -28,6 +28,9 @@ void print_circle (Circle *temp_circ);
 /* Aloca espaço para um nó */
 Circle *create_cnode (Circle *temp_struct);
 
+/* Adiciona um nó na lista de circulos dash */
+void new_dash_node(Circle **temp_struct, Circle **temp_end, float x, float y, float raio);
+
 /* Free na struct e seus elementos */
 void free_cstruct(Circle* temp_struct);
 

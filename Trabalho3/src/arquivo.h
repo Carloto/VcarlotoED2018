@@ -55,6 +55,9 @@ void destroi_txt (FILE **OutputFile);
 /* Imprimir figura traçejada */
 void vazado_svg(FILE **OutputFile, float x, float y, float width, float height);
 
+/* Imprime a lsita de figuras traçejadas */
+void vazado_list(FILE **OutputFile, Circle *head);
+
 /* Imprime a linha de resposta no txt de saida */
 void rtprint_txt(FILE **OutputFile, char *resposta, char *linha, float distancia);
 

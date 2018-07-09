@@ -675,12 +675,12 @@ void kill_inside(FILE          **OutputFile,
 			vazado_svg(OutputFile, x, y, width, height);
 
 			while (quad_head != NULL) {
-				if ((x < (((Quadra *)(quad_head)->data)->x)) &&
-				    ((x + width) >
+				if ((x <= (((Quadra *)(quad_head)->data)->x)) &&
+				    ((x + width) >=
 				     (((Quadra *)(quad_head)->data)->x +
 				      ((Quadra *)(quad_head)->data)->width)) &&
-				    (y < ((((Quadra *)(quad_head)->data)->y))) &&
-				    ((y + height) >
+				    (y <= ((((Quadra *)(quad_head)->data)->y))) &&
+				    ((y + height) >=
 				     (((Quadra *)(quad_head)->data)->y) +
 				     ((Quadra *)(quad_head)->data)->height)) {
 					rtprint_txt(OutputTxtStd,
