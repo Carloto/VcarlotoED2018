@@ -715,11 +715,11 @@ void kill_inside(FILE          **OutputFile,
 
 			aux  = strtok(NULL, " ");
 			token = strtok(NULL, " ");
-			width = atof(token);
-			token = strtok(NULL, " ");
 			x     = atof(token);
 			token = strtok(NULL, " ");
 			y     = atof(token);
+			token = strtok(NULL, " ");
+			width = atof(token);
 			vazado_svg(OutputFile, x, y, -1, width);
 			len = strlen(aux);
 
