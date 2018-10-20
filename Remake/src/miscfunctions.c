@@ -32,7 +32,7 @@ void removeFirstChar(char **final) {
     char *aux;
     len = strlen(*final);
     aux = (char *) calloc(len, sizeof(char));
-    for (int i = 1, j = 0; i  < len; i++, j ++) {
+    for (int i = 1, j = 0; i < len; i++, j++) {
         aux[j] = (*final)[i];
     }
 
@@ -51,14 +51,14 @@ void strcatFileName(char **final, char *before, char **after) {
     lenAfter = strlen(*after);
 
     // Verifica a occorencia de "/"
-    if((before[lenBefore-1] == '/' && *after[0] != '/') || (before[lenBefore-1] != '/' && (*after)[0] == '/')) {
+    if ((before[lenBefore - 1] == '/' && *after[0] != '/') || (before[lenBefore - 1] != '/' && (*after)[0] == '/')) {
         *final = (char *) calloc(lenBefore + lenAfter + 1, sizeof(char));
         sprintf(*final, "%s%s", before, *after);
-    } else if(before[lenBefore-1] == '/' && (*after)[0] == '/') {
+    } else if (before[lenBefore - 1] == '/' && (*after)[0] == '/') {
         removeFirstChar(after);
         *final = (char *) calloc(lenBefore + lenAfter + 1, sizeof(char));
         sprintf(*final, "%s%s", before, *after);
-    } else if(before[lenBefore-1] != '/' && (*after)[0] != '/') {
+    } else if (before[lenBefore - 1] != '/' && (*after)[0] != '/') {
         *final = (char *) calloc(lenBefore + lenAfter + 2, sizeof(char));
         sprintf(*final, "%s/%s", before, *after);
     }

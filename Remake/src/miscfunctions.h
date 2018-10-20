@@ -1,4 +1,8 @@
 // Define
+#ifndef M_BUFFER
+#define M_BUFFER 1000
+#endif
+
 #ifndef TRAB3_MISCFUNCTIONS_H
 #define TRAB3_MISCFUNCTIONS_H
 

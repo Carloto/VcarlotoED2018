@@ -53,13 +53,34 @@ void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
     // Verificar se -f possui "." e concatenar nome do arquivo geo
     if ((*set_struct)->input_e != NULL) {
         if ((*set_struct)->input_f[0] == '.') {
-            print_this((*set_struct)->input_f);
-
             removeFirstChar(&(*set_struct)->input_f);
-            print_this((*set_struct)->input_f);
         }
         strcatFileName((&(*set_struct)->geo_input_name), (*set_struct)->input_e, &(*set_struct)->input_f);
     } else {
         copyString(&(*set_struct)->geo_input_name, (*set_struct)->input_f);
     }
+}
+
+// Lê uma linha do arquivo de entrada
+void readLine(char **line, FILE **input) {
+    free_string(line);
+    *line = (char *) calloc(M_BUFFER, sizeof(char));
+    fgets(*line, M_BUFFER, *input);
+    *line = strtok(*line, "\r\n");
+
+}
+
+// Abre um arquivo
+int openFile(char *fileName, char accessType[3], FILE **fileToOpen) {
+    // Abrir arquivo
+    *fileToOpen = fopen(fileName, accessType);
+
+    // Falha
+    if (*fileToOpen == NULL) {
+        perror("Erro na abertura do arquivo");
+        return -1;
+    }
+
+    // Sucesso
+    return 1;
 }

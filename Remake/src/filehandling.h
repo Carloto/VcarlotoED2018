@@ -23,4 +23,10 @@ void printInputArguments(fileArguments *print_struct);
 // Obtem os argumentos de argv
 void setInputArguments(fileArguments **set_struct, int argc, char *argv[]);
 
+// Lê uma linha do arquivo de entrada
+void readLine(char **line, FILE **input);
+
+// Abre um arquivo a partir do nome recebido
+int openFile(char *fileName, char accessType[3], FILE **fileToOpen);
+
 #endif //TRAB3_INPUTARGV_H
