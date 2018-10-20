@@ -12,7 +12,8 @@ typedef struct tmp_fileArguments {
     char *input_e;
     char *input_f;
     char *output_o;
-    char *geo_input_name;
+    char *geoInput;
+    char *geoName;
 } fileArguments;
 
 #endif //TRAB3_STRUCTLIB_H

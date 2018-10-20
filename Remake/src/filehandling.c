@@ -9,7 +9,8 @@ fileArguments *createInputArguments() {
     create_struct->input_e = NULL;
     create_struct->input_f = NULL;
     create_struct->output_o = NULL;
-    create_struct->geo_input_name = NULL;
+    create_struct->geoInput = NULL;
+    create_struct->geoName = NULL;
     return create_struct;
 }
 
@@ -18,7 +19,8 @@ void killInputArguments(fileArguments *kill_struct) {
     free_string(&(kill_struct->input_e));
     free_string(&(kill_struct->input_f));
     free_string(&(kill_struct->output_o));
-    free_string(&(kill_struct->geo_input_name));
+    free_string(&(kill_struct->geoInput));
+    free_string(&(kill_struct->geoName));
     free(kill_struct);
 }
 
@@ -27,7 +29,8 @@ void printInputArguments(fileArguments *print_struct) {
     print_this(print_struct->input_e);
     print_this(print_struct->input_f);
     print_this(print_struct->output_o);
-    print_this(print_struct->geo_input_name);
+    print_this(print_struct->geoInput);
+    print_this(print_struct->geoName);
 }
 
 // Obtem os argumentos de argv
@@ -55,10 +58,14 @@ void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
         if ((*set_struct)->input_f[0] == '.') {
             removeFirstChar(&(*set_struct)->input_f);
         }
-        strcatFileName((&(*set_struct)->geo_input_name), (*set_struct)->input_e, &(*set_struct)->input_f);
+        strcatFileName((&(*set_struct)->geoInput), (*set_struct)->input_e, &(*set_struct)->input_f);
     } else {
-        copyString(&(*set_struct)->geo_input_name, (*set_struct)->input_f);
+        copyString(&(*set_struct)->geoInput, (*set_struct)->input_f);
     }
+
+    // Isolar nome do arquivo
+    cutFileName(&(*set_struct)->geoName, (*set_struct)->geoInput);
+
 }
 
 // Lê uma linha do arquivo de entrada
@@ -67,7 +74,6 @@ void readLine(char **line, FILE **input) {
     *line = (char *) calloc(M_BUFFER, sizeof(char));
     fgets(*line, M_BUFFER, *input);
     *line = strtok(*line, "\r\n");
-
 }
 
 // Abre um arquivo

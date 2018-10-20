@@ -64,3 +64,44 @@ void strcatFileName(char **final, char *before, char **after) {
     }
 
 }
+
+// Função de hashing para strings
+unsigned long hash(unsigned char *str) {
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *str++)) {
+        hash = (hash * 33) + c; /* hash * 33 + c */
+    }
+    return hash;
+}
+
+// Isola o nome de um arquivo
+void cutFileName(char **final, char *aux) {
+    int i, j;
+    size_t len = 0;
+    free_string(final);
+    len = strlen(aux);
+    for (i = (int) len; i > -1; i--) { // Verificar a ocorrencia de / no meio do nome
+        if (aux[i] == '/') {
+            break;
+        }
+    }
+    if (i == -1) { // Loop no final, não há path
+        *final = (char *) calloc(len + 1, sizeof(char));
+        i = 0;
+
+        for (j = 0; j < (int) len - 4; j++, i++) {
+            (*final)[j] = aux[i];
+        }
+        (*final)[len - 4] = '\0';
+    } else {
+        /* O loop não chegou no final, logo, há path */
+        len = len - i;
+        *final = (char *) calloc(len + 1, sizeof(char));
+        i++;
+        for (j = 0; j < len - 5; j++, i++) {
+            (*final)[j] = aux[i];
+        }
+        (*final)[len - 5] = '\0';
+    }
+}
