@@ -9,28 +9,29 @@ fileArguments *createInputArguments() {
     create_struct->input_e = NULL;
     create_struct->input_f = NULL;
     create_struct->output_o = NULL;
-    create_struct->geoInput = NULL;
+    create_struct->geoInputName = NULL;
     create_struct->geoName = NULL;
+    create_struct->GeoInputFile = NULL;
     return create_struct;
 }
 
 // Destruir fileArguments
-void killInputArguments(fileArguments *kill_struct) {
-    free_string(&(kill_struct->input_e));
-    free_string(&(kill_struct->input_f));
-    free_string(&(kill_struct->output_o));
-    free_string(&(kill_struct->geoInput));
-    free_string(&(kill_struct->geoName));
-    free(kill_struct);
+void killInputArguments(fileArguments **kill_struct) {
+    freeString(&(*kill_struct)->input_e);
+    freeString(&(*kill_struct)->input_f);
+    freeString(&(*kill_struct)->output_o);
+    freeString(&(*kill_struct)->geoInputName);
+    freeString(&(*kill_struct)->geoName);
+    free(*kill_struct);
 }
 
 // Imprimir fileArguments
 void printInputArguments(fileArguments *print_struct) {
-    print_this(print_struct->input_e);
-    print_this(print_struct->input_f);
-    print_this(print_struct->output_o);
-    print_this(print_struct->geoInput);
-    print_this(print_struct->geoName);
+    printThis(print_struct->input_e);
+    printThis(print_struct->input_f);
+    printThis(print_struct->output_o);
+    printThis(print_struct->geoInputName);
+    printThis(print_struct->geoName);
 }
 
 // Obtem os argumentos de argv
@@ -58,19 +59,19 @@ void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
         if ((*set_struct)->input_f[0] == '.') {
             removeFirstChar(&(*set_struct)->input_f);
         }
-        strcatFileName((&(*set_struct)->geoInput), (*set_struct)->input_e, &(*set_struct)->input_f);
+        strcatFileName((&(*set_struct)->geoInputName), (*set_struct)->input_e, &(*set_struct)->input_f);
     } else {
-        copyString(&(*set_struct)->geoInput, (*set_struct)->input_f);
+        copyString(&(*set_struct)->geoInputName, (*set_struct)->input_f);
     }
 
     // Isolar nome do arquivo
-    cutFileName(&(*set_struct)->geoName, (*set_struct)->geoInput);
+    cutFileName(&(*set_struct)->geoName, (*set_struct)->geoInputName);
 
 }
 
 // Lê uma linha do arquivo de entrada
 void readLine(char **line, FILE **input) {
-    free_string(line);
+    freeString(line);
     *line = (char *) calloc(M_BUFFER, sizeof(char));
     fgets(*line, M_BUFFER, *input);
     *line = strtok(*line, "\r\n");

@@ -47,13 +47,13 @@
 // Esse modulo contem funções auxiliares para o programa
 
 //Imprime uma string não nula
-void print_this(char *output);
+void printThis(char *output);
 
 // Copia uma string
 void copyString(char **final, char *aux);
 
 // Libera uma string e aponta o ponteiro para null
-void free_string(char **temp_free);
+void freeString(char **temp_free);
 
 // Remove o primeiro character da string
 void removeFirstChar(char **final);

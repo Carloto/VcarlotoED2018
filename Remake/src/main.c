@@ -23,58 +23,57 @@ int main(int argc, char *argv[]) {
     printInputArguments(FileNames);
 
     // Leitura de .geo
-    FILE *InputGeo = NULL;
-    if (openFile(FileNames->geoInput, "r", &InputGeo) == -1) { // Verificar se foi aberto corretamente
-        killInputArguments(FileNames);
+    if (openFile(FileNames->geoInputName, "r", &(FileNames->GeoInputFile) ) == -1) { // Verificar se foi aberto corretamente
+        killInputArguments(&FileNames);
         return -1;
     }
 
-    char *linha = NULL;
-    char *tmpLinha = NULL;
+    char *linha = NULL; // Linha lida
+    char *tmpLinha = NULL; // Copia para strtok
     int controle = 1; // Controle permite a execução da leitura, e # muda seu valor para 0
-    unsigned long int hashResult = 0;
+    unsigned long int hashResult = 0; // Resultado do hash
 
-    while (!feof(InputGeo) && controle == 1) { // Loop de leitura
-        /*if (feof(InputGeo)){
-            break;
-        }*/
-        readLine(&linha, &InputGeo); // Le uma linha do arquivo de entrada
-        // print_this(linha); // Impime a linha lida
-        copyString(&tmpLinha, linha);
-        hashResult = hash((unsigned char *) strtok(tmpLinha, " "));
-        printf("\nResultado do hashing : %lu", hashResult);
+    while (!feof(FileNames->GeoInputFile) && controle == 1) { // Loop de leitura
+
+        readLine(&linha, &(FileNames->GeoInputFile)); // Le uma linha do arquivo de entrada
+        // printThis(linha); // Impime a linha lida
+        copyString(&tmpLinha, linha); // Copia a linha lida
+        hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
+        //printf("\nResultado do hashing : %lu", hashResult);
+
         switch (hashResult) { // Switch dos comandos lidos
             case CMD_NX:
-                print_this(linha);
+                printThis(linha);
                 break;
 
             case CMD_A:
-                print_this(linha);
+                printThis(linha);
                 break;
 
             case CMD_D:
-                print_this(linha);
+                printThis(linha);
                 break;
 
             case CMD_I:
-                print_this(linha);
+                printThis(linha);
                 break;
 
             case CMD_O:
-                print_this(linha);
+                printThis(linha);
                 break;
+
             case CMD_FIM:
-                print_this(linha);
+                printThis(linha);
                 controle = 0; // Sinaliza o fim da leitura
-                printf("\nControle = %d", controle);
+               //printf("\nControle = %d", controle);
                 break;
 
             case FIG_C:
-                print_this(linha);
+                printThis(linha);
                 break;
 
             case FIG_R:
-                print_this(linha);
+                printThis(linha);
                 break;
 
             default:
@@ -82,14 +81,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    fclose(InputGeo); // Fecha o arquivo .geo
+    fclose(FileNames->GeoInputFile); // Fecha o arquivo .geo
 
     // Free structs
-    killInputArguments(FileNames);
+    killInputArguments(&FileNames);
 
     // Free Strings
-    free_string(&linha);
-    free_string(&tmpLinha);
+    freeString(&linha);
+    freeString(&tmpLinha);
 
     // End main
     return 0;

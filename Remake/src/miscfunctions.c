@@ -3,7 +3,7 @@
 #include "miscfunctions.h"
 
 // Imprime uma string
-void print_this(char *output) {
+void printThis(char *output) {
     if (output != NULL) {
         printf("\n|%s|", output);
     }
@@ -13,13 +13,13 @@ void print_this(char *output) {
 void copyString(char **final, char *aux) {
     size_t len = 0;
     len = strlen(aux);
-    free_string(final);
+    freeString(final);
     *final = (char *) calloc(len + 1, sizeof(char));
     strcpy(*final, aux);
 }
 
 // Free String
-void free_string(char **temp_free) {
+void freeString(char **temp_free) {
     if (*temp_free != NULL) {
         free(*temp_free);
     }
@@ -37,10 +37,10 @@ void removeFirstChar(char **final) {
     }
 
     aux[len - 1] = '\0';
-    free_string(final);
+    freeString(final);
     *final = (char *) calloc(len, sizeof(char));
     strcpy(*final, aux);
-    free_string(&aux);
+    freeString(&aux);
 }
 
 // Concatena nomes de arquivos
@@ -79,7 +79,7 @@ unsigned long hash(unsigned char *str) {
 void cutFileName(char **final, char *aux) {
     int i, j;
     size_t len = 0;
-    free_string(final);
+    freeString(final);
     len = strlen(aux);
     for (i = (int) len; i > -1; i--) { // Verificar a ocorrencia de / no meio do nome
         if (aux[i] == '/') {

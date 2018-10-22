@@ -15,7 +15,7 @@
 fileArguments *createInputArguments();
 
 // Libera as strings e a struct input arguments
-void killInputArguments(fileArguments *kill_struct);
+void killInputArguments(fileArguments **kill_struct);
 
 // Imprime fileArguments
 void printInputArguments(fileArguments *print_struct);
