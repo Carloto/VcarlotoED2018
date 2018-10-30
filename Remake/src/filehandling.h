@@ -9,6 +9,9 @@
 #include "structlib.h"
 #include "miscfunctions.h"
 
+// Struct para guardar a entrada de argumentos
+typedef struct tmp_fileArguments fileArguments;
+
 // O objetivo deste modulo é lidar com a entrada de argumentos na linha de comando
 
 // Aloca espaço e inicializa as variaveis da struct input arguments
@@ -27,6 +30,6 @@ void setInputArguments(fileArguments **set_struct, int argc, char *argv[]);
 void readLine(char **line, FILE **input);
 
 // Abre um arquivo a partir do nome recebido
-int openFile(char *fileName, char accessType[3], FILE **fileToOpen);
+FILE *openFile(fileArguments *tmpStruct, char accessType[3], int fileName);
 
 #endif //TRAB3_INPUTARGV_H

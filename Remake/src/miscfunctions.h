@@ -67,5 +67,11 @@ unsigned long hash(unsigned char *str);
 // Isola o nome de um arquivo
 void cutFileName(char **final, char *aux);
 
+// Conversão para inteiro
+int newAtoi(char *aux);
+
+// Conversão para double
+double newAtod(char *aux);
+
 #endif //TRAB3_MISCFUNCTIONS_H
 

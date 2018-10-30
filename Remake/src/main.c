@@ -7,6 +7,7 @@
 #include "structlib.h"
 #include "miscfunctions.h"
 #include "filehandling.h"
+#include "basicshapes.h"
 
 // Main
 int main(int argc, char *argv[]) {
@@ -22,8 +23,13 @@ int main(int argc, char *argv[]) {
     setInputArguments(&FileNames, argc, argv);
     printInputArguments(FileNames);
 
+    // Structs de figuras basicas
+    BasicShapes *AllBasicShapes = allocBasicShapes();
+
     // Leitura de .geo
-    if (openFile(FileNames->geoInputName, "r", &(FileNames->GeoInputFile) ) == -1) { // Verificar se foi aberto corretamente
+    FILE *GeoInputFile = openFile(FileNames, "r", 0);
+    if (GeoInputFile == NULL) { // Verificar se foi aberto corretamente
+        printf("\nFalha na abertura do arquivo!");
         killInputArguments(&FileNames);
         return -1;
     }
@@ -33,9 +39,9 @@ int main(int argc, char *argv[]) {
     int controle = 1; // Controle permite a execução da leitura, e # muda seu valor para 0
     unsigned long int hashResult = 0; // Resultado do hash
 
-    while (!feof(FileNames->GeoInputFile) && controle == 1) { // Loop de leitura
+    while (!feof(GeoInputFile) && controle == 1) { // Loop de leitura
 
-        readLine(&linha, &(FileNames->GeoInputFile)); // Le uma linha do arquivo de entrada
+        readLine(&linha, &GeoInputFile); // Le uma linha do arquivo de entrada
         // printThis(linha); // Impime a linha lida
         copyString(&tmpLinha, linha); // Copia a linha lida
         hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
@@ -65,11 +71,12 @@ int main(int argc, char *argv[]) {
             case CMD_FIM:
                 printThis(linha);
                 controle = 0; // Sinaliza o fim da leitura
-               //printf("\nControle = %d", controle);
+                //printf("\nControle = %d", controle);
                 break;
 
             case FIG_C:
                 printThis(linha);
+                newCircleFromFile(AllBasicShapes, linha);
                 break;
 
             case FIG_R:
@@ -81,10 +88,12 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    fclose(FileNames->GeoInputFile); // Fecha o arquivo .geo
+    printBasicShapes(AllBasicShapes);
+    fclose(GeoInputFile); // Fecha o arquivo .geo
 
     // Free structs
     killInputArguments(&FileNames);
+    killBasicShapes(AllBasicShapes);
 
     // Free Strings
     freeString(&linha);

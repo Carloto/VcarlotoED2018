@@ -105,3 +105,17 @@ void cutFileName(char **final, char *aux) {
         (*final)[len - 5] = '\0';
     }
 }
+
+// Conversão para inteiro
+int newAtoi(char *aux) {
+    char *ptr;
+    int newValue = (int) strtol(aux, &ptr, 10);
+    return newValue;
+}
+
+// Conversão para double
+double newAtod(char *aux) {
+    char *ptr;
+    double newValue = strtod(aux, &ptr);
+    return newValue;
+}

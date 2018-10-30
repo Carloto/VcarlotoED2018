@@ -3,15 +3,25 @@
 // Include
 #include "filehandling.h"
 
+// Struct para guardar a entrada de argumentos
+struct tmp_fileArguments {
+    char *input_e; // Argumento do comando -e
+    char *input_f; // Argumento do comando -f
+    char *output_o; // Argumento do comando -o
+    char *inputGeoFileName; // Nome completo do arquivo .geo
+    char *inputGeoName; // Nome isolado do arquivo .geo
+    char *outputSvgStandard; // Arquivo de saida .svg principal
+};
+
 // Inicializar fileArguments
 fileArguments *createInputArguments() {
     fileArguments *create_struct = (fileArguments *) calloc(1, sizeof(fileArguments));
     create_struct->input_e = NULL;
     create_struct->input_f = NULL;
     create_struct->output_o = NULL;
-    create_struct->geoInputName = NULL;
-    create_struct->geoName = NULL;
-    create_struct->GeoInputFile = NULL;
+    create_struct->inputGeoFileName = NULL;
+    create_struct->inputGeoName = NULL;
+    create_struct->outputSvgStandard = NULL;
     return create_struct;
 }
 
@@ -20,8 +30,9 @@ void killInputArguments(fileArguments **kill_struct) {
     freeString(&(*kill_struct)->input_e);
     freeString(&(*kill_struct)->input_f);
     freeString(&(*kill_struct)->output_o);
-    freeString(&(*kill_struct)->geoInputName);
-    freeString(&(*kill_struct)->geoName);
+    freeString(&(*kill_struct)->inputGeoFileName);
+    freeString(&(*kill_struct)->inputGeoName);
+    freeString(&(*kill_struct)->outputSvgStandard);
     free(*kill_struct);
 }
 
@@ -30,11 +41,12 @@ void printInputArguments(fileArguments *print_struct) {
     printThis(print_struct->input_e);
     printThis(print_struct->input_f);
     printThis(print_struct->output_o);
-    printThis(print_struct->geoInputName);
-    printThis(print_struct->geoName);
+    printThis(print_struct->inputGeoFileName);
+    printThis(print_struct->inputGeoName);
+    printThis(print_struct->outputSvgStandard);
 }
 
-// Obtem os argumentos de argv
+// Obtem os argumentos de argv e montar os nomes dos arquivos
 void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
     // Loop para encontrar argv
     for (int i = 0; i < argc; i++) {
@@ -59,13 +71,13 @@ void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
         if ((*set_struct)->input_f[0] == '.') {
             removeFirstChar(&(*set_struct)->input_f);
         }
-        strcatFileName((&(*set_struct)->geoInputName), (*set_struct)->input_e, &(*set_struct)->input_f);
+        strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->input_f);
     } else {
-        copyString(&(*set_struct)->geoInputName, (*set_struct)->input_f);
+        copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
     }
 
     // Isolar nome do arquivo
-    cutFileName(&(*set_struct)->geoName, (*set_struct)->geoInputName);
+    cutFileName(&(*set_struct)->inputGeoName, (*set_struct)->inputGeoFileName);
 
 }
 
@@ -78,16 +90,18 @@ void readLine(char **line, FILE **input) {
 }
 
 // Abre um arquivo
-int openFile(char *fileName, char accessType[3], FILE **fileToOpen) {
-    // Abrir arquivo
-    *fileToOpen = fopen(fileName, accessType);
+FILE *openFile(fileArguments *tmpStruct, char accessType[3], int fileName) {
+    // Arquivo a ser aberto
+    FILE *fileToOpen = NULL;
+    // Detectar arquivo resquisitado
+    switch (fileName) {
+        case 0: // Arquivo de entrada .geo
+            fileToOpen = fopen(tmpStruct->inputGeoFileName, accessType);
+            break;
 
-    // Falha
-    if (*fileToOpen == NULL) {
-        perror("Erro na abertura do arquivo");
-        return -1;
+        default:
+            break;
     }
-
-    // Sucesso
-    return 1;
+    // Retorno
+    return fileToOpen;
 }
