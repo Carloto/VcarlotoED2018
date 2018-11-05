@@ -66,18 +66,21 @@ void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
         }
     }
 
+    // Isolar nome do arquivo
+    cutFileName(&(*set_struct)->inputGeoName, (*set_struct)->input_f);
+
+    // Concatenar nome do arquivo de saida .svg
+    strcatFileName(&(*set_struct)->outputSvgStandard, (*set_struct)->output_o, &(*set_struct)->inputGeoName, "svg\0");
+
     // Verificar se -f possui "." e concatenar nome do arquivo geo
     if ((*set_struct)->input_e != NULL) {
         if ((*set_struct)->input_f[0] == '.') {
             removeFirstChar(&(*set_struct)->input_f);
         }
-        strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->input_f);
+        strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->inputGeoName, "geo\0");
     } else {
         copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
     }
-
-    // Isolar nome do arquivo
-    cutFileName(&(*set_struct)->inputGeoName, (*set_struct)->inputGeoFileName);
 
 }
 

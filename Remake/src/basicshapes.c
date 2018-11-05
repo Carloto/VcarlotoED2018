@@ -1,5 +1,6 @@
 // Include
 #include "basicshapes.h"
+#include "genericlist.h"
 
 struct tmpCircle { // Circulo
 
@@ -37,10 +38,11 @@ struct tmpBasicShapes { // Figuras basicas (circulo e retangulo)
 BasicShapes *allocBasicShapes() {
     BasicShapes *tmpStruct = (BasicShapes *) calloc(1, sizeof(BasicShapes));
     tmpStruct->ShapesHead = (genericList **) calloc(1, sizeof(genericList *));
+    *(tmpStruct->ShapesHead) = NULL;
     tmpStruct->ShapesTail = (genericList **) calloc(1, sizeof(genericList *));
+    *(tmpStruct->ShapesTail) = NULL;
     return tmpStruct;
 }
-
 
 // Aloca e inicializa uma struct Circle
 Circle *allocCircle() {
@@ -52,98 +54,99 @@ Circle *allocCircle() {
 }
 
 // Libera a memoria de toda a lista
-void killBasicShapes(BasicShapes *tmpShapes) {
-    genericList *auxList;
-    genericList **auxHead = tmpShapes->ShapesHead;
-    genericList **auxTail = tmpShapes->ShapesTail;
-    BasicShapes **auxShapes = &tmpShapes;
-    while (*(tmpShapes->ShapesHead) != NULL) {
-        auxList = *(tmpShapes->ShapesHead);
-        *(tmpShapes->ShapesHead) = (*(tmpShapes->ShapesHead))->next;
-        switch (auxList->type) {
+void killBasicShapes(BasicShapes **tmpShapes) {
+    // Referencias dos ponteiros
+    genericList *auxList = NULL;
+    genericList *auxHead = *((*tmpShapes)->ShapesHead);
+    BasicShapes **auxShapes = tmpShapes;
+
+    // Looping de free
+    while (auxHead != NULL) {
+        auxList = auxHead;
+        auxHead = (getNext(auxHead));
+        switch (getType(auxList)) {
             case 1:
-                killCircle((Circle **) &(auxList->data));
+                killCircle((Circle *) getData(auxList));
                 break;
+
             default:
                 break;
         }
-        free(auxList->data);
+        free(getData(auxList));
         free(auxList);
     }
-    free(auxHead);
-    free(auxTail);
+
+    // Free nos ponteiros duplos
+    free((*tmpShapes)->ShapesHead);
+    free((*tmpShapes)->ShapesTail);
     free(*auxShapes);
 }
 
 // Libera a memoria de um unico circulo
-void killCircle(Circle **tmpCircle) {
+void killCircle(Circle *tmpCircle) {
     if (tmpCircle != NULL) {
-        freeString(&(*tmpCircle)->strokeColor);
-        freeString(&(*tmpCircle)->fillColor);
+        freeString(&(tmpCircle->strokeColor));
+        freeString(&(tmpCircle->fillColor));
     }
+}
 
-}// Libera a memoria de um unico retangulo
-void killRectangle(Circle **tmpRectangle) {
-    if (tmpRectangle != NULL) {
-        freeString(&(*tmpRectangle)->strokeColor);
-        freeString(&(*tmpRectangle)->fillColor);
+void printBasicShapes(BasicShapes *tmpShapes) {
+    genericList *aux = *(tmpShapes->ShapesHead);
+    while (aux != NULL) {
+        printf("\nid = |%d|", ((Circle *) getData(aux))->numberId);
+        printf("  raio = |%.3lf|", ((Circle *) getData(aux))->radius);
+        printf("  x = |%.3lf|", ((Circle *) getData(aux))->xCenter);
+        printf("  y = |%.3lf|", ((Circle *) getData(aux))->yCenter);
+        printf("  stroke color = |%s|", ((Circle *) getData(aux))->strokeColor);
+        printf("  fill color = |%s|\n", ((Circle *) getData(aux))->fillColor);
+        aux = getNext(aux);
     }
 }
 
 // Imprime a lista de circulos
-void printBasicShapes(BasicShapes *tmpShapes) {
-    genericList *aux = (*tmpShapes->ShapesHead);
-    while (aux != NULL) {
-        printf("\nid = |%d|", ((Circle *) aux->data)->numberId);
-        printf("  raio = |%.3lf|", ((Circle *) aux->data)->radius);
-        printf("  x = |%.3lf|", ((Circle *) aux->data)->xCenter);
-        printf("  y = |%.3lf|", ((Circle *) aux->data)->yCenter);
-        printf("  stroke color = |%s|", ((Circle *) aux->data)->strokeColor);
-        printf("  fill color = |%s|\n", ((Circle *) aux->data)->fillColor);
-        aux = aux->next;
-    }
+void printOneShapes(Circle *tmpShapes) {
+    Circle *aux = tmpShapes;
+    printf("\nid = |%d|", aux->numberId);
+    printf("  raio = |%.3lf|", aux->radius);
+    printf("  x = |%.3lf|", aux->xCenter);
+    printf("  y = |%.3lf|", aux->yCenter);
+    printf("  stroke color = |%s|", aux->strokeColor);
+    printf("  fill color = |%s|\n", aux->fillColor);
 }
 
 // Adiciona um novo circulo ao final da lista, a partir do arquivo lido
 void newCircleFromFile(BasicShapes *shapesIndex, char *inputLine) {
     // Novo nó
-    genericList *tmpNode = (genericList *) calloc(1, sizeof(genericList));
-    tmpNode->type = 1; // Circulo
+    genericList *tmpNode = allocGenericList();
     Circle *tmpCircle = allocCircle();
 
     // Obter os valores de tmpCircle
-    printThis(inputLine);
-    strtok(inputLine, " ");// Comando
-     // Id
+    char *token = strtok(inputLine, " ");// Comando
+    if (token == NULL) {
+        return;
+    }
+    // Id
     tmpCircle->numberId = newAtoi(strtok(NULL, " ")); // Conversão para inteiro e atribuição
-     // Stroke color
+    // Stroke color
     copyString(&(tmpCircle->strokeColor), strtok(NULL, " "));
-     // Fill color
+    // Fill color
     copyString(&(tmpCircle->fillColor), strtok(NULL, " "));
-     // Raio
+    // Raio
     tmpCircle->radius = newAtod(strtok(NULL, " "));
-     // Coordenada X
+    // Coordenada X
     tmpCircle->xCenter = newAtod(strtok(NULL, " "));
-     // Coordenada Y
+    // Coordenada Y
     tmpCircle->yCenter = newAtod(strtok(NULL, " "));
 
     // Atribuir ao novo nó
-    tmpNode->data = tmpCircle;
+    setNewData(tmpNode, (void *) tmpCircle, 1);
 
     // Verificar se a lista foi inicializada
     if (*(shapesIndex->ShapesHead) == NULL) { // Inicializar a cabeça
-        (*shapesIndex->ShapesHead) = tmpNode;
-        (*shapesIndex->ShapesTail) = (*shapesIndex->ShapesHead); // Adicionar ao final
-        (*shapesIndex->ShapesTail)->next = NULL;
+        addNewNode(shapesIndex->ShapesHead, shapesIndex->ShapesTail, &tmpNode, 0);
     } else { // Cabeça já inicializada
-        (*shapesIndex->ShapesTail)->next = tmpNode; // Adicionar ao final
-        (*shapesIndex->ShapesTail) = (*shapesIndex->ShapesTail)->next;
-        (*shapesIndex->ShapesTail)->next = NULL;
+        addNewNode(shapesIndex->ShapesHead, shapesIndex->ShapesTail, &tmpNode, 1);
     }
-}
-
-genericList **returnHead(BasicShapes *AllBasicShapes){
-    return AllBasicShapes->ShapesHead;
 }
 
 // Imprime a lista de figuras no arquivo de saida .svg

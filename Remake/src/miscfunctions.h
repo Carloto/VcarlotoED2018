@@ -36,8 +36,8 @@
 #define FIG_R 177687
 #endif
 
-#ifndef TRAB3_MISCFUNCTIONS_H
-#define TRAB3_MISCFUNCTIONS_H
+#ifndef MISCFUNCTIONS_H
+#define MISCFUNCTIONS_H
 
 // Include
 #include <stdio.h>
@@ -59,7 +59,7 @@ void freeString(char **temp_free);
 void removeFirstChar(char **final);
 
 // Concatena nomes de arquivos, verificando a ausenica ou duplicata de "/"
-void strcatFileName(char **final, char *before, char **after);
+void strcatFileName(char **final, char *before, char **after, char type[3]);
 
 // Função de hashing para strings
 unsigned long hash(unsigned char *str);
@@ -73,5 +73,5 @@ int newAtoi(char *aux);
 // Conversão para double
 double newAtod(char *aux);
 
-#endif //TRAB3_MISCFUNCTIONS_H
+#endif //MISCFUNCTIONS_H
 

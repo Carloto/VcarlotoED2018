@@ -1,12 +1,12 @@
 // Define
-#ifndef TRAB3_INPUTARGV_H
-#define TRAB3_INPUTARGV_H
+#ifndef INPUTARGV_H
+#define INPUTARGV_H
 
 // Include
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structlib.h"
+#include "genericlist.h"
 #include "miscfunctions.h"
 
 // Struct para guardar a entrada de argumentos
@@ -32,4 +32,4 @@ void readLine(char **line, FILE **input);
 // Abre um arquivo a partir do nome recebido
 FILE *openFile(fileArguments *tmpStruct, char accessType[3], int fileName);
 
-#endif //TRAB3_INPUTARGV_H
+#endif //INPUTARGV_H

@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "filehandling.h"
-#include "structlib.h"
 #include "miscfunctions.h"
 #include "filehandling.h"
 #include "basicshapes.h"
@@ -21,7 +20,7 @@ int main(int argc, char *argv[]) {
     // Obtem os argumentos da linha de comando
     fileArguments *FileNames = createInputArguments();
     setInputArguments(&FileNames, argc, argv);
-    printInputArguments(FileNames);
+    //printInputArguments(FileNames);
 
     // Structs de figuras basicas
     BasicShapes *AllBasicShapes = allocBasicShapes();
@@ -45,42 +44,42 @@ int main(int argc, char *argv[]) {
         // printThis(linha); // Impime a linha lida
         copyString(&tmpLinha, linha); // Copia a linha lida
         hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-        //printf("\nResultado do hashing : %lu", hashResult);
+       // printf("\nResultado do hashing : %lu", hashResult);
 
         switch (hashResult) { // Switch dos comandos lidos
             case CMD_NX:
-                printThis(linha);
+                //printThis(linha);
                 break;
 
             case CMD_A:
-                printThis(linha);
+                //printThis(linha);
                 break;
 
             case CMD_D:
-                printThis(linha);
+                //printThis(linha);
                 break;
 
             case CMD_I:
-                printThis(linha);
+                //printThis(linha);
                 break;
 
             case CMD_O:
-                printThis(linha);
+                //printThis(linha);
                 break;
 
             case CMD_FIM:
-                printThis(linha);
+                //printThis(linha);
                 controle = 0; // Sinaliza o fim da leitura
                 //printf("\nControle = %d", controle);
                 break;
 
             case FIG_C:
-                printThis(linha);
+                //printThis(linha);
                 newCircleFromFile(AllBasicShapes, linha);
                 break;
 
             case FIG_R:
-                printThis(linha);
+                //printThis(linha);
                 break;
 
             default:
@@ -93,7 +92,7 @@ int main(int argc, char *argv[]) {
 
     // Free structs
     killInputArguments(&FileNames);
-    killBasicShapes(AllBasicShapes);
+    killBasicShapes(&AllBasicShapes);
 
     // Free Strings
     freeString(&linha);
