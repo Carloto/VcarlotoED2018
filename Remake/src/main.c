@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Obtem os argumentos da linha de comando
-    fileArguments *FileNames = createInputArguments();
-    setInputArguments(&FileNames, argc, argv);
+    fileArguments *FileNames = createFileArguments();
+    setFileArguments(&FileNames, argc, argv);
     //printInputArguments(FileNames);
 
     // Structs de figuras basicas
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     FILE *GeoInputFile = openFile(FileNames, "r", 0);
     if (GeoInputFile == NULL) { // Verificar se foi aberto corretamente
         printf("\nFalha na abertura do arquivo!");
-        killInputArguments(&FileNames);
+        killFileArguments(&FileNames);
         return -1;
     }
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
         // printThis(linha); // Impime a linha lida
         copyString(&tmpLinha, linha); // Copia a linha lida
         hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-       // printf("\nResultado do hashing : %lu", hashResult);
+        // printf("\nResultado do hashing : %lu", hashResult);
 
         switch (hashResult) { // Switch dos comandos lidos
             case CMD_NX:
@@ -74,12 +74,11 @@ int main(int argc, char *argv[]) {
                 break;
 
             case FIG_C:
-                //printThis(linha);
-                newCircleFromFile(AllBasicShapes, linha);
+                newShapeFromFile(AllBasicShapes, linha, 1); // 1 para circulo
                 break;
 
             case FIG_R:
-                //printThis(linha);
+                newShapeFromFile(AllBasicShapes, linha, 2); // 2 para retangulo
                 break;
 
             default:
@@ -91,7 +90,7 @@ int main(int argc, char *argv[]) {
     fclose(GeoInputFile); // Fecha o arquivo .geo
 
     // Free structs
-    killInputArguments(&FileNames);
+    killFileArguments(&FileNames);
     killBasicShapes(&AllBasicShapes);
 
     // Free Strings

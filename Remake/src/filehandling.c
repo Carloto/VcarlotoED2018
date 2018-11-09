@@ -14,7 +14,7 @@ struct tmp_fileArguments {
 };
 
 // Inicializar fileArguments
-fileArguments *createInputArguments() {
+fileArguments *createFileArguments() {
     fileArguments *create_struct = (fileArguments *) calloc(1, sizeof(fileArguments));
     create_struct->input_e = NULL;
     create_struct->input_f = NULL;
@@ -26,7 +26,7 @@ fileArguments *createInputArguments() {
 }
 
 // Destruir fileArguments
-void killInputArguments(fileArguments **kill_struct) {
+void killFileArguments(fileArguments **kill_struct) {
     freeString(&(*kill_struct)->input_e);
     freeString(&(*kill_struct)->input_f);
     freeString(&(*kill_struct)->output_o);
@@ -47,7 +47,7 @@ void printInputArguments(fileArguments *print_struct) {
 }
 
 // Obtem os argumentos de argv e montar os nomes dos arquivos
-void setInputArguments(fileArguments **set_struct, int argc, char *argv[]) {
+void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
     // Loop para encontrar argv
     for (int i = 0; i < argc; i++) {
         if (strcmp("-e", argv[i]) == 0) {

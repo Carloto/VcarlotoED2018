@@ -55,6 +55,12 @@ void copyString(char **final, char *aux);
 // Libera uma string e aponta o ponteiro para null
 void freeString(char **temp_free);
 
+// Free double
+void freeDouble(double **tmpValue);
+
+// Free int
+void freeInt(int **tmpValue) ;
+
 // Remove o primeiro character da string
 void removeFirstChar(char **final);
 

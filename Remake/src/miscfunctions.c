@@ -1,5 +1,4 @@
 // Include
-#include <stdio.h>
 #include "miscfunctions.h"
 
 // Imprime uma string
@@ -26,6 +25,22 @@ void freeString(char **temp_free) {
     *temp_free = NULL;
 }
 
+// Free double
+void freeDouble(double **tmpValue) {
+    if (*tmpValue != NULL) {
+        free(*tmpValue);
+    }
+    *tmpValue = NULL;
+}
+
+// Free int
+void freeInt(int **tmpValue) {
+    if (*tmpValue != NULL) {
+        free(*tmpValue);
+    }
+    *tmpValue = NULL;
+}
+
 // Remove o primeiro character
 void removeFirstChar(char **final) {
     size_t len;
@@ -46,11 +61,11 @@ void removeFirstChar(char **final) {
 // Concatena nomes de arquivos
 void strcatFileName(char **final, char *before, char **after, char type[3]) {
     size_t lenBefore = strlen(before);
-    printf("\n len before = %lu", lenBefore);
+//    printf("\n len before = %lu", lenBefore);
     size_t lenAfter = strlen(*after);
-    printf("\n len after = %lu", lenAfter);
+//    printf("\n len after = %lu", lenAfter);
     size_t lenType = strlen(type);
-    printf("\n len type = %lu", lenType);
+//    printf("\n len type = %lu", lenType);
 
     // Verifica a occorencia de "/"
     if ((before[lenBefore - 1] == '/' && *after[0] != '/') || (before[lenBefore - 1] != '/' && (*after)[0] == '/')) {
