@@ -136,3 +136,28 @@ double newAtod(char *aux) {
     double newValue = strtod(aux, &ptr);
     return newValue;
 }
+
+// Retorna a distancia entre duas coordenadas
+double findDistance(double aX, double aY, double bX, double bY){
+    double exp = 2;
+    return sqrt(pow(aX - bX, exp) + pow(aY - bY, exp));
+}
+
+// Verifica se um ponto é interno a  um circulo
+int pointInsideCircle(double pointX, double pointY, double circleX, double circleY, double radius) {
+    double distance = findDistance(pointX, pointY, circleX, circleY);
+    distance = distance - radius;
+    if (distance < 0) { //  O ponto é interno
+        return 1;
+    }
+    return 0; // O ponto não é interno
+}
+
+// Verifica se um ponto é interno a  um retangulo
+int pointInsideRectangle(double pointX, double pointY, double rectX, double rectY, double width, double height) {
+    if (rectX < pointX && (rectX + width) > pointX &&
+        rectY < pointY && (rectY + height) > pointY) { //  O ponto é interno
+        return 1;
+    }
+    return 0; // O ponto não é interno
+}

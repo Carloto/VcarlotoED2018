@@ -29,6 +29,21 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv);
 void readLine(char **line, FILE **input);
 
 // Abre um arquivo a partir do nome recebido
-FILE *openFile(fileArguments *tmpStruct, char accessType[3], int fileName);
+FILE *openFile(char *fileName, char accessType[3]);
+
+// Retorna o nome de do arquivo base
+char *getInputGeoName(fileArguments *tmpStructs);
+
+// Retorna o nome de do arquivo de entrada .geo
+char *getInputGeoFileName(fileArguments *tmpStructs);
+
+// Retorna o nome do arquivo de saida .svg padrão
+char *getOutputSvgStandardFileName(fileArguments *tmpStructs);
+
+// Retorna o nome do arquivo de saida .txt padrão
+char *getOutputTxtFileName(fileArguments *tmpStructs);
+
+// Imprime tags svg
+void printTagSvg(FILE **outputFile, int type);
 
 #endif //INPUTARGV_H

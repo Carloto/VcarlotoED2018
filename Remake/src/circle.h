@@ -39,6 +39,24 @@ void setCircleFillColor(Circle *tmpCircle, char *tmpFillColor);
 // Set strokeColor
 void setCircleStrokeColor(Circle *tmpCircle, char *tmpStrokeColor);
 
+// Get number id
+int *getCircleId(Circle *tmpCircle);
+
+// Get radius
+double *getCircleRadius(Circle *tmpCircle);
+
+// Get xCenter
+double *getCircleX(Circle *tmpCircle);
+
+// Get yCenter
+double *getCircleY(Circle *tmpCircle);
+
+// Get fillColor
+char *getCircleFillColor(Circle *tmpCircle);
+
+// Get strokeColor
+char *getCircleStrokeColor(Circle *tmpCircle);
+
 // Imprime as informações do circulo
 void printCircle(Circle *tmpCircle);
 

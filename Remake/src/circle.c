@@ -2,7 +2,6 @@
 #include "circle.h"
 
 struct tmpCircle { // Circulo
-    int *type; // 0 = figura normal, 1 = pontilhado
     int *numberId; // Id da figura
     double *radius; // Raio do circulo
     double *xCenter; // X do centro
@@ -14,21 +13,18 @@ struct tmpCircle { // Circulo
 // Aloca e inicializa uma struct Circle
 Circle *allocCircle() {
     Circle *tmpCircle = (Circle *) calloc(1, sizeof(Circle));
-    tmpCircle->type = (int *) calloc(1, sizeof(int));
     tmpCircle->numberId = (int *) calloc(1, sizeof(int));
     tmpCircle->radius = (double *) calloc(1, sizeof(double));
     tmpCircle->xCenter = (double *) calloc(1, sizeof(double));
     tmpCircle->yCenter = (double *) calloc(1, sizeof(double));
     tmpCircle->fillColor = NULL;
     tmpCircle->strokeColor = NULL;
-    setCircleType(tmpCircle, 0);
     return tmpCircle;
 }
 
 // Libera a memoria de um unico circulo
 void killCircle(Circle *tmpCircle) {
     if (tmpCircle != NULL) {
-        freeInt(&(tmpCircle->type));
         freeInt(&(tmpCircle->numberId));
         freeDouble(&(tmpCircle->radius));
         freeDouble(&(tmpCircle->xCenter));
@@ -36,11 +32,6 @@ void killCircle(Circle *tmpCircle) {
         freeString(&(tmpCircle->fillColor));
         freeString(&(tmpCircle->strokeColor));
     }
-}
-
-// Set type
-void setCircleType(Circle *tmpCircle, int tmpType) {
-    *(tmpCircle->type) = tmpType;
 }
 
 // Set number id
@@ -73,13 +64,42 @@ void setCircleStrokeColor(Circle *tmpCircle, char *tmpStrokeColor) {
     copyString(&(tmpCircle->strokeColor), tmpStrokeColor);
 }
 
+// Get number id
+int *getCircleId(Circle *tmpCircle) {
+    return tmpCircle->numberId;
+}
+
+// Get radius
+double *getCircleRadius(Circle *tmpCircle) {
+    return tmpCircle->radius;
+}
+
+// Get xCenter
+double *getCircleX(Circle *tmpCircle) {
+    return tmpCircle->xCenter;
+}
+
+// Get yCenter
+double *getCircleY(Circle *tmpCircle) {
+    return tmpCircle->yCenter;
+}
+
+// Get fillColor
+char *getCircleFillColor(Circle *tmpCircle) {
+    return tmpCircle->fillColor;
+}
+
+// Get strokeColor
+char *getCircleStrokeColor(Circle *tmpCircle) {
+    return tmpCircle->strokeColor;
+}
+
 // Imprime as informações do circulo
 void printCircle(Circle *tmpCircle) {
-    printf("\ntype = |%d|", *(tmpCircle->type));
-    printf(" id = |%d|", *(tmpCircle->numberId));
-    printf("  raio = |%.3lf|", *(tmpCircle->radius));
+    printf("\nid = |%d|", *(tmpCircle->numberId));
     printf("  x = |%.3lf|", *(tmpCircle->xCenter));
     printf("  y = |%.3lf|", *(tmpCircle->yCenter));
+    printf("  raio = |%.3lf|", *(tmpCircle->radius));
     printf("  fill color = |%s|\n", tmpCircle->fillColor);
     printf("  stroke color = |%s|", tmpCircle->strokeColor);
 }

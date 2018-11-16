@@ -20,19 +20,25 @@ int main(int argc, char *argv[]) {
     // Obtem os argumentos da linha de comando
     fileArguments *FileNames = createFileArguments();
     setFileArguments(&FileNames, argc, argv);
-    //printInputArguments(FileNames);
+//    printInputArguments(FileNames);
 
     // Structs de figuras basicas
     BasicShapes *AllBasicShapes = allocBasicShapes();
 
     // Leitura de .geo
-    FILE *GeoInputFile = openFile(FileNames, "r", 0);
+    FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
     if (GeoInputFile == NULL) { // Verificar se foi aberto corretamente
         printf("\nFalha na abertura do arquivo!");
         killFileArguments(&FileNames);
         return -1;
     }
 
+    // Cria arquivo de saida svg
+    FILE *StandardSvgOutput = openFile(getOutputSvgStandardFileName(FileNames), "w"); // Arquivo de saida svg padrão
+    FILE *StandardTxtOutput = openFile(getOutputTxtFileName(FileNames), "w");
+    printTagSvg(&StandardSvgOutput, 0); // Inicia header svg
+
+    // Leitura da entrada .geo
     char *linha = NULL; // Linha lida
     char *tmpLinha = NULL; // Copia para strtok
     int controle = 1; // Controle permite a execução da leitura, e # muda seu valor para 0
@@ -47,8 +53,7 @@ int main(int argc, char *argv[]) {
         // printf("\nResultado do hashing : %lu", hashResult);
 
         switch (hashResult) { // Switch dos comandos lidos
-            case CMD_NX:
-                //printThis(linha);
+            case CMD_NX: // Comando desnecessario nessa implementacao
                 break;
 
             case CMD_A:
@@ -56,11 +61,11 @@ int main(int argc, char *argv[]) {
                 break;
 
             case CMD_D:
-                //printThis(linha);
+                distanceBasicShapes(AllBasicShapes, linha, &StandardTxtOutput); // Calcula a distancia entre figuras
                 break;
 
             case CMD_I:
-                //printThis(linha);
+                insideBasicShapes(AllBasicShapes, linha, &StandardTxtOutput); // Verifica se um ponto é interno a figura
                 break;
 
             case CMD_O:
@@ -68,9 +73,7 @@ int main(int argc, char *argv[]) {
                 break;
 
             case CMD_FIM:
-                //printThis(linha);
-                controle = 0; // Sinaliza o fim da leitura
-                //printf("\nControle = %d", controle);
+                controle = 0;
                 break;
 
             case FIG_C:
@@ -86,8 +89,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    printBasicShapes(AllBasicShapes);
     fclose(GeoInputFile); // Fecha o arquivo .geo
+    printBasicShapes(AllBasicShapes);
+    printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
 
     // Free structs
     killFileArguments(&FileNames);
@@ -96,6 +100,10 @@ int main(int argc, char *argv[]) {
     // Free Strings
     freeString(&linha);
     freeString(&tmpLinha);
+
+    // Close files
+    printTagSvg(&StandardSvgOutput, 1); // Finaliza header svg
+    fclose(StandardSvgOutput);
 
     // End main
     return 0;

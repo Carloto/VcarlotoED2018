@@ -42,7 +42,28 @@ void setRectangleFillColor(Rectangle *tmpRect, char *tmpFillColor);
 // Set strokeColor
 void setRectangleStrokeColor(Rectangle *tmpRect, char *tmpStrokeColor);
 
-// Imprime as informações do circulo
+// Get number id
+int *getRectangleId(Rectangle *tmpRect);
+
+// Get X
+double *getRectangleX(Rectangle *tmpRect);
+
+// Get Y
+double *getRectangleY(Rectangle *tmpRect);
+
+// Get width
+double *getRectangleWidth(Rectangle *tmpRect);
+
+// Get height
+double *getRectangleHeight(Rectangle *tmpRect);
+
+// Get fillColor
+char *getRectangleFillColor(Rectangle *tmpRect);
+
+// Get strokeColor
+char *getRectangleStrokeColor(Rectangle *tmpRect);
+
+// Imprime as informações do Retangulo
 void printRectangle(Rectangle *tmpRect);
 
 

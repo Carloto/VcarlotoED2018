@@ -2,7 +2,6 @@
 #include "rectangle.h"
 
 struct tmpRectangle { // Retangulo
-    int *type; // 0 = figura normal, 1 = pontilhado
     int *numberId; // Id da figura
     double *xCoord; // X do canto superior esquerdo
     double *yCoord; // Y do canto superior esquerdo
@@ -15,7 +14,6 @@ struct tmpRectangle { // Retangulo
 // Aloca e inicializa uma struct Rectangle
 Rectangle *allocRectangle() {
     Rectangle *tmpRect = (Rectangle *) calloc(1, sizeof(Rectangle));
-    tmpRect->type = (int *) calloc(1, sizeof(int));
     tmpRect->numberId = (int *) calloc(1, sizeof(int));
     tmpRect->xCoord = (double *) calloc(1, sizeof(double));
     tmpRect->yCoord = (double *) calloc(1, sizeof(double));
@@ -23,14 +21,12 @@ Rectangle *allocRectangle() {
     tmpRect->height = (double *) calloc(1, sizeof(double));
     tmpRect->fillColor = NULL;
     tmpRect->strokeColor = NULL;
-    setRectangleType(tmpRect, 0);
     return tmpRect;
 }
 
 // Libera a memoria de um unico retangulo
 void killRectangle(Rectangle *tmpRect) {
     if (tmpRect != NULL) {
-        freeInt(&(tmpRect->type));
         freeInt(&(tmpRect->numberId));
         freeDouble(&(tmpRect->xCoord));
         freeDouble(&(tmpRect->yCoord));
@@ -39,11 +35,6 @@ void killRectangle(Rectangle *tmpRect) {
         freeString(&(tmpRect->fillColor));
         freeString(&(tmpRect->strokeColor));
     }
-}
-
-// Set type
-void setRectangleType(Rectangle *tmpRect, int tmpType) {
-    *(tmpRect->type) = tmpType;
 }
 
 // Set number id
@@ -81,10 +72,44 @@ void setRectangleStrokeColor(Rectangle *tmpRect, char *tmpStrokeColor) {
     copyString(&(tmpRect->strokeColor), tmpStrokeColor);
 }
 
-// Imprime as informações do circulo
+// Get number id
+int *getRectangleId(Rectangle *tmpRect) {
+    return tmpRect->numberId;
+}
+
+// Get X
+double *getRectangleX(Rectangle *tmpRect) {
+    return tmpRect->xCoord;
+}
+
+// Get Y
+double *getRectangleY(Rectangle *tmpRect) {
+    return tmpRect->yCoord;
+}
+
+// Get width
+double *getRectangleWidth(Rectangle *tmpRect) {
+    return tmpRect->width;
+}
+
+// Get height
+double *getRectangleHeight(Rectangle *tmpRect) {
+    return tmpRect->height;
+}
+
+// Get fillColor
+char *getRectangleFillColor(Rectangle *tmpRect) {
+    return tmpRect->fillColor;
+}
+
+// Get strokeColor
+char *getRectangleStrokeColor(Rectangle *tmpRect) {
+    return tmpRect->strokeColor;
+}
+
+// Imprime as informações do Retangulo
 void printRectangle(Rectangle *tmpRect) {
-    printf("\ntype = |%d|", *(tmpRect->type));
-    printf(" id = |%d|", *(tmpRect->numberId));
+    printf("\nid = |%d|", *(tmpRect->numberId));
     printf("  x = |%.3lf|", *(tmpRect->xCoord));
     printf("  y = |%.3lf|", *(tmpRect->yCoord));
     printf("  width = |%.3lf|", *(tmpRect->width));
