@@ -43,6 +43,12 @@ char *getOutputSvgStandardFileName(fileArguments *tmpStructs);
 // Retorna o nome do arquivo de saida .txt padrão
 char *getOutputTxtFileName(fileArguments *tmpStructs);
 
+// Retorna o nome base
+char *getBaseName(fileArguments *tmpStructs);
+
+// Retorna o output path
+char *getOutputPath(fileArguments *tmpStructs);
+
 // Imprime tags svg
 void printTagSvg(FILE **outputFile, int type);
 

@@ -253,3 +253,135 @@ void distanceBasicShapes(BasicShapes *tmpShapes, char *inputLine, FILE **outputF
     }
     fprintf(*outputFile, "%lf\n", distance);
 }
+
+// Verifica a sobreposicao fe  duas figuras basicas
+void overlapBasicShapes(BasicShapes *tmpShapes, char *inputLine, FILE **outputTxt, FILE **outputSvg) {
+    int id1, id2, check, controle, result = 0;
+    genericList *first = NULL;
+    genericList *second = NULL;
+    fprintf(*outputTxt, "%s\n", inputLine);
+    char *token = strtok(inputLine, " ");// Comando
+    if (token == NULL) {
+        return;
+    }
+    id1 = newAtoi(strtok(NULL, " ")); // Id1
+    id2 = newAtoi(strtok(NULL, " ")); // Id2
+    controle = searchBasicShapesId(tmpShapes, &second, id1);
+    if (controle == 1) { // Circulo
+        first = second;
+        check = searchBasicShapesId(tmpShapes, &second, id2);
+        if (check == 1) { // first == Circle && second == Circle
+            result = overlapCircleCircle(*getCircleX((Circle *) getData(first)),
+                                         *getCircleY((Circle *) getData(first)),
+                                         *getCircleRadius((Circle *) getData(first)),
+                                         *getCircleX((Circle *) getData(second)),
+                                         *getCircleY((Circle *) getData(second)),
+                                         *getCircleRadius((Circle *) getData(second)), 1, outputSvg);
+        } else if (check == 2) { // first == Circle && second == Rectangle
+            result = overlapCircleRectangle(*getCircleX((Circle *) getData(first)),
+                                            *getCircleY((Circle *) getData(first)),
+                                            *getCircleRadius((Circle *) getData(first)),
+                                            *getRectangleX((Rectangle *) getData(second)),
+                                            *getRectangleY((Rectangle *) getData(second)),
+                                            *getRectangleWidth((Rectangle *) getData(second)),
+                                            *getRectangleHeight((Rectangle *) getData(second)), 1, outputSvg);
+        }
+    } else if (controle == 2) { // Retangulo
+        check = searchBasicShapesId(tmpShapes, &first, id2);
+        if (check == 1) { // first == Circle && second == Rectangle
+            result = overlapCircleRectangle(*getCircleX((Circle *) getData(first)),
+                                            *getCircleY((Circle *) getData(first)),
+                                            *getCircleRadius((Circle *) getData(first)),
+                                            *getRectangleX((Rectangle *) getData(second)),
+                                            *getRectangleY((Rectangle *) getData(second)),
+                                            *getRectangleWidth((Rectangle *) getData(second)),
+                                            *getRectangleHeight((Rectangle *) getData(second)), 1, outputSvg);
+        } else if (check == 2) { // first == Rectangle && second == Rectangle
+            result = overlapRectangleRectangle(*getRectangleX((Rectangle *) getData(first)),
+                                               *getRectangleY((Rectangle *) getData(first)),
+                                               *getRectangleWidth((Rectangle *) getData(first)),
+                                               *getRectangleHeight((Rectangle *) getData(first)),
+                                               *getRectangleX((Rectangle *) getData(second)),
+                                               *getRectangleY((Rectangle *) getData(second)),
+                                               *getRectangleWidth((Rectangle *) getData(second)),
+                                               *getRectangleHeight((Rectangle *) getData(second)), 1, outputSvg);
+        }
+    }
+    if (result == 1) {
+        fprintf(*outputTxt, "SIM\n");
+    } else {
+        fprintf(*outputTxt, "NAO\n");
+    }
+}
+
+// Traça linhas a partir do id
+void linesFromId(BasicShapes *tmpShapes, char *inputLine, fileArguments *tmpFileNames) {
+    char *token = strtok(inputLine, " ");// Comando
+    char *sufixo = NULL, *fileName = NULL, *newBaseName = NULL;
+    if (token == NULL) {
+        return;
+    }
+    int id = newAtoi(strtok(NULL, " ")); // Id
+    token = strtok(NULL, " "); // Sufixo
+    copyString(&sufixo, token);
+    strcatName(&newBaseName, getBaseName(tmpFileNames), &sufixo, "-");
+    strcatFileName(&fileName, getOutputPath(tmpFileNames), &newBaseName, "svg");
+    FILE *outputFile = fopen(fileName, "w");
+    printTagSvg(&outputFile, 0);
+    genericList *aux = *(tmpShapes->ShapesHead);
+    genericList *tmpNode = NULL;
+    double pointX = 0, pointY = 0, distance = 0, tx = 0, ty = 0;
+    int check = searchBasicShapesId(tmpShapes, &tmpNode, id);
+    if (check == 1) { // Circulo
+        pointX = *getCircleX((Circle *) getData(tmpNode));
+        pointY = *getCircleY((Circle *) getData(tmpNode));
+    } else if (check == 2) {
+        pointX =
+                *getRectangleX((Rectangle *) getData(tmpNode)) + *getRectangleWidth((Rectangle *) getData(tmpNode)) / 2;
+        pointY = *getRectangleY((Rectangle *) getData(tmpNode)) +
+                 *getRectangleHeight((Rectangle *) getData(tmpNode)) / 2;
+    }
+    printBasicShapesToSvg(tmpShapes, &outputFile);
+    while (aux != NULL) {
+        switch (getType(aux)) {
+            case 1: // Circulo
+                distance = findDistance(pointX, pointY,
+                                        *getCircleX((Circle *) getData(aux)), *getCircleY((Circle *) getData(aux)));
+                fprintf(outputFile, "\t<line x1=\"%f\" y1=\"%f\" ", pointX, pointY);
+                fprintf(outputFile, "x2=\"%f\" y2=\"%f\" ", *getCircleX((Circle *) getData(aux)),
+                        *getCircleY((Circle *) getData(aux)));
+                fprintf(outputFile, "style=\"stroke:%s\" />", getCircleStrokeColor((Circle *) getData(tmpNode)));
+                tx = (pointX + *getCircleX((Circle *) getData(aux))) / 2;
+                ty = (pointY + *getCircleY((Circle *) getData(aux))) / 2;
+                fprintf(outputFile, "\t<text x=\"%f\" y=\"%f\" fill=\"%s\">%f</text>\n", tx, ty,
+                        getCircleStrokeColor((Circle *) getData(tmpNode)), distance);
+                break;
+            case 2: // Retangulo
+                distance = findDistance(pointX, pointY,
+                                        *getRectangleX((Rectangle *) getData(aux)) +
+                                        (*getRectangleWidth((Rectangle *) getData(aux)) / 2),
+                                        *getRectangleY((Rectangle *) getData(aux)) +
+                                        (*getRectangleHeight((Rectangle *) getData(aux)) / 2));
+                fprintf(outputFile, "\t<line x1=\"%f\" y1=\"%f\" ", pointX, pointY);
+                fprintf(outputFile, "x2=\"%f\" y2=\"%f\" ",
+                        *getRectangleX((Rectangle *) getData(aux)) + *getRectangleWidth((Rectangle *) getData(aux)) / 2,
+                        *getRectangleY((Rectangle *) getData(aux)) +
+                        *getRectangleHeight((Rectangle *) getData(aux)) / 2);
+                fprintf(outputFile, "style=\"stroke:%s\" />", getCircleStrokeColor((Circle *) getData(tmpNode)));
+                tx = (pointX + *getRectangleX((Rectangle *) getData(aux)) +
+                          *getRectangleWidth((Rectangle *) getData(aux)) / 2) / 2;
+                ty = (pointY + *getRectangleY((Rectangle *) getData(aux)) +
+                          *getRectangleHeight((Rectangle *) getData(aux)) / 2) / 2;
+                fprintf(outputFile, "\t<text x=\"%f\" y=\"%f\" fill=\"%s\">%f</text>\n", tx, ty,
+                        getCircleStrokeColor((Circle *) getData(tmpNode)), distance);
+                break;
+            default:
+                break;
+        }
+        aux = getNext(aux);
+    }
+    printTagSvg(&outputFile, 1);
+    freeString(&newBaseName);
+    freeString(&fileName);
+    freeString(&sufixo);
+}

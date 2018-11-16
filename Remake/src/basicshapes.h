@@ -10,6 +10,7 @@
 #include "genericlist.h"
 #include "circle.h"
 #include "rectangle.h"
+#include "filehandling.h"
 
 typedef struct tmpBasicShapes BasicShapes; // Figuras basicas (circulo e retanulo)
 
@@ -38,5 +39,11 @@ void insideBasicShapes(BasicShapes *tmpShapes, char *inputLine, FILE **outputFil
 
 // Calcula a distancia entre duas figuras basicas
 void distanceBasicShapes(BasicShapes *tmpShapes, char *inputLine, FILE **outputFile);
+
+// Verifica a sobreposicao fe  duas figuras basicas
+void overlapBasicShapes(BasicShapes *tmpShapes, char *inputLine, FILE **outputTxt, FILE **outputSvg);
+
+// Traça linhas a partir do id
+void linesFromId(BasicShapes *tmpShapes, char *inputLine, fileArguments *tmpFileNames);
 
 #endif //BASICSHAPES_H

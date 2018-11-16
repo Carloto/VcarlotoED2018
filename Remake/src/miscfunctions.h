@@ -27,13 +27,16 @@ void freeString(char **temp_free);
 void freeDouble(double **tmpValue);
 
 // Free int
-void freeInt(int **tmpValue) ;
+void freeInt(int **tmpValue);
 
 // Remove o primeiro character da string
 void removeFirstChar(char **final);
 
 // Concatena nomes de arquivos, verificando a ausenica ou duplicata de "/"
 void strcatFileName(char **final, char *before, char **after, char type[3]);
+
+// Concatena nomes
+void strcatName(char **final, char *before, char **after, char type[10]);
 
 // Função de hashing para strings
 unsigned long hash(unsigned char *str);
@@ -55,6 +58,23 @@ int pointInsideCircle(double pointX, double pointY, double circleX, double circl
 
 // Verifica se um ponto é interno a  um retangulo
 int pointInsideRectangle(double pointX, double pointY, double rectX, double rectY, double width, double height);
+
+// Verifica se dois circulos se sobrepoem
+int
+overlapCircleCircle(double aX, double aY, double aR, double bX, double bY, double bR, int controle, FILE **outputFile);
+
+// Verifica se um circulo e um retangulo se sobrepoem
+int
+overlapCircleRectangle(double aX, double aY, double aR, double bX, double bY, double bWidth, double bHeight,
+                       int controle, FILE **outputFile);
+
+// Verifica se dois retangulos se sobrepoem
+int
+overlapRectangleRectangle(double aX, double aY, double aWidth, double aHeight, double bX, double bY, double bWidth,
+                          double bHeight, int controle, FILE **outputFile);
+
+// Imprime um retangulo tracejado
+void printDashRectangle(FILE **outputFile, double rectX, double rectY, double width, double height);
 
 #endif //MISCFUNCTIONS_H
 

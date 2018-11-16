@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
                 break;
 
             case CMD_A:
-                //printThis(linha);
+                linesFromId(AllBasicShapes, linha, FileNames); // Traça linhas a partir do id
                 break;
 
             case CMD_D:
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
                 break;
 
             case CMD_O:
-                //printThis(linha);
+                overlapBasicShapes(AllBasicShapes, linha, &StandardTxtOutput, &StandardSvgOutput); // Sobreposicao
                 break;
 
             case CMD_FIM:

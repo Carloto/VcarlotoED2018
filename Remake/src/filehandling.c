@@ -127,6 +127,16 @@ char *getOutputTxtFileName(fileArguments *tmpStructs) {
     return tmpStructs->outputTxtFileName;
 }
 
+// Retorna o nome base
+char *getBaseName(fileArguments *tmpStructs) {
+    return tmpStructs->inputGeoName;
+}
+
+// Retorna o output path
+char *getOutputPath(fileArguments *tmpStructs) {
+    return tmpStructs->output_o;
+}
+
 // Imprime tags svg
 void printTagSvg(FILE **outputFile, int type) {
     switch (type) {

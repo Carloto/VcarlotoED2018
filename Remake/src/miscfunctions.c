@@ -60,6 +60,7 @@ void removeFirstChar(char **final) {
 
 // Concatena nomes de arquivos
 void strcatFileName(char **final, char *before, char **after, char type[3]) {
+    freeString(final);
     size_t lenBefore = strlen(before);
 //    printf("\n len before = %lu", lenBefore);
     size_t lenAfter = strlen(*after);
@@ -79,6 +80,20 @@ void strcatFileName(char **final, char *before, char **after, char type[3]) {
         *final = (char *) calloc(lenBefore + lenAfter + lenType + 3, sizeof(char));
         sprintf(*final, "%s/%s.%s", before, *after, type);
     }
+
+}
+
+// Concatena nomes
+void strcatName(char **final, char *before, char **after, char type[10]) {
+    freeString(final);
+    size_t lenBefore = strlen(before);
+//    printf("\n len before = %lu", lenBefore);
+    size_t lenAfter = strlen(*after);
+//    printf("\n len after = %lu", lenAfter);
+    size_t lenType = strlen(type);
+//    printf("\n len type = %lu", lenType);
+    *final = (char *) calloc(lenBefore + lenAfter + lenType + 2, sizeof(char));
+    sprintf(*final, "%s%s%s", before, type, *after);
 
 }
 
@@ -138,7 +153,7 @@ double newAtod(char *aux) {
 }
 
 // Retorna a distancia entre duas coordenadas
-double findDistance(double aX, double aY, double bX, double bY){
+double findDistance(double aX, double aY, double bX, double bY) {
     double exp = 2;
     return sqrt(pow(aX - bX, exp) + pow(aY - bY, exp));
 }
@@ -160,4 +175,131 @@ int pointInsideRectangle(double pointX, double pointY, double rectX, double rect
         return 1;
     }
     return 0; // O ponto não é interno
+}
+
+// Verifica se dois circulos se sobrepoem
+int
+overlapCircleCircle(double aX, double aY, double aR, double bX, double bY, double bR, int controle, FILE **outputFile) {
+    double distance = findDistance(aX, aY, bX, bY);
+    double rectX, rectY, width, height;
+    distance = distance - aR - bR;
+    if (distance < 0) { // Sobrepõem
+        if (controle == 1) { // Imprimir retangulo tracejado
+            if (aX - aR <= bX - bR) { // Pega X
+                rectX = aX - aR - 1;
+            } else {
+                rectX = bX - bR - 1;
+            }
+            if ((bX + bR) > (aX + aR)) { // Pega width
+                width = bX - rectX + bR + 1;
+            } else {
+                width = aX - rectX + aR + 1;
+            }
+            if (aY - aR <= bY - bR) { // Pega Y
+                rectY = aY - aR - 1;
+            } else {
+                rectY = bY - bR - 1;
+            }
+            if ((bY + bR) > (aY + aR)) { // Pega height
+                height = bY - rectY + bR + 1;
+            } else {
+                height = aY - rectY + aR + 1;
+            }
+            printDashRectangle(outputFile, rectX, rectY, width, height);
+        }
+        return 1;
+    }
+    return 0; // Não sobrepõem
+}
+
+// Verifica se um circulo e um retangulo se sobrepoem
+int
+overlapCircleRectangle(double aX, double aY, double aR, double bX, double bY, double bWidth, double bHeight,
+                       int controle, FILE **outputFile) {
+    double distX = fabs(aX - bX - bWidth / 2);
+    double distY = fabs(aY - bY - bHeight / 2);
+    double rectX, rectY, width, height;
+    int validate = 0;
+    if (distX < (bWidth / 2 + aR) && distY < (bHeight / 2 + aR)) {
+        if (distX <= (bWidth / 2) || distY <= (bHeight / 2)) {
+            validate = 1;
+        } else {
+            distX = distX - bWidth / 2;
+            distY = distY - bHeight / 2;
+            if (distX * distX + distY * distY <= ((aR) * (aR))) {
+                validate = 1;
+            }
+        }
+    }
+    if (validate) { // Sobrepõem
+        if (controle == 1) { // Imprimir retangulo tracejado
+            if ((aX - aR) <= bX) { // Pega x
+                rectX = aX - aR - 1;
+            } else {
+                rectX = bX - 1;
+            }
+            if ((bX + bWidth) > (aX + aR)) { // Pega width
+                width = bX - rectX + bWidth + 1;
+            } else {
+                width = aX - rectX + aR + 1;
+            }
+            if ((aY - aR) <= bY) { // Pega y
+                rectY = aY - aR - 1;
+            } else {
+                rectY = bY - 1;
+            }
+            if ((bY + bHeight) > (aY + aR)) { // Pega height
+                height = bY - rectY + bHeight + 1;
+            } else {
+                height = aY - rectY + aR + 1;
+            }
+            printDashRectangle(outputFile, rectX, rectY, width, height);
+        }
+        return 1;
+    }
+    return 0; // Não sobrepõem
+}
+
+// Verifica se dois retangulos se sobrepoem
+int
+overlapRectangleRectangle(double aX, double aY, double aWidth, double aHeight, double bX, double bY, double bWidth,
+                          double bHeight, int controle, FILE **outputFile) {
+    double rectX, rectY, width, height;
+    if (aX < (bX + bWidth) && (aX + aWidth) > bX &&
+        aY < (bY + bHeight) && (aY + aHeight) > bY) { // Sobrepõem
+        if (controle == 1) { // Imprimir retangulo tracejado
+            if (aX <= bX) { // Pega x
+                rectX = aX - 1;
+            } else {
+                rectX = bX - 1;
+            }
+            if ((bX + bWidth) > (aX + aWidth)) { // Pega width
+                width = bX - rectX + bWidth + 1;
+            } else {
+                width = aX - rectX + aWidth + 1;
+            }
+            if (aY <= bY) { // Pega y
+                rectY = aY - 1;
+            } else {
+                rectY = bY - 1;
+            }
+            if ((bY + bHeight) > (aY + aHeight)) { // Pega height
+                height = bY - rectY + bHeight + 1;
+            } else {
+                height = aY - rectY + aHeight + 1;
+            }
+            printDashRectangle(outputFile, rectX, rectY, width, height);
+        }
+        return 1;
+    }
+    return 0; // Não sobrepõem
+}
+
+// Imprime um retangulo tracejado
+void printDashRectangle(FILE **outputFile, double rectX, double rectY, double width, double height) {
+
+    fprintf(*outputFile, "\t<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" \n", rectX, rectY, width, height);
+    fprintf(*outputFile, "\t\tstyle=\"stroke: %s;\n\t\t\tstroke-dasharray: 4 1;\n\t\t\tfill: none;\n\t\t\"\n\t/>",
+            "black");
+    fprintf(*outputFile, "\t<text x=\"%f\" y=\"%f\" fill=\"%s\">Sobrepõe</text>\n", rectX, rectY - 3, "black");
 }
