@@ -325,7 +325,7 @@ void linesFromId(BasicShapes *tmpShapes, char *inputLine, fileArguments *tmpFile
     token = strtok(NULL, " "); // Sufixo
     copyString(&sufixo, token);
     strcatName(&newBaseName, getBaseName(tmpFileNames), &sufixo, "-");
-    strcatFileName(&fileName, getOutputPath(tmpFileNames), &newBaseName, "svg");
+    strcatFileName(&fileName, getOutputPath(tmpFileNames), &newBaseName, ".svg");
     FILE *outputFile = fopen(fileName, "w");
     printTagSvg(&outputFile, 0);
     genericList *aux = *(tmpShapes->ShapesHead);
@@ -384,4 +384,5 @@ void linesFromId(BasicShapes *tmpShapes, char *inputLine, fileArguments *tmpFile
     freeString(&newBaseName);
     freeString(&fileName);
     freeString(&sufixo);
+    fclose(outputFile);
 }

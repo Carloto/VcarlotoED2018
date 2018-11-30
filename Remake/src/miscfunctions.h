@@ -33,7 +33,7 @@ void freeInt(int **tmpValue);
 void removeFirstChar(char **final);
 
 // Concatena nomes de arquivos, verificando a ausenica ou duplicata de "/"
-void strcatFileName(char **final, char *before, char **after, char type[3]);
+void strcatFileName(char **final, char *before, char **after, char type[6]);
 
 // Concatena nomes
 void strcatName(char **final, char *before, char **after, char type[10]);

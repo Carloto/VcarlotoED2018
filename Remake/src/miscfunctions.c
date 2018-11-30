@@ -59,7 +59,7 @@ void removeFirstChar(char **final) {
 }
 
 // Concatena nomes de arquivos
-void strcatFileName(char **final, char *before, char **after, char type[3]) {
+void strcatFileName(char **final, char *before, char **after, char type[6]) {
     freeString(final);
     size_t lenBefore = strlen(before);
 //    printf("\n len before = %lu", lenBefore);
@@ -71,14 +71,14 @@ void strcatFileName(char **final, char *before, char **after, char type[3]) {
     // Verifica a occorencia de "/"
     if ((before[lenBefore - 1] == '/' && *after[0] != '/') || (before[lenBefore - 1] != '/' && (*after)[0] == '/')) {
         *final = (char *) calloc(lenBefore + lenAfter + lenType + 2, sizeof(char));
-        sprintf(*final, "%s%s.%s", before, *after, type);
+        sprintf(*final, "%s%s%s", before, *after, type);
     } else if (before[lenBefore - 1] == '/' && (*after)[0] == '/') {
         removeFirstChar(after);
         *final = (char *) calloc(lenBefore + lenAfter + lenType + 2, sizeof(char));
-        sprintf(*final, "%s%s.%s", before, *after, type);
+        sprintf(*final, "%s%s%s", before, *after, type);
     } else if (before[lenBefore - 1] != '/' && (*after)[0] != '/') {
         *final = (char *) calloc(lenBefore + lenAfter + lenType + 3, sizeof(char));
-        sprintf(*final, "%s/%s.%s", before, *after, type);
+        sprintf(*final, "%s/%s%s", before, *after, type);
     }
 
 }

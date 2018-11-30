@@ -73,19 +73,19 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
 
     // Concatenar nome do arquivo de saida .svg
     strcatFileName(&(*set_struct)->outputSvgStandardFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
-                   "svg\0");
+                   ".svg\0");
 
     // Concatenar nome do arquivo de saida .txt
     strcatFileName(&(*set_struct)->outputTxtFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
-                   "txt\0");
+                   ".txt\0");
 
     // Verificar se -f possui "." e concatenar nome do arquivo geo
     if ((*set_struct)->input_e != NULL) {
         if ((*set_struct)->input_f[0] == '.') {
             removeFirstChar(&(*set_struct)->input_f);
         }
-        strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->inputGeoName,
-                       "geo\0");
+        strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->input_f,
+                       "\0");
     } else {
         copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
     }
