@@ -8,10 +8,12 @@ struct tmp_fileArguments {
     char *input_e; // Argumento do comando -e
     char *input_f; // Argumento do comando -f
     char *output_o; // Argumento do comando -o
+    char *path_bd; // Argumento do comando -bd
     char *inputGeoFileName; // Nome completo do arquivo .geo
     char *inputGeoName; // Nome isolado do arquivo .geo
     char *outputSvgStandardFileName; // Arquivo de saida .svg principal
     char *outputTxtFileName; // Arquivo de saida .txt
+    char *full_path_bd; // Path completo do banco de dados
 };
 
 // Inicializar fileArguments
@@ -20,10 +22,12 @@ fileArguments *createFileArguments() {
     create_struct->input_e = NULL;
     create_struct->input_f = NULL;
     create_struct->output_o = NULL;
+    create_struct->path_bd = NULL;
     create_struct->inputGeoFileName = NULL;
     create_struct->inputGeoName = NULL;
     create_struct->outputSvgStandardFileName = NULL;
     create_struct->outputTxtFileName = NULL;
+    create_struct->full_path_bd = NULL;
     return create_struct;
 }
 
@@ -32,10 +36,12 @@ void killFileArguments(fileArguments **kill_struct) {
     freeString(&(*kill_struct)->input_e);
     freeString(&(*kill_struct)->input_f);
     freeString(&(*kill_struct)->output_o);
+    freeString(&(*kill_struct)->path_bd);
     freeString(&(*kill_struct)->inputGeoFileName);
     freeString(&(*kill_struct)->inputGeoName);
     freeString(&(*kill_struct)->outputSvgStandardFileName);
     freeString(&(*kill_struct)->outputTxtFileName);
+    freeString(&(*kill_struct)->full_path_bd);
     free(*kill_struct);
 }
 
@@ -44,10 +50,12 @@ void printInputArguments(fileArguments *print_struct) {
     printThis(print_struct->input_e);
     printThis(print_struct->input_f);
     printThis(print_struct->output_o);
+    printThis(print_struct->path_bd);
     printThis(print_struct->inputGeoFileName);
     printThis(print_struct->inputGeoName);
     printThis(print_struct->outputSvgStandardFileName);
     printThis(print_struct->outputTxtFileName);
+    printThis(print_struct->full_path_bd);
 }
 
 // Obtem os argumentos de argv e montar os nomes dos arquivos
@@ -66,6 +74,10 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
             i++;
             copyString(&(*set_struct)->output_o, argv[i]);
         }
+        if (strcmp("-bd", argv[i]) == 0) {
+            i++;
+            copyString(&(*set_struct)->path_bd, argv[i]);
+        }
     }
 
     // Isolar nome do arquivo
@@ -78,6 +90,9 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
     // Concatenar nome do arquivo de saida .txt
     strcatFileName(&(*set_struct)->outputTxtFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
                    ".txt\0");
+
+    // Concatenar path do banco de dados
+    strcatFileName(&(*set_struct)->full_path_bd, (*set_struct)->output_o, &(*set_struct)->path_bd,"\0");
 
     // Verificar se -f possui "." e concatenar nome do arquivo geo
     if ((*set_struct)->input_e != NULL) {
@@ -105,6 +120,25 @@ FILE *openFile(char *fileName, char accessType[3]) {
     FILE *fileToOpen = NULL; // Arquivo a ser aberto
     fileToOpen = fopen(fileName, accessType); // Abrir arquivo
     return fileToOpen; // Retorno
+}
+
+// Imprime tags svg
+void printTagSvg(FILE **outputFile, int type) {
+    switch (type) {
+        case 0: // Tag de início
+            fprintf(*outputFile, "<svg>\n");
+            break;
+        case 1: // Tag de fim
+            fprintf(*outputFile, "</svg>");
+            break;
+        default:
+            break;
+    }
+}
+
+// Imprime um tipo de dado no arquivo binario
+void printToBin(FILE **binFile, void *data) {
+    fwrite(data, sizeof(data), 1, *binFile);
 }
 
 // Retorna o nome de do arquivo base
@@ -135,18 +169,4 @@ char *getBaseName(fileArguments *tmpStructs) {
 // Retorna o output path
 char *getOutputPath(fileArguments *tmpStructs) {
     return tmpStructs->output_o;
-}
-
-// Imprime tags svg
-void printTagSvg(FILE **outputFile, int type) {
-    switch (type) {
-        case 0: // Tag de início
-            fprintf(*outputFile, "<svg>\n");
-            break;
-        case 1: // Tag de fim
-            fprintf(*outputFile, "</svg>");
-            break;
-        default:
-            break;
-    }
 }

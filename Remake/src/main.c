@@ -7,20 +7,25 @@
 #include "miscfunctions.h"
 #include "filehandling.h"
 #include "basicshapes.h"
+#include "quadra.h"
 
 // Main
 int main(int argc, char *argv[]) {
+
     // Verificar se entrada de argumentos é nula
     if (argc <= 1) {
         printf("\nNenhum argumento foi encontrado na linha de comando!\n");
         return -1;
     }
+
     // Obtem os argumentos da linha de comando
     fileArguments *FileNames = createFileArguments();
     setFileArguments(&FileNames, argc, argv);
     printInputArguments(FileNames);
+
     // Structs de figuras basicas
     BasicShapes *AllBasicShapes = allocBasicShapes();
+
     // Leitura de .geo
     FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
     if (GeoInputFile == NULL) { // Verificar se foi aberto corretamente
@@ -28,21 +33,29 @@ int main(int argc, char *argv[]) {
         killFileArguments(&FileNames);
         return -1;
     }
+
     // Cria arquivo de saida svg
     FILE *StandardSvgOutput = openFile(getOutputSvgStandardFileName(FileNames), "w"); // Arquivo de saida svg padrão
     FILE *StandardTxtOutput = openFile(getOutputTxtFileName(FileNames), "w");
     printTagSvg(&StandardSvgOutput, 0); // Inicia header svg
+
+    //
+    FILE *binFile = fopen("/home/vcarloto/ed/new/new_output/quadra.bin", "wb+");
+    //
+
     // Leitura da entrada .geo
     char *linha = NULL; // Linha lida
     char *tmpLinha = NULL; // Copia para strtok
     int controle = 1; // Controle permite a execução da leitura, e # muda seu valor para 0
     unsigned long int hashResult = 0; // Resultado do hash
+
     while (!feof(GeoInputFile) && controle == 1) { // Loop de leitura
         readLine(&linha, &GeoInputFile); // Le uma linha do arquivo de entrada
-        // printThis(linha); // Impime a linha lida
+        printThis(linha); // Impime a linha lida
         copyString(&tmpLinha, linha); // Copia a linha lida
         hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
         // printf("\nResultado do hashing : %lu", hashResult);
+
         switch (hashResult) { // Switch dos comandos lidos
             case CMD_NX: // Comando desnecessario nessa implementacao
                 break;
@@ -70,9 +83,16 @@ int main(int argc, char *argv[]) {
             default:
                 break;
         }
+
     }
+
+    //
+    printBinQuadra(&binFile);
+    fclose(binFile);
+    //
+
     fclose(GeoInputFile); // Fecha o arquivo .geo
-    printBasicShapes(AllBasicShapes);
+    // printBasicShapes(AllBasicShapes);
     printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
     // Free structs
     killFileArguments(&FileNames);
@@ -84,6 +104,7 @@ int main(int argc, char *argv[]) {
     printTagSvg(&StandardSvgOutput, 1); // Finaliza header svg
     fclose(StandardSvgOutput);
     fclose(StandardTxtOutput);
+
     // End main
     return 0;
 

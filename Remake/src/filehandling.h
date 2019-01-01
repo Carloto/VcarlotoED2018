@@ -31,6 +31,12 @@ void readLine(char **line, FILE **input);
 // Abre um arquivo a partir do nome recebido
 FILE *openFile(char *fileName, char accessType[3]);
 
+// Imprime tags svg
+void printTagSvg(FILE **outputFile, int type);
+
+// Imprime um tipo de dado no arquivo binario
+void printToBin(FILE **binFile, void *data);
+
 // Retorna o nome de do arquivo base
 char *getInputGeoName(fileArguments *tmpStructs);
 
@@ -48,8 +54,5 @@ char *getBaseName(fileArguments *tmpStructs);
 
 // Retorna o output path
 char *getOutputPath(fileArguments *tmpStructs);
-
-// Imprime tags svg
-void printTagSvg(FILE **outputFile, int type);
 
 #endif //INPUTARGV_H
