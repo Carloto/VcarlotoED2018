@@ -7,7 +7,7 @@
 #include "miscfunctions.h"
 #include "filehandling.h"
 #include "basicshapes.h"
-#include "quadra.h"
+#include "cidade.h"
 
 // Main
 int main(int argc, char *argv[]) {
@@ -23,8 +23,9 @@ int main(int argc, char *argv[]) {
     setFileArguments(&FileNames, argc, argv);
     printInputArguments(FileNames);
 
-    // Structs de figuras basicas
+    // Estruturas de Bitnopolis
     BasicShapes *AllBasicShapes = allocBasicShapes();
+    Cidade *Bitnopolis = allocCidade(FileNames);
 
     // Leitura de .geo
     FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
@@ -39,10 +40,6 @@ int main(int argc, char *argv[]) {
     FILE *StandardTxtOutput = openFile(getOutputTxtFileName(FileNames), "w");
     printTagSvg(&StandardSvgOutput, 0); // Inicia header svg
 
-    //
-    FILE *binFile = fopen("/home/vcarloto/ed/new/new_output/quadra.bin", "wb+");
-    //
-
     // Leitura da entrada .geo
     char *linha = NULL; // Linha lida
     char *tmpLinha = NULL; // Copia para strtok
@@ -51,12 +48,13 @@ int main(int argc, char *argv[]) {
 
     while (!feof(GeoInputFile) && controle == 1) { // Loop de leitura
         readLine(&linha, &GeoInputFile); // Le uma linha do arquivo de entrada
-        printThis(linha); // Impime a linha lida
+//        printThis(linha); // Imprime a linha lida
         copyString(&tmpLinha, linha); // Copia a linha lida
         hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-        // printf("\nResultado do hashing : %lu", hashResult);
+//        printf("\nResultado do hashing : %lu", hashResult);
 
         switch (hashResult) { // Switch dos comandos lidos
+            // T2
             case CMD_NX: // Comando desnecessario nessa implementacao
                 break;
             case CMD_A:
@@ -71,32 +69,32 @@ int main(int argc, char *argv[]) {
             case CMD_O:
                 overlapBasicShapes(AllBasicShapes, linha, &StandardTxtOutput, &StandardSvgOutput); // Sobreposicao
                 break;
-            case CMD_FIM:
-                controle = 0;
-                break;
             case FIG_C:
                 newShapeFromFile(AllBasicShapes, linha, 1); // 1 para circulo
                 break;
             case FIG_R:
                 newShapeFromFile(AllBasicShapes, linha, 2); // 2 para retangulo
                 break;
+            case CMD_FIM: // Final da leitura
+                controle = 0;
+                break;
+            // T3
+            case FIG_Q:
+                newCityShapeFromFile(Bitnopolis, linha, 1);
             default:
                 break;
         }
 
     }
 
-    //
-    printBinQuadra(&binFile);
-    fclose(binFile);
-    //
-
+    printCityShapes(Bitnopolis);
     fclose(GeoInputFile); // Fecha o arquivo .geo
     // printBasicShapes(AllBasicShapes);
     printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
     // Free structs
     killFileArguments(&FileNames);
     killBasicShapes(&AllBasicShapes);
+    killCidade(&Bitnopolis);
     // Free Strings
     freeString(&linha);
     freeString(&tmpLinha);

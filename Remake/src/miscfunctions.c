@@ -14,7 +14,8 @@ void copyString(char **final, char *aux) {
     len = strlen(aux);
     freeString(final);
     *final = (char *) calloc(len + 1, sizeof(char));
-    strcpy(*final, aux);
+    //strcpy(*final, aux);
+    sprintf(*final, "%s", aux);
 }
 
 // Free String
@@ -59,7 +60,7 @@ void removeFirstChar(char **final) {
 }
 
 // Concatena nomes de arquivos
-void strcatFileName(char **final, char *before, char **after, char type[6]) {
+void strcatFileName(char **final, char *before, char **after, char type[50]) {
     freeString(final);
     size_t lenBefore = strlen(before);
 //    printf("\n len before = %lu", lenBefore);
@@ -84,7 +85,7 @@ void strcatFileName(char **final, char *before, char **after, char type[6]) {
 }
 
 // Concatena nomes
-void strcatName(char **final, char *before, char **after, char type[10]) {
+void strcatName(char **final, char *before, char **after, char type[50]) {
     freeString(final);
     size_t lenBefore = strlen(before);
 //    printf("\n len before = %lu", lenBefore);

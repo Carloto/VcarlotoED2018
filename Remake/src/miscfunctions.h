@@ -33,10 +33,10 @@ void freeInt(int **tmpValue);
 void removeFirstChar(char **final);
 
 // Concatena nomes de arquivos, verificando a ausenica ou duplicata de "/"
-void strcatFileName(char **final, char *before, char **after, char type[6]);
+void strcatFileName(char **final, char *before, char **after, char type[50]);
 
 // Concatena nomes
-void strcatName(char **final, char *before, char **after, char type[10]);
+void strcatName(char **final, char *before, char **after, char type[50]);
 
 // Função de hashing para strings
 unsigned long hash(unsigned char *str);
@@ -110,3 +110,8 @@ void printDashRectangle(FILE **outputFile, double rectX, double rectY, double wi
 #ifndef FIG_R
 #define FIG_R 177687
 #endif
+
+#ifndef FIG_Q
+#define FIG_Q 177686
+#endif
+

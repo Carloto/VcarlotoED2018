@@ -29,13 +29,16 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv);
 void readLine(char **line, FILE **input);
 
 // Abre um arquivo a partir do nome recebido
-FILE *openFile(char *fileName, char accessType[3]);
+FILE *openFile(char *fileName, char accessType[6]);
 
 // Imprime tags svg
 void printTagSvg(FILE **outputFile, int type);
 
 // Imprime um tipo de dado no arquivo binario
-void printToBin(FILE **binFile, void *data);
+void printToBin(FILE **binFile, size_t dataSize, void *data);
+
+// Lê um tipo de dado no arquivo binario
+void readFromBin(FILE **binFile, size_t dataSize, void *data);
 
 // Retorna o nome de do arquivo base
 char *getInputGeoName(fileArguments *tmpStructs);
@@ -54,5 +57,9 @@ char *getBaseName(fileArguments *tmpStructs);
 
 // Retorna o output path
 char *getOutputPath(fileArguments *tmpStructs);
+
+// Retorna o diretorio do banco de dados
+char *getFullPathBd(fileArguments *tmpStructs);
+
 
 #endif //INPUTARGV_H

@@ -92,7 +92,7 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
                    ".txt\0");
 
     // Concatenar path do banco de dados
-    strcatFileName(&(*set_struct)->full_path_bd, (*set_struct)->output_o, &(*set_struct)->path_bd,"\0");
+    strcatFileName(&(*set_struct)->full_path_bd, (*set_struct)->output_o, &(*set_struct)->path_bd, "\0");
 
     // Verificar se -f possui "." e concatenar nome do arquivo geo
     if ((*set_struct)->input_e != NULL) {
@@ -116,7 +116,7 @@ void readLine(char **line, FILE **input) {
 }
 
 // Abre um arquivo
-FILE *openFile(char *fileName, char accessType[3]) {
+FILE *openFile(char *fileName, char accessType[6]) {
     FILE *fileToOpen = NULL; // Arquivo a ser aberto
     fileToOpen = fopen(fileName, accessType); // Abrir arquivo
     return fileToOpen; // Retorno
@@ -137,8 +137,13 @@ void printTagSvg(FILE **outputFile, int type) {
 }
 
 // Imprime um tipo de dado no arquivo binario
-void printToBin(FILE **binFile, void *data) {
-    fwrite(data, sizeof(data), 1, *binFile);
+void printToBin(FILE **binFile, size_t dataSize, void *data) {
+    fwrite(data, dataSize, 1, *binFile);
+}
+
+// Lê um tipo de dado no arquivo binario
+void readFromBin(FILE **binFile, size_t dataSize, void *data) {
+    fread(data, dataSize, 1, *binFile);
 }
 
 // Retorna o nome de do arquivo base
@@ -169,4 +174,9 @@ char *getBaseName(fileArguments *tmpStructs) {
 // Retorna o output path
 char *getOutputPath(fileArguments *tmpStructs) {
     return tmpStructs->output_o;
+}
+
+// Retorna o diretorio do banco de dados
+char *getFullPathBd(fileArguments *tmpStructs) {
+    return tmpStructs->full_path_bd;
 }
