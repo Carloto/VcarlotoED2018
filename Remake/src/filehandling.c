@@ -80,6 +80,13 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
         }
     }
 
+    // Concatenar path do banco de dados
+    strcatFileName(&(*set_struct)->full_path_bd, (*set_struct)->output_o, &(*set_struct)->path_bd, "\0");
+    struct stat st = {0};
+    if (stat((*set_struct)->full_path_bd, &st) == -1) { // Verifica se o diretorio já existe
+        mkdir((*set_struct)->full_path_bd, 0700); // Cria o diretorio
+    }
+
     // Isolar nome do arquivo
     cutFileName(&(*set_struct)->inputGeoName, (*set_struct)->input_f);
 
@@ -91,8 +98,6 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
     strcatFileName(&(*set_struct)->outputTxtFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
                    ".txt\0");
 
-    // Concatenar path do banco de dados
-    strcatFileName(&(*set_struct)->full_path_bd, (*set_struct)->output_o, &(*set_struct)->path_bd, "\0");
 
     // Verificar se -f possui "." e concatenar nome do arquivo geo
     if ((*set_struct)->input_e != NULL) {

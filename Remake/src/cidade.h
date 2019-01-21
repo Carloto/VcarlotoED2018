@@ -8,6 +8,8 @@
 #include "miscfunctions.h"
 #include "filehandling.h"
 #include "quadra.h"
+#include "btree.h"
+#include "color.h"
 
 typedef struct tmpCidade Cidade; // Estruturas da cidade
 
@@ -20,7 +22,7 @@ Cidade *allocCidade(fileArguments *source);
 void killCidade(Cidade **tmpBitnopolis);
 
 // Adiciona uma nova estrutura no arquivo binario e na b-tree, a partir do arquivo lido
-void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, int typeOfData);
+void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex, int typeOfData);
 
 // Imprime as estruturas da cidade
 void printCityShapes(Cidade *cityIndex);

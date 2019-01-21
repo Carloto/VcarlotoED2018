@@ -8,6 +8,7 @@
 #include "filehandling.h"
 #include "basicshapes.h"
 #include "cidade.h"
+#include "color.h"
 
 // Main
 int main(int argc, char *argv[]) {
@@ -26,6 +27,7 @@ int main(int argc, char *argv[]) {
     // Estruturas de Bitnopolis
     BasicShapes *AllBasicShapes = allocBasicShapes();
     Cidade *Bitnopolis = allocCidade(FileNames);
+    Color *ColorIndex = allocColor();
 
     // Leitura de .geo
     FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
@@ -78,9 +80,13 @@ int main(int argc, char *argv[]) {
             case CMD_FIM: // Final da leitura
                 controle = 0;
                 break;
-            // T3
+                // T3
             case FIG_Q:
-                newCityShapeFromFile(Bitnopolis, linha, 1);
+                newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 1);
+                break;
+            case COR_Q:
+                newColorFromFile(ColorIndex, linha, 1); // 1 para cor de quadra
+                break;
             default:
                 break;
         }
@@ -95,6 +101,7 @@ int main(int argc, char *argv[]) {
     killFileArguments(&FileNames);
     killBasicShapes(&AllBasicShapes);
     killCidade(&Bitnopolis);
+    killColor(ColorIndex);
     // Free Strings
     freeString(&linha);
     freeString(&tmpLinha);

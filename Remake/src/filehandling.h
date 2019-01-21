@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "miscfunctions.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 // Struct para guardar a entrada de argumentos
 typedef struct tmp_fileArguments fileArguments;

@@ -115,3 +115,6 @@ void printDashRectangle(FILE **outputFile, double rectX, double rectY, double wi
 #define FIG_Q 177686
 #endif
 
+#ifndef COR_Q
+#define COR_Q 5863289
+#endif
