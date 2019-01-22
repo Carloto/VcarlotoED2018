@@ -131,18 +131,24 @@ int main(int argc, char *argv[]) {
 
         while (!feof(QryInputFile)) { // Loop de leitura
             readLine(&linha, &QryInputFile); // Le uma linha do arquivo de entrada
-            if (linha == NULL){
+            if (linha == NULL) {
                 break;
             }
-            printThis(linha); // Imprime a linha lida
+//            printThis(linha); // Imprime a linha lida
             copyString(&tmpLinha, linha); // Copia a linha lida
             hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-            printf("\nResultado do hashing : %lu", hashResult);
+//            printf("\nResultado do hashing : %lu", hashResult);
 
             switch (hashResult) { // Switch dos comandos lidos
                 // T3
                 case Q_MIN_SEARCH:
-                    strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile);
+                    strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 1); // 1 para q?
+                    break;
+                case D_MIN_Q:
+                    strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 2); // 2 para dq
+                    break;
+                case D_MIN_LE:
+                    strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 3); // 3 para dle
                     break;
                 default:
                     break;

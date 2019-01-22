@@ -23,8 +23,13 @@ void killTorre(Torre *tmpTor) {
     }
 }
 
+// Deleta a torre
+void deleteTorre(Torre *tmpTorre) {
+    sprintf(tmpTorre->id, "%s", "deletado");
+}
+
 // Retorna o tamanho de uma Torre
-size_t getTorreSize(){
+size_t getTorreSize() {
     return sizeof(Torre);
 }
 

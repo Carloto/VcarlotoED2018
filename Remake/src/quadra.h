@@ -17,6 +17,9 @@ Quadra *allocQuadra();
 // Libera a memoria de uma unica quadra
 void killQuadra(Quadra *tmpQuad);
 
+// Deleta a quadra
+void deleteQuadra(Quadra *tmpQuad);
+
 // Retorna o tamanho de uma quadra
 size_t getQuadraSize();
 

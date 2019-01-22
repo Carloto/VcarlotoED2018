@@ -17,6 +17,9 @@ Semaforo *allocSemaforo();
 // Libera a memoria de uma unica Semaforo
 void killSemaforo(Semaforo *tmpSemaf);
 
+// Deleta o semaforo
+void deleteSemaforo(Semaforo *tmpSemaf);
+
 // Retorna o tamanho de uma Semaforo
 size_t getSemaforoSize();
 

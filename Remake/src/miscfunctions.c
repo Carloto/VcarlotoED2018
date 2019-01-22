@@ -1,6 +1,14 @@
 // Include
 #include "miscfunctions.h"
 
+// Verificar validade da string
+int checkString(char *aux){
+    if(strcmp(aux, "deletado") == 0){
+        return 0;
+    }
+    return 1;
+}
+
 // Imprime uma string
 void printThis(char *output) {
     if (output != NULL) {

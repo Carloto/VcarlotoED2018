@@ -18,6 +18,6 @@
 // Este modulo contem as chamadas para execução dos comandos qry
 
 // Verifica quais estruturas se encontram totalmente dentro da area requisitada
-void strucutreInsideRectangle(Cidade *cityIndex, char *linha, FILE **txtOutput, FILE **svgOutput);
+void strucutreInsideRectangle(Cidade *cityIndex, char *linha, FILE **txtOutput, FILE **svgOutput, int action);
 
 #endif // QUERY_H

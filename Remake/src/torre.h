@@ -17,6 +17,9 @@ Torre *allocTorre();
 // Libera a memoria de uma unica Torre
 void killTorre(Torre *tmpTor);
 
+// Deleta a torre
+void deleteTorre(Torre *tmpTorre);
+
 // Retorna o tamanho de uma Torre
 size_t getTorreSize();
 

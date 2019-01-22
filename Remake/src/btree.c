@@ -41,14 +41,14 @@ void btDestroy(bTree b) {
     free(b);
 }
 
-/* return smallest index i in sorted array such that key <= a[i] */
-/* (or n if there is no such index) */
+// retorna  menor indice i de forma que key <= a[i]
+// (ou n caso i não exista)
 static int searchKey(int n, const unsigned long *a, unsigned long key) {
     int lo;
     int hi;
     int mid;
 
-    /* invariant: a[lo] < key <= a[hi] */
+    // invariavel : a[lo] < key <= a[hi]
     lo = -1;
     hi = n;
 
@@ -66,19 +66,45 @@ static int searchKey(int n, const unsigned long *a, unsigned long key) {
     return hi;
 }
 
-int btGetAddress(bTree b, unsigned long key, long int *address) {
+// Deleta uma certa chave
+int btDeleteInfo(bTree b, unsigned long key, long int *address) {
     int pos;
 
-    /* have to check for empty tree */
+    // verificar arvore vazia
     if (b->numKeys == 0) {
         return 0;
     }
 
-    /* look for smallest position that key fits below */
+    // verificar menor posicao onde a chave pode ser encontrada
     pos = searchKey(b->numKeys, b->keys, key);
 
     if (pos < b->numKeys && b->keys[pos] == key) {
-        printf("\nChego aqui com address %lu \n", b->address[pos]);
+        *address = b->address[pos];
+        b->address[pos] = -1;
+        return 1;
+    } else {
+        return (!b->isLeaf && btGetAddress(b->kids[pos], key, address));
+    }
+}
+
+int btGetAddress(bTree b, unsigned long key, long int *address) {
+    int pos;
+
+    // verificar arvore vazia
+    if (b->numKeys == 0) {
+        return 0;
+    }
+
+
+    // verificar menor posicao onde a chave pode ser encontrada
+    pos = searchKey(b->numKeys, b->keys, key);
+
+
+    if (pos < b->numKeys && b->keys[pos] == key) {
+        // verificar informacao deletada
+        if (b->address[pos] == -1) {
+            return 0;
+        }
         *address = b->address[pos];
         return 1;
     } else {
@@ -89,12 +115,12 @@ int btGetAddress(bTree b, unsigned long key, long int *address) {
 int btSearch(bTree b, unsigned long key) {
     int pos;
 
-    /* have to check for empty tree */
+    // verificar arvore vazia
     if (b->numKeys == 0) {
         return 0;
     }
 
-    /* look for smallest position that key fits below */
+    //verificar menor posicao onde a chave pode ser encontrada
     pos = searchKey(b->numKeys, b->keys, key);
 
     if (pos < b->numKeys && b->keys[pos] == key) {
@@ -104,10 +130,10 @@ int btSearch(bTree b, unsigned long key) {
     }
 }
 
-/* insert a new key into a tree */
-/* returns new right sibling if the node splits */
-/* and puts the median in *median */
-/* else returns 0 */
+// inserir um novo no na arvore
+// retorna nova criança a direita cas o no seja separado
+// e guarda a mediana em *median
+// caso contrario retorna 0
 static bTree
 btInsertInternal(bTree b, unsigned long key, long int addr, unsigned long *median, long int *medianAddress) {
     int pos, mid2;
@@ -118,13 +144,13 @@ btInsertInternal(bTree b, unsigned long key, long int addr, unsigned long *media
     pos = searchKey(b->numKeys, b->keys, key);
 
     if (pos < b->numKeys && b->keys[pos] == key) {
-        /* nothing to do */
+        // nada a ser feito
         return 0;
     }
 
     if (b->isLeaf) {
 
-        /* everybody above pos moves up one space */
+        // todos acima de pos sobem 1 espaço
         memmove(&b->keys[pos + 1], &b->keys[pos], sizeof(*(b->keys)) * (b->numKeys - pos));
         memmove(&b->address[pos + 1], &b->address[pos], sizeof(*(b->address)) * (b->numKeys - pos));
         b->keys[pos] = key;
@@ -133,16 +159,16 @@ btInsertInternal(bTree b, unsigned long key, long int addr, unsigned long *media
 
     } else {
 
-        /* insert in child */
+        // insere na criança
         b2 = btInsertInternal(b->kids[pos], key, addr, &mid, &midAddr);
 
-        /* maybe insert a new key in b */
+        // talvez inserir em b
         if (b2) {
 
-            /* every key above pos moves up one space */
+            // todas acima de pos sobem 1 espaço
             memmove(&b->keys[pos + 1], &b->keys[pos], sizeof(*(b->keys)) * (b->numKeys - pos));
             memmove(&b->address[pos + 1], &b->address[pos], sizeof(*(b->address)) * (b->numKeys - pos));
-            /* new kid goes in pos + 1*/
+            // nova criança em pos + 1
             memmove(&b->kids[pos + 2], &b->kids[pos + 1], sizeof(*(b->keys)) * (b->numKeys - pos));
             memmove(&b->address[pos + 2], &b->address[pos + 1], sizeof(*(b->address)) * (b->numKeys - pos));
 
@@ -153,21 +179,19 @@ btInsertInternal(bTree b, unsigned long key, long int addr, unsigned long *media
         }
     }
 
-    /* we waste a tiny bit of space by splitting now
-     * instead of on next insert */
     if (b->numKeys >= MAX_KEYS) {
         mid2 = b->numKeys / 2;
 
         *median = b->keys[mid2];
         *medianAddress = b->address[mid2];
 
-        /* make a new node for keys > median */
-        /* picture is:
+        // cria novo no se keys > median
+        /* arvore é:
          *
          *      3 5 7
          *      A B C D
          *
-         * becomes
+         * se torna
          *          (5)
          *      3        7
          *      A B      C D
@@ -192,24 +216,23 @@ btInsertInternal(bTree b, unsigned long key, long int addr, unsigned long *media
 }
 
 void btInsert(bTree b, unsigned long key, long int addr) {
-    bTree b1;   /* new left child */
-    bTree b2;   /* new right child */
+    bTree b1;   // nova criana a esquerda
+    bTree b2;   // nova criança a deireita
     unsigned long median;
     long int medianAddress;
 
     b2 = btInsertInternal(b, key, addr, &median, &medianAddress);
 
     if (b2) {
-        /* basic issue here is that we are at the root */
-        /* so if we split, we have to make a new root */
+        // verificar mudança de raiz
 
         b1 = malloc(sizeof(*b1));
         assert(b1);
 
-        /* copy root to b1 */
+        // copia a raiz para b1
         memmove(b1, b, sizeof(*b));
 
-        /* make root point to b1 and b2 */
+        // atualiza a raiz
         b->numKeys = 1;
         b->isLeaf = 0;
         b->keys[0] = median;

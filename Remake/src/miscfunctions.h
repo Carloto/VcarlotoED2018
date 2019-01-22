@@ -14,6 +14,9 @@
 
 // Esse modulo contem funções auxiliares para o programa
 
+// Verificar validade da string
+int checkString(char *aux);
+
 //Imprime uma string não nula
 void printThis(char *output);
 

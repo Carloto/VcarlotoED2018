@@ -29,19 +29,19 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
 
 // Verifica quais quadras estão dentro de dado retangulo
 void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                           double aHeigth);
+                           double aHeigth, int action);
 
 // Verifica quais semaforos estão dentro de dado retangulo
 void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                          double aHeigth);
+                          double aHeigth, int action);
 
 // Verifica quais hidrantes estão dentro de dado retangulo
 void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                        double aHeigth);
+                        double aHeigth, int action);
 
-// Verifica quais semaforos estão dentro de dado retangulo
+// Verifica quais torres estão dentro de dado retangulo
 void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                          double aHeigth);
+                          double aHeigth, int action);
 
 // Imprime as estruturas da cidade
 void printCityShapes(Cidade *cityIndex);

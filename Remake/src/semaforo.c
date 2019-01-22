@@ -24,6 +24,11 @@ void killSemaforo(Semaforo *tmpSemaf) {
     }
 }
 
+// Deleta o semaforo
+void deleteSemaforo(Semaforo *tmpSemaf) {
+    sprintf(tmpSemaf->id, "%s", "deletado");
+}
+
 // Retorna o tamanho de uma Semaforo
 size_t getSemaforoSize(){
     return sizeof(Semaforo);

@@ -129,8 +129,9 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
 
 // Verifica quais quadras estão dentro de dado retangulo
 void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                           double aHeigth) {
+                           double aHeigth, int action) {
     printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    long int address;
     Quadra *tmpQuad = allocQuadra();
     fseek(cityIndex->quadras, 0, SEEK_SET);
     while (!feof(cityIndex->quadras)) {
@@ -138,10 +139,26 @@ void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput
         if (!feof(cityIndex->quadras)) {
             if (rectInsideRect(aX, aY, aWidth, aHeigth, getQuadraX(tmpQuad), getQuadraY(tmpQuad),
                                getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad)) == 1) {
-                fprintf(*txtOutput, "Cep = %s  X = %lf  Y = %lf  Width = %lf  Height = %lf  Stroke = %s  Fill = %s\n",
-                        getQuadraCep(tmpQuad), getQuadraX(tmpQuad),
-                        getQuadraY(tmpQuad), getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad),
-                        getQuadraStrokeColor(tmpQuad), getQuadraFillColor(tmpQuad));
+                if (checkString(getQuadraCep(tmpQuad))) {
+                    fprintf(*txtOutput,
+                            "Cep = %s  X = %lf  Y = %lf  Width = %lf  Height = %lf  Stroke = %s  Fill = %s\n",
+                            getQuadraCep(tmpQuad), getQuadraX(tmpQuad),
+                            getQuadraY(tmpQuad), getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad),
+                            getQuadraStrokeColor(tmpQuad), getQuadraFillColor(tmpQuad));
+
+                    switch (action) {
+                        case 2: // dq
+                            btDeleteInfo(cityIndex->quadraTree, hash((unsigned char *) getQuadraCep(tmpQuad)),
+                                         &address);
+                            deleteQuadra(tmpQuad);
+                            fseek(cityIndex->quadras, address, SEEK_SET);
+                            printToBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }
@@ -150,18 +167,35 @@ void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput
 
 // Verifica quais semaforos estão dentro de dado retangulo
 void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                          double aHeigth) {
+                          double aHeigth, int action) {
     printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    long int address;
     Semaforo *tmpSemaf = allocSemaforo();
     fseek(cityIndex->semaforos, 0, SEEK_SET);
     while (!feof(cityIndex->semaforos)) {
         readFromBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
         if (!feof(cityIndex->semaforos)) {
             if (pointInsideRectangle(getSemaforoX(tmpSemaf), getSemaforoY(tmpSemaf), aX, aY, aWidth, aHeigth) == 1) {
-                fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
-                        getSemaforoId(tmpSemaf), getSemaforoX(tmpSemaf),
-                        getSemaforoY(tmpSemaf),
-                        getSemaforoStrokeColor(tmpSemaf), getSemaforoFillColor(tmpSemaf));
+                if (checkString(getSemaforoId(tmpSemaf))) {
+
+                    fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                            getSemaforoId(tmpSemaf), getSemaforoX(tmpSemaf),
+                            getSemaforoY(tmpSemaf),
+                            getSemaforoStrokeColor(tmpSemaf), getSemaforoFillColor(tmpSemaf));
+
+                    switch (action) {
+                        case 2: // dle
+                            btDeleteInfo(cityIndex->semafTree, hash((unsigned char *) getSemaforoId(tmpSemaf)),
+                                         &address);
+                            deleteSemaforo(tmpSemaf);
+                            fseek(cityIndex->semaforos, address, SEEK_SET);
+                            printToBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }
@@ -170,38 +204,70 @@ void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput,
 
 // Verifica quais hidrantes estão dentro de dado retangulo
 void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                        double aHeigth) {
+                        double aHeigth, int action) {
     printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    long int address;
     Hidrante *tmpHid = allocHidrante();
     fseek(cityIndex->hidrantes, 0, SEEK_SET);
     while (!feof(cityIndex->hidrantes)) {
         readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
         if (!feof(cityIndex->hidrantes)) {
             if (pointInsideRectangle(getHidranteX(tmpHid), getHidranteY(tmpHid), aX, aY, aWidth, aHeigth) == 1) {
-                fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
-                        getHidranteId(tmpHid), getHidranteX(tmpHid),
-                        getHidranteY(tmpHid),
-                        getHidranteStrokeColor(tmpHid), getHidranteFillColor(tmpHid));
+                if (checkString(getHidranteId(tmpHid))) {
+
+                    fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                            getHidranteId(tmpHid), getHidranteX(tmpHid),
+                            getHidranteY(tmpHid),
+                            getHidranteStrokeColor(tmpHid), getHidranteFillColor(tmpHid));
+
+                    switch (action) {
+                        case 2: // dle
+                            btDeleteInfo(cityIndex->hidrTree, hash((unsigned char *) getHidranteId(tmpHid)), &address);
+                            deleteHidrante(tmpHid);
+                            fseek(cityIndex->hidrantes, address, SEEK_SET);
+                            printToBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }
     killHidrante(tmpHid);
 }
 
-// Verifica quais semaforos estão dentro de dado retangulo
+// Verifica quais torres estão dentro de dado retangulo
 void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
-                          double aHeigth) {
+                          double aHeigth, int action) {
     printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    long int address;
     Torre *tmpTorre = allocTorre();
     fseek(cityIndex->torres, 0, SEEK_SET);
     while (!feof(cityIndex->torres)) {
         readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
         if (!feof(cityIndex->torres)) {
             if (pointInsideRectangle(getTorreX(tmpTorre), getTorreY(tmpTorre), aX, aY, aWidth, aHeigth) == 1) {
-                fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
-                        getTorreId(tmpTorre), getTorreX(tmpTorre),
-                        getTorreY(tmpTorre),
-                        getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
+                if (checkString(getTorreId(tmpTorre))) {
+
+                    fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                            getTorreId(tmpTorre), getTorreX(tmpTorre),
+                            getTorreY(tmpTorre),
+                            getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
+
+                    switch (action) {
+                        case 2: // dle
+                            btDeleteInfo(cityIndex->torreTree, hash((unsigned char *) getTorreId(tmpTorre)), &address);
+                            deleteTorre(tmpTorre);
+                            fseek(cityIndex->torres, address, SEEK_SET);
+                            printToBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
         }
     }
@@ -217,7 +283,9 @@ void printCityShapes(Cidade *cityIndex) {
     while (!feof(cityIndex->quadras)) {
         readFromBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
         if (!feof(cityIndex->quadras)) {
-            printQuadra(tmpQuad);
+            if (checkString(getQuadraCep(tmpQuad))) {
+                printQuadra(tmpQuad);
+            }
         }
     }
     killQuadra(tmpQuad);
@@ -229,7 +297,9 @@ void printCityShapes(Cidade *cityIndex) {
     while (!feof(cityIndex->hidrantes)) {
         readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
         if (!feof(cityIndex->hidrantes)) {
-            printHidrante(tmpHid);
+            if (checkString(getHidranteId(tmpHid))) {
+                printHidrante(tmpHid);
+            }
         }
     }
     killHidrante(tmpHid);
@@ -241,7 +311,9 @@ void printCityShapes(Cidade *cityIndex) {
     while (!feof(cityIndex->semaforos)) {
         readFromBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
         if (!feof(cityIndex->semaforos)) {
-            printSemaforo(tmpSemaf);
+            if (checkString(getSemaforoId(tmpSemaf))) {
+                printSemaforo(tmpSemaf);
+            }
         }
     }
     killSemaforo(tmpSemaf);
@@ -253,7 +325,9 @@ void printCityShapes(Cidade *cityIndex) {
     while (!feof(cityIndex->torres)) {
         readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
         if (!feof(cityIndex->torres)) {
-            printTorre(tmpTorre);
+            if (checkString(getTorreId(tmpTorre))) {
+                printTorre(tmpTorre);
+            }
         }
     }
     killTorre(tmpTorre);
@@ -267,21 +341,23 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
     while (!feof(cityIndex->quadras)) {
         readFromBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
         if (!feof(cityIndex->quadras)) {
-            fprintf(*outputFile,
-                    "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" ",
-                    getQuadraX(tmpQuad),
-                    getQuadraY(tmpQuad),
-                    getQuadraWidth(tmpQuad),
-                    getQuadraHeight(tmpQuad));
-            fprintf(*outputFile,
-                    "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n",
-                    getQuadraStrokeColor(tmpQuad),
-                    getQuadraFillColor(tmpQuad));
-            fprintf(*outputFile,
-                    "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5;\" >%s</text>\n",
-                    (getQuadraWidth(tmpQuad) / 2) + getQuadraX(tmpQuad),
-                    (getQuadraHeight(tmpQuad) / 2) + getQuadraY(tmpQuad),
-                    getQuadraCep(tmpQuad));
+            if (checkString(getQuadraCep(tmpQuad))) {
+                fprintf(*outputFile,
+                        "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" ",
+                        getQuadraX(tmpQuad),
+                        getQuadraY(tmpQuad),
+                        getQuadraWidth(tmpQuad),
+                        getQuadraHeight(tmpQuad));
+                fprintf(*outputFile,
+                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n",
+                        getQuadraStrokeColor(tmpQuad),
+                        getQuadraFillColor(tmpQuad));
+                fprintf(*outputFile,
+                        "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5;\" >%s</text>\n",
+                        (getQuadraWidth(tmpQuad) / 2) + getQuadraX(tmpQuad),
+                        (getQuadraHeight(tmpQuad) / 2) + getQuadraY(tmpQuad),
+                        getQuadraCep(tmpQuad));
+            }
         }
     }
     killQuadra(tmpQuad);
@@ -292,20 +368,22 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
     while (!feof(cityIndex->hidrantes)) {
         readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
         if (!feof(cityIndex->hidrantes)) {
-            fprintf(*outputFile,
-                    "\t<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" ",
-                    getHidranteX(tmpHid),
-                    getHidranteY(tmpHid),
-                    getHidranteRadius(tmpHid));
-            fprintf(*outputFile,
-                    "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
-                    getHidranteStrokeColor(tmpHid),
-                    getHidranteFillColor(tmpHid));
-            fprintf(*outputFile,
-                    "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
-                    getHidranteX(tmpHid),
-                    getHidranteY(tmpHid) + getHidranteRadius(tmpHid) / 2,
-                    "H");
+            if (checkString(getHidranteId(tmpHid))) {
+                fprintf(*outputFile,
+                        "\t<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" ",
+                        getHidranteX(tmpHid),
+                        getHidranteY(tmpHid),
+                        getHidranteRadius(tmpHid));
+                fprintf(*outputFile,
+                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
+                        getHidranteStrokeColor(tmpHid),
+                        getHidranteFillColor(tmpHid));
+                fprintf(*outputFile,
+                        "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
+                        getHidranteX(tmpHid),
+                        getHidranteY(tmpHid) + getHidranteRadius(tmpHid) / 2,
+                        "H");
+            }
         }
     }
     killHidrante(tmpHid);
@@ -316,21 +394,23 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
     while (!feof(cityIndex->semaforos)) {
         readFromBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
         if (!feof(cityIndex->semaforos)) {
-            fprintf(*outputFile,
-                    "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" ",
-                    getSemaforoX(tmpSemaf),
-                    getSemaforoY(tmpSemaf),
-                    getSemaforoWidth(tmpSemaf),
-                    getSemaforoHeight(tmpSemaf));
-            fprintf(*outputFile,
-                    "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n",
-                    getSemaforoStrokeColor(tmpSemaf),
-                    getSemaforoFillColor(tmpSemaf));
-            fprintf(*outputFile,
-                    "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
-                    (getSemaforoWidth(tmpSemaf) / 2) + getSemaforoX(tmpSemaf),
-                    (getSemaforoHeight(tmpSemaf) / 2) + getSemaforoY(tmpSemaf),
-                    "S");
+            if (checkString(getSemaforoId(tmpSemaf))) {
+                fprintf(*outputFile,
+                        "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" ",
+                        getSemaforoX(tmpSemaf),
+                        getSemaforoY(tmpSemaf),
+                        getSemaforoWidth(tmpSemaf),
+                        getSemaforoHeight(tmpSemaf));
+                fprintf(*outputFile,
+                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n",
+                        getSemaforoStrokeColor(tmpSemaf),
+                        getSemaforoFillColor(tmpSemaf));
+                fprintf(*outputFile,
+                        "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
+                        (getSemaforoWidth(tmpSemaf) / 2) + getSemaforoX(tmpSemaf),
+                        (getSemaforoHeight(tmpSemaf) / 2) + getSemaforoY(tmpSemaf),
+                        "S");
+            }
         }
     }
     killSemaforo(tmpSemaf);
@@ -341,20 +421,22 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
     while (!feof(cityIndex->torres)) {
         readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
         if (!feof(cityIndex->torres)) {
-            fprintf(*outputFile,
-                    "\t<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" ",
-                    getTorreX(tmpTorre),
-                    getTorreY(tmpTorre),
-                    getTorreRadius(tmpTorre));
-            fprintf(*outputFile,
-                    "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
-                    getTorreStrokeColor(tmpTorre),
-                    getTorreFillColor(tmpTorre));
-            fprintf(*outputFile,
-                    "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
-                    getTorreX(tmpTorre),
-                    getTorreY(tmpTorre) + getTorreRadius(tmpTorre) / 2,
-                    "T");
+            if (checkString(getTorreId(tmpTorre))) {
+                fprintf(*outputFile,
+                        "\t<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" ",
+                        getTorreX(tmpTorre),
+                        getTorreY(tmpTorre),
+                        getTorreRadius(tmpTorre));
+                fprintf(*outputFile,
+                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
+                        getTorreStrokeColor(tmpTorre),
+                        getTorreFillColor(tmpTorre));
+                fprintf(*outputFile,
+                        "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" >%s</text>\n",
+                        getTorreX(tmpTorre),
+                        getTorreY(tmpTorre) + getTorreRadius(tmpTorre) / 2,
+                        "T");
+            }
         }
     }
     killTorre(tmpTorre);

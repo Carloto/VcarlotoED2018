@@ -23,8 +23,13 @@ void killHidrante(Hidrante *tmpHid) {
     }
 }
 
+// Deleta o hidrante
+void deleteHidrante(Hidrante *tmpHid) {
+    sprintf(tmpHid->id, "%s", "deletado");
+}
+
 // Retorna o tamanho de uma Hidrante
-size_t getHidranteSize(){
+size_t getHidranteSize() {
     return sizeof(Hidrante);
 }
 

@@ -17,6 +17,9 @@ Hidrante *allocHidrante();
 // Libera a memoria de uma unica Hidrante
 void killHidrante(Hidrante *tmpHid);
 
+// Deleta o hidrante
+void deleteHidrante(Hidrante *tmpHid);
+
 // Retorna o tamanho de uma Hidrante
 size_t getHidranteSize();
 

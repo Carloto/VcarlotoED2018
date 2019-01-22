@@ -24,6 +24,11 @@ void killQuadra(Quadra *tmpQuad) {
     }
 }
 
+// Deleta a quadra
+void deleteQuadra(Quadra *tmpQuad) {
+    sprintf(tmpQuad->cep, "%s", "deletado");
+}
+
 // Retorna o tamanho de uma quadra
 size_t getQuadraSize(){
     return sizeof(Quadra);
