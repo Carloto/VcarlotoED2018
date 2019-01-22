@@ -65,8 +65,4 @@ char *getQuadraStrokeColor(Quadra *tmpQuad);
 // Imprime as informações do Retangulo
 void printQuadra(Quadra *tmpQuad);
 
-
-// Print quadras
-void printBinQuadra(FILE **binFile);
-
 #endif // QUADRA_H

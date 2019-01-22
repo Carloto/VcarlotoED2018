@@ -73,8 +73,19 @@ int
 overlapRectangleRectangle(double aX, double aY, double aWidth, double aHeight, double bX, double bY, double bWidth,
                           double bHeight, int controle, FILE **outputFile);
 
+// Verifica se um retangulo está dentro do outro
+int
+rectInsideRect(double aX, double aY, double aWidth, double aHeight, double bX, double bY, double bWidth,
+               double bHeight);
+
 // Imprime um retangulo tracejado
 void printDashRectangle(FILE **outputFile, double rectX, double rectY, double width, double height);
+
+// Imprime um retangulo tracejado com sobreposicao
+void printOverlapRectangle(FILE **outputFile, double rectX, double rectY, double width, double height);
+
+// Imprime um Circulo tracejado
+void printDashCircle(FILE **outputFile, double cX, double cY, double radius);
 
 #endif //MISCFUNCTIONS_H
 
@@ -115,6 +126,66 @@ void printDashRectangle(FILE **outputFile, double rectX, double rectY, double wi
 #define FIG_Q 177686
 #endif
 
+#ifndef FIG_H
+#define FIG_H 177677
+#endif
+
+#ifndef FIG_S
+#define FIG_S 177688
+#endif
+
+#ifndef FIG_T
+#define FIG_T 177689
+#endif
+
 #ifndef COR_Q
 #define COR_Q 5863289
+#endif
+
+#ifndef COR_H
+#define COR_H 5863280
+#endif
+
+#ifndef COR_S
+#define COR_S 5863291
+#endif
+
+#ifndef COR_T
+#define COR_T 5863292
+#endif
+
+#ifndef D_MIN_Q
+#define D_MIN_Q 5863322
+#endif
+
+#ifndef D_MIN_LE
+#define D_MIN_LE 193489562
+#endif
+
+#ifndef D_Q
+#define D_Q 5862266
+#endif
+
+#ifndef D_LE
+#define D_LE 193454714
+#endif
+
+#ifndef CC
+#define CC  5863275
+#endif
+
+#ifndef CRD
+#define CRD 6385126173
+#endif
+
+#ifndef CRB
+#define CRB 6385126107
+#endif
+
+#ifndef Q_MIN_SEARCH
+#define Q_MIN_SEARCH 5863701
+#endif
+
+#ifndef Q_SEARCH
+#define Q_SEARCH 5862645
 #endif

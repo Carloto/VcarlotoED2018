@@ -7,10 +7,13 @@
 struct tmp_fileArguments {
     char *input_e; // Argumento do comando -e
     char *input_f; // Argumento do comando -f
+    char *input_q; // Argumento do comando -q
     char *output_o; // Argumento do comando -o
     char *path_bd; // Argumento do comando -bd
     char *inputGeoFileName; // Nome completo do arquivo .geo
+    char *inputQryFileName; // Nome completo do arquivo .qry
     char *inputGeoName; // Nome isolado do arquivo .geo
+    char *outputQrySvgName; // Nome isolado do arquivo .geo
     char *outputSvgStandardFileName; // Arquivo de saida .svg principal
     char *outputTxtFileName; // Arquivo de saida .txt
     char *full_path_bd; // Path completo do banco de dados
@@ -21,10 +24,13 @@ fileArguments *createFileArguments() {
     fileArguments *create_struct = (fileArguments *) calloc(1, sizeof(fileArguments));
     create_struct->input_e = NULL;
     create_struct->input_f = NULL;
+    create_struct->input_q = NULL;
     create_struct->output_o = NULL;
     create_struct->path_bd = NULL;
     create_struct->inputGeoFileName = NULL;
+    create_struct->inputQryFileName = NULL;
     create_struct->inputGeoName = NULL;
+    create_struct->outputQrySvgName = NULL;
     create_struct->outputSvgStandardFileName = NULL;
     create_struct->outputTxtFileName = NULL;
     create_struct->full_path_bd = NULL;
@@ -35,10 +41,13 @@ fileArguments *createFileArguments() {
 void killFileArguments(fileArguments **kill_struct) {
     freeString(&(*kill_struct)->input_e);
     freeString(&(*kill_struct)->input_f);
+    freeString(&(*kill_struct)->input_q);
     freeString(&(*kill_struct)->output_o);
     freeString(&(*kill_struct)->path_bd);
     freeString(&(*kill_struct)->inputGeoFileName);
+    freeString(&(*kill_struct)->inputQryFileName);
     freeString(&(*kill_struct)->inputGeoName);
+    freeString(&(*kill_struct)->outputQrySvgName);
     freeString(&(*kill_struct)->outputSvgStandardFileName);
     freeString(&(*kill_struct)->outputTxtFileName);
     freeString(&(*kill_struct)->full_path_bd);
@@ -49,10 +58,13 @@ void killFileArguments(fileArguments **kill_struct) {
 void printInputArguments(fileArguments *print_struct) {
     printThis(print_struct->input_e);
     printThis(print_struct->input_f);
+    printThis(print_struct->input_q);
     printThis(print_struct->output_o);
     printThis(print_struct->path_bd);
     printThis(print_struct->inputGeoFileName);
+    printThis(print_struct->inputQryFileName);
     printThis(print_struct->inputGeoName);
+    printThis(print_struct->outputQrySvgName);
     printThis(print_struct->outputSvgStandardFileName);
     printThis(print_struct->outputTxtFileName);
     printThis(print_struct->full_path_bd);
@@ -74,6 +86,10 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
             i++;
             copyString(&(*set_struct)->output_o, argv[i]);
         }
+        if (strcmp("-q", argv[i]) == 0) {
+            i++;
+            copyString(&(*set_struct)->input_q, argv[i]);
+        }
         if (strcmp("-bd", argv[i]) == 0) {
             i++;
             copyString(&(*set_struct)->path_bd, argv[i]);
@@ -87,29 +103,47 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
         mkdir((*set_struct)->full_path_bd, 0700); // Cria o diretorio
     }
 
-    // Isolar nome do arquivo
-    cutFileName(&(*set_struct)->inputGeoName, (*set_struct)->input_f);
+    // Verificar se existe input
+    if ((*set_struct)->input_f != NULL) {
+        // Isolar nome do arquivo
+        cutFileName(&(*set_struct)->inputGeoName, (*set_struct)->input_f);
+        // Concatenar nome do arquivo de saida .svg
+        strcatFileName(&(*set_struct)->outputSvgStandardFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
+                       ".svg\0");
+        // Verificar se -f possui "." e concatenar nome do arquivo geo
+        if ((*set_struct)->input_e != NULL) {
+            if ((*set_struct)->input_f[0] == '.') {
+                removeFirstChar(&(*set_struct)->input_f);
+            }
+            strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->input_f,
+                           "\0");
+        } else {
+            copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
+        }
+    }
 
-    // Concatenar nome do arquivo de saida .svg
-    strcatFileName(&(*set_struct)->outputSvgStandardFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
-                   ".svg\0");
+    // Verificar se existe qry
+    if ((*set_struct)->input_q != NULL) {
+        // Verificar se -f possui "." e concatenar nome do arquivo qry
+        if ((*set_struct)->input_e != NULL) {
+            if ((*set_struct)->input_q[0] == '.') {
+                removeFirstChar(&(*set_struct)->input_q);
+            }
+            strcatFileName((&(*set_struct)->inputQryFileName), (*set_struct)->input_e, &(*set_struct)->input_q,
+                           "\0");
+        } else {
+            copyString(&(*set_struct)->inputQryFileName, (*set_struct)->input_q);
+        }
+        // Isolar nome do arquivo qry
+        cutFileName(&(*set_struct)->outputQrySvgName, (*set_struct)->input_q);
+        // Concatenar nome do arquivo de saida .svg do qry
+        strcatName(&(*set_struct)->input_q, (*set_struct)->inputGeoName, &(*set_struct)->outputQrySvgName, "-");
+        strcatFileName(&(*set_struct)->outputQrySvgName, (*set_struct)->output_o, &(*set_struct)->input_q, ".svg");
+    }
 
     // Concatenar nome do arquivo de saida .txt
     strcatFileName(&(*set_struct)->outputTxtFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
                    ".txt\0");
-
-
-    // Verificar se -f possui "." e concatenar nome do arquivo geo
-    if ((*set_struct)->input_e != NULL) {
-        if ((*set_struct)->input_f[0] == '.') {
-            removeFirstChar(&(*set_struct)->input_f);
-        }
-        strcatFileName((&(*set_struct)->inputGeoFileName), (*set_struct)->input_e, &(*set_struct)->input_f,
-                       "\0");
-    } else {
-        copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
-    }
-
 }
 
 // Lê uma linha do arquivo de entrada
@@ -159,6 +193,16 @@ char *getInputGeoName(fileArguments *tmpStructs) {
 // Retorna o nome de do arquivo de entrada .geo
 char *getInputGeoFileName(fileArguments *tmpStructs) {
     return tmpStructs->inputGeoFileName;
+}
+
+// Retorna o nome de do arquivo de entrada .qry
+char *getInputQryFileName(fileArguments *tmpStructs) {
+    return tmpStructs->inputQryFileName;
+}
+
+// Retorna o nome de do arquivo de saida .svg do qry
+char *getOutputQrySvgName(fileArguments *tmpStructs) {
+    return tmpStructs->outputQrySvgName;
 }
 
 // Retorna o nome do arquivo de saida .svg padrão

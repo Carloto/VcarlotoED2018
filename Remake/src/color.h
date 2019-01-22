@@ -31,4 +31,40 @@ void setQuadFillColor(Color *tmpCol, char *aux);
 // Set quadStroke
 void setQuadStrokeColor(Color *tmpCol, char *aux);
 
+// Get hidFill
+char *getHidFillColor(Color *tmpCol);
+
+// Get hidStroke
+char *getHidStrokeColor(Color *tmpCol);
+
+// Set hidFill
+void setHidFillColor(Color *tmpCol, char *aux);
+
+// Set hidStroke
+void setHidStrokeColor(Color *tmpCol, char *aux);
+
+// Get semafFill
+char *getSemafFillColor(Color *tmpCol);
+
+// Get semafStroke
+char *getSemafStrokeColor(Color *tmpCol);
+
+// Set semafFill
+void setSemafFillColor(Color *tmpCol, char *aux);
+
+// Set semafStroke
+void setSemafStrokeColor(Color *tmpCol, char *aux);
+
+// Get torreFill
+char *getTorFillColor(Color *tmpCol);
+
+// Get torreStroke
+char *getTorStrokeColor(Color *tmpCol);
+
+// Set torreFill
+void setTorFillColor(Color *tmpCol, char *aux);
+
+// Set torreStroke
+void setTorStrokeColor(Color *tmpCol, char *aux);
+
 #endif // COLOR_H

@@ -172,7 +172,7 @@ int pointInsideCircle(double pointX, double pointY, double circleX, double circl
 // Verifica se um ponto é interno a  um retangulo
 int pointInsideRectangle(double pointX, double pointY, double rectX, double rectY, double width, double height) {
     if (rectX < pointX && (rectX + width) > pointX &&
-        rectY < pointY && (rectY + height) > pointY) { //  O ponto é interno
+        rectY < pointY && (rectY + height) > pointY) { //  1 ponto é interno
         return 1;
     }
     return 0; // O ponto não é interno
@@ -206,7 +206,7 @@ overlapCircleCircle(double aX, double aY, double aR, double bX, double bY, doubl
             } else {
                 height = aY - rectY + aR + 1;
             }
-            printDashRectangle(outputFile, rectX, rectY, width, height);
+            printOverlapRectangle(outputFile, rectX, rectY, width, height);
         }
         return 1;
     }
@@ -254,7 +254,7 @@ overlapCircleRectangle(double aX, double aY, double aR, double bX, double bY, do
             } else {
                 height = aY - rectY + aR + 1;
             }
-            printDashRectangle(outputFile, rectX, rectY, width, height);
+            printOverlapRectangle(outputFile, rectX, rectY, width, height);
         }
         return 1;
     }
@@ -289,18 +289,44 @@ overlapRectangleRectangle(double aX, double aY, double aWidth, double aHeight, d
             } else {
                 height = aY - rectY + aHeight + 1;
             }
-            printDashRectangle(outputFile, rectX, rectY, width, height);
+            printOverlapRectangle(outputFile, rectX, rectY, width, height);
         }
         return 1;
     }
     return 0; // Não sobrepõem
 }
 
-// Imprime um retangulo tracejado
-void printDashRectangle(FILE **outputFile, double rectX, double rectY, double width, double height) {
+// Verifica se um retangulo está dentro do outro
+int
+rectInsideRect(double aX, double aY, double aWidth, double aHeight, double bX, double bY, double bWidth,
+               double bHeight) {
+    double rectX, rectY, width, height;
+    if ((aX < bX) && ((aX + aWidth) > (bX + bWidth)) && (aY < bY) &&
+        ((aY + aHeight) > (bY + bHeight))) { // b dentro de a
+        return 1;
+    }
+    return 0; // Não sobrepõem
+}
 
-    fprintf(*outputFile, "\t<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" \n", rectX, rectY, width, height);
+// Imprime um retangulo tracejado
+void printOverlapRectangle(FILE **outputFile, double rectX, double rectY, double width, double height) {
+
+    fprintf(*outputFile, "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" \n", rectX, rectY, width, height);
     fprintf(*outputFile, "\t\tstyle=\"stroke: %s;\n\t\t\tstroke-dasharray: 4 1;\n\t\t\tfill: none;\n\t\t\"\n\t/>",
             "black");
-    fprintf(*outputFile, "\t<text x=\"%f\" y=\"%f\" fill=\"%s\">Sobrepõe</text>\n", rectX, rectY - 3, "black");
+    fprintf(*outputFile, "\t<text x=\"%lf\" y=\"%lf\" fill=\"%s\">Sobrepõe</text>\n", rectX, rectY - 3, "black");
+}
+
+// Imprime um retangulo tracejado
+void printDashRectangle(FILE **outputFile, double rectX, double rectY, double width, double height) {
+    fprintf(*outputFile, "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" \n", rectX, rectY, width, height);
+    fprintf(*outputFile, "\t\tstyle=\"stroke: %s;\n\t\t\tstroke-dasharray: 4 1;\n\t\t\tfill: none;\n\t\t\"\n\t/>",
+            "black");
+}
+
+// Imprime um Circulo tracejado
+void printDashCircle(FILE **outputFile, double cX, double cY, double radius) {
+    fprintf(*outputFile, "\t<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" \n", cX, cY, radius);
+    fprintf(*outputFile, "\t\tstyle=\"stroke: %s;\n\t\t\tstroke-dasharray: 4 1;\n\t\t\tfill: none;\n\t\t\"\n\t/>",
+            "black");
 }
