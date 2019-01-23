@@ -127,6 +127,67 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
     }
 }
 
+// Retorna um ponteiro para o arquivo requisitado
+FILE **getCityFile(Cidade *cityIndex, int action) {
+    switch (action) {
+        case 1: // Quadras
+            return &(cityIndex->quadras);
+        case 2: // Semaforos
+            return &(cityIndex->semaforos);
+        case 3: // Hidrantes
+            return &(cityIndex->hidrantes);
+        case 4: // Torres
+            return &(cityIndex->torres);
+        default:
+            break;
+    }
+    return NULL;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getQuadraAddress(Cidade *cityIndex, unsigned long id, long int *address, Quadra **aux) {
+    if (btGetAddress(cityIndex->quadraTree, id, address)) {
+        *aux = allocQuadra();
+        fseek(cityIndex->quadras, *address, SEEK_SET);
+        readFromBin(&(cityIndex->quadras), getQuadraSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getSemaforoAddress(Cidade *cityIndex, unsigned long id, long int *address, Semaforo **aux) {
+    if (btGetAddress(cityIndex->semafTree, id, address)) {
+        *aux = allocSemaforo();
+        fseek(cityIndex->semaforos, *address, SEEK_SET);
+        readFromBin(&(cityIndex->semaforos), getSemaforoSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getHidranteAddress(Cidade *cityIndex, unsigned long id, long int *address, Hidrante **aux) {
+    if (btGetAddress(cityIndex->hidrTree, id, address)) {
+        *aux = allocHidrante();
+        fseek(cityIndex->hidrantes, *address, SEEK_SET);
+        readFromBin(&(cityIndex->hidrantes), getHidranteSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getTorreAddress(Cidade *cityIndex, unsigned long id, long int *address, Torre **aux) {
+    if (btGetAddress(cityIndex->torreTree, id, address)) {
+        *aux = allocTorre();
+        fseek(cityIndex->torres, *address, SEEK_SET);
+        readFromBin(&(cityIndex->torres), getTorreSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
 // Verifica quais quadras estão dentro de dado retangulo
 void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                            double aHeigth, int action) {
@@ -139,6 +200,48 @@ void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput
         if (!feof(cityIndex->quadras)) {
             if (rectInsideRect(aX, aY, aWidth, aHeigth, getQuadraX(tmpQuad), getQuadraY(tmpQuad),
                                getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad)) == 1) {
+                if (checkString(getQuadraCep(tmpQuad))) {
+                    fprintf(*txtOutput,
+                            "Cep = %s  X = %lf  Y = %lf  Width = %lf  Height = %lf  Stroke = %s  Fill = %s\n",
+                            getQuadraCep(tmpQuad), getQuadraX(tmpQuad),
+                            getQuadraY(tmpQuad), getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad),
+                            getQuadraStrokeColor(tmpQuad), getQuadraFillColor(tmpQuad));
+
+                    switch (action) {
+                        case 2: // dq
+                            btDeleteInfo(cityIndex->quadraTree, hash((unsigned char *) getQuadraCep(tmpQuad)),
+                                         &address);
+                            deleteQuadra(tmpQuad);
+                            fseek(cityIndex->quadras, address, SEEK_SET);
+                            printToBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    killQuadra(tmpQuad);
+}
+
+// Verifica quais quadras estão dentro de dado circulo
+void quadraInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+                        int action) {
+    printDashCircle(svgOutput, aX, aY, radius);
+    long int address;
+    Quadra *tmpQuad = allocQuadra();
+    fseek(cityIndex->quadras, 0, SEEK_SET);
+    while (!feof(cityIndex->quadras)) {
+        readFromBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
+        if (!feof(cityIndex->quadras)) {
+            if (pointInsideCircle(getQuadraX(tmpQuad), getQuadraY(tmpQuad), aX, aY, radius) &&
+                pointInsideCircle(getQuadraX(tmpQuad) + getQuadraWidth(tmpQuad), getQuadraY(tmpQuad), aX, aY, radius) &&
+                pointInsideCircle(getQuadraX(tmpQuad), getQuadraY(tmpQuad) + getQuadraHeight(tmpQuad), aX, aY,
+                                  radius) &&
+                pointInsideCircle(getQuadraX(tmpQuad) + getQuadraWidth(tmpQuad),
+                                  getQuadraY(tmpQuad) + getQuadraHeight(tmpQuad), aX, aY, radius)) {
                 if (checkString(getQuadraCep(tmpQuad))) {
                     fprintf(*txtOutput,
                             "Cep = %s  X = %lf  Y = %lf  Width = %lf  Height = %lf  Stroke = %s  Fill = %s\n",
@@ -202,6 +305,43 @@ void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput,
     killSemaforo(tmpSemaf);
 }
 
+// Verifica quais semaforos estão dentro de dado circulo
+void semafInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+                       int action) {
+    printDashCircle(svgOutput, aX, aY, radius);
+    long int address;
+    Semaforo *tmpSemaf = allocSemaforo();
+    fseek(cityIndex->semaforos, 0, SEEK_SET);
+    while (!feof(cityIndex->semaforos)) {
+        readFromBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
+        if (!feof(cityIndex->semaforos)) {
+            if (pointInsideCircle(getSemaforoX(tmpSemaf), getSemaforoY(tmpSemaf), aX, aY, radius)) {
+                if (checkString(getSemaforoId(tmpSemaf))) {
+
+                    fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                            getSemaforoId(tmpSemaf), getSemaforoX(tmpSemaf),
+                            getSemaforoY(tmpSemaf),
+                            getSemaforoStrokeColor(tmpSemaf), getSemaforoFillColor(tmpSemaf));
+
+                    switch (action) {
+                        case 2: // dle
+                            btDeleteInfo(cityIndex->semafTree, hash((unsigned char *) getSemaforoId(tmpSemaf)),
+                                         &address);
+                            deleteSemaforo(tmpSemaf);
+                            fseek(cityIndex->semaforos, address, SEEK_SET);
+                            printToBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    killSemaforo(tmpSemaf);
+}
+
 // Verifica quais hidrantes estão dentro de dado retangulo
 void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                         double aHeigth, int action) {
@@ -238,6 +378,42 @@ void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, d
     killHidrante(tmpHid);
 }
 
+// Verifica quais hidrantes estão dentro de dado circulo
+void hidInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+                     int action) {
+    printDashCircle(svgOutput, aX, aY, radius);
+    long int address;
+    Hidrante *tmpHid = allocHidrante();
+    fseek(cityIndex->hidrantes, 0, SEEK_SET);
+    while (!feof(cityIndex->hidrantes)) {
+        readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
+        if (!feof(cityIndex->hidrantes)) {
+            if (pointInsideCircle(getHidranteX(tmpHid), getHidranteY(tmpHid), aX, aY, radius)) {
+                if (checkString(getHidranteId(tmpHid))) {
+
+                    fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                            getHidranteId(tmpHid), getHidranteX(tmpHid),
+                            getHidranteY(tmpHid),
+                            getHidranteStrokeColor(tmpHid), getHidranteFillColor(tmpHid));
+
+                    switch (action) {
+                        case 2: // dle
+                            btDeleteInfo(cityIndex->hidrTree, hash((unsigned char *) getHidranteId(tmpHid)), &address);
+                            deleteHidrante(tmpHid);
+                            fseek(cityIndex->hidrantes, address, SEEK_SET);
+                            printToBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    killHidrante(tmpHid);
+}
+
 // Verifica quais torres estão dentro de dado retangulo
 void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                           double aHeigth, int action) {
@@ -249,6 +425,42 @@ void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput,
         readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
         if (!feof(cityIndex->torres)) {
             if (pointInsideRectangle(getTorreX(tmpTorre), getTorreY(tmpTorre), aX, aY, aWidth, aHeigth) == 1) {
+                if (checkString(getTorreId(tmpTorre))) {
+
+                    fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                            getTorreId(tmpTorre), getTorreX(tmpTorre),
+                            getTorreY(tmpTorre),
+                            getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
+
+                    switch (action) {
+                        case 2: // dle
+                            btDeleteInfo(cityIndex->torreTree, hash((unsigned char *) getTorreId(tmpTorre)), &address);
+                            deleteTorre(tmpTorre);
+                            fseek(cityIndex->torres, address, SEEK_SET);
+                            printToBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    killTorre(tmpTorre);
+}
+
+// Verifica quais torres estão dentro de dado circulo
+void torreInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+                       int action) {
+    printDashCircle(svgOutput, aX, aY, radius);
+    long int address;
+    Torre *tmpTorre = allocTorre();
+    fseek(cityIndex->torres, 0, SEEK_SET);
+    while (!feof(cityIndex->torres)) {
+        readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+        if (!feof(cityIndex->torres)) {
+            if (pointInsideCircle(getTorreX(tmpTorre), getTorreY(tmpTorre), aX, aY, radius)) {
                 if (checkString(getTorreId(tmpTorre))) {
 
                     fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",

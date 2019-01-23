@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
 //    printBasicShapes(AllBasicShapes);
     printCityShapesToSvg(Bitnopolis, &StandardSvgOutput); // Imprime as estruturas da cidade no svg
-    printCityShapes(Bitnopolis);
+//    printCityShapes(Bitnopolis);
     printTagSvg(&StandardSvgOutput, 1); // Finaliza header svg
     fclose(StandardSvgOutput); // Fecha a saida svg padrao
 
@@ -144,13 +144,28 @@ int main(int argc, char *argv[]) {
                 case Q_MIN_SEARCH:
                     strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 1); // 1 para q?
                     break;
+                case Q_SEARCH:
+                    structureInsideCircle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 1); // 1 para Q?
+                    break;
                 case D_MIN_Q:
                     strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 2); // 2 para dq
+                    break;
+                case D_Q:
+                    structureInsideCircle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 2); // 2 para Dq
                     break;
                 case D_MIN_LE:
                     strucutreInsideRectangle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 3); // 3 para dle
                     break;
+                case D_LE:
+                    structureInsideCircle(Bitnopolis, linha, &StandardTxtOutput, &SvgQryOutputFile, 3); // 3 para dle
+                    break;
+                case CC:
+                    changeColor(Bitnopolis, linha);
+                    break;
                 default:
+                    if (hashResult == CRD) {
+                        reportStructure(Bitnopolis, linha, &StandardTxtOutput);
+                    }
                     break;
             }
 

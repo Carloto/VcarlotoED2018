@@ -20,4 +20,13 @@
 // Verifica quais estruturas se encontram totalmente dentro da area requisitada
 void strucutreInsideRectangle(Cidade *cityIndex, char *linha, FILE **txtOutput, FILE **svgOutput, int action);
 
+// Verifica quais estruturas se encontram totalmente dentro da area requisitada
+void structureInsideCircle(Cidade *cityIndex, char *linha, FILE **txtOutput, FILE **svgOutput, int action);
+
+// Modifica a cor de dada estrutura
+void changeColor(Cidade *cityIndex, char *linha);
+
+// Imprime os dados da estrutura requisitada
+void reportStructure(Cidade *cityIndex, char *linha, FILE **txtOutput);
+
 #endif // QUERY_H
