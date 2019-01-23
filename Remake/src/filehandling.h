@@ -52,6 +52,9 @@ char *getInputGeoFileName(fileArguments *tmpStructs);
 // Retorna o nome de do arquivo de entrada .qry
 char *getInputQryFileName(fileArguments *tmpStructs);
 
+// Retorna o nome de do arquivo de entrada .ec
+char *getInputEcFileName(fileArguments *tmpStructs);
+
 // Retorna o nome de do arquivo de saida .svg do qry
 char *getOutputQrySvgName(fileArguments *tmpStructs);
 

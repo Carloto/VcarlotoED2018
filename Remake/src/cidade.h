@@ -14,6 +14,8 @@
 #include "btree.h"
 #include "color.h"
 #include "closestpair.h"
+#include "estabelecimento.h"
+#include "tipoestab.h"
 
 typedef struct tmpCidade Cidade; // Estruturas da cidade
 

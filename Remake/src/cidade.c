@@ -11,6 +11,10 @@ struct tmpCidade { // Estruturas da cidade
     FILE *torres; // Arquivo binario de torres
     bTree torreTree; // Arvore contendo os enderecos do arquivo binario
     int numTorres; // Quantidade de torres
+    FILE *estabe; // Arquivo binario de estabelecimentos
+    bTree estabeTree; // Arvore contendo os enderecos do arquivo binario
+    FILE *tipoestabe; // Arquivo binario de tipos de estabelecimentos
+    bTree tipoestabeTree; // Arvore contendo os enderecos do arquivo binario
 };
 
 // Aloca e inicializa uma struct Cidade
@@ -40,6 +44,15 @@ Cidade *allocCidade(fileArguments *source) {
     tmpStruct->torreTree = btCreate();
     tmpStruct->numTorres = 0;
 
+    sprintf(name, "%s", "estabelecimento"); // Estabelecimento
+    strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
+    tmpStruct->estabe = openFile(openName, "wb+");
+    tmpStruct->estabeTree = btCreate();
+
+    sprintf(name, "%s", "tipoestabelecimento"); // Tipo de estabelecimento
+    strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
+    tmpStruct->tipoestabe = openFile(openName, "wb+");
+    tmpStruct->tipoestabeTree = btCreate();
 
     freeString(&openName);
     freeString(&name);
@@ -56,6 +69,10 @@ void killCidade(Cidade **cityIndex) {
     btDestroy((*cityIndex)->semafTree);
     fclose((*cityIndex)->torres);
     btDestroy((*cityIndex)->torreTree);
+    fclose((*cityIndex)->estabe);
+    btDestroy((*cityIndex)->estabeTree);
+    fclose((*cityIndex)->tipoestabe);
+    btDestroy((*cityIndex)->tipoestabeTree);
     free(*cityIndex);
 }
 
@@ -65,6 +82,8 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
     Hidrante *tmpHid = NULL;
     Semaforo *tmpSemaf = NULL;
     Torre *tmpTorre = NULL;
+    Estab *tmpEstab = NULL;
+    Tipo *tmpTipoEstab = NULL;
     char *token = strtok(inputLine, " ");// Comando
     if (token == NULL) {
         return;
@@ -128,6 +147,55 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
             killTorre(tmpTorre);
             cityIndex->numTorres++;
             break;
+        case 5: // Estabelecimento
+            tmpEstab = allocEstab();
+            token = strtok(NULL, " "); // Cnpj
+            setEstabCnpj(tmpEstab, token);
+            btInsert(cityIndex->estabeTree, hash((unsigned char *) token), ftell(cityIndex->estabe));
+            setEstabCodt(tmpEstab, strtok(NULL, " ")); // Codt
+            setEstabCep(tmpEstab, strtok(NULL, " ")); // Cep
+            setEstabFace(tmpEstab, strtok(NULL, " ")); // Face
+            setEstabNum(tmpEstab, newAtoi(strtok(NULL, " "))); // Num
+            setEstabNome(tmpEstab, strtok(NULL, " ")); // Nome
+            long int address;
+            if (getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address, &tmpQuad)) {
+                switch (getFaceValue(getEstabFace(tmpEstab))) {
+                    case 1: // Norte
+                        setEstabX(tmpEstab, getQuadraX(tmpQuad) + ((double) getEstabNum(tmpEstab) / 10) * 11); // X
+                        setEstabY(tmpEstab, getQuadraY(tmpQuad) + 1); // Y
+                        break;
+                    case 2: // Sul
+                        setEstabX(tmpEstab, getQuadraX(tmpQuad) + ((double) getEstabNum(tmpEstab) / 10) * 11); // X
+                        setEstabY(tmpEstab,
+                                  getQuadraY(tmpQuad) + getQuadraHeight(tmpQuad) - 11); // Y
+                        break;
+                    case 3: // Leste
+                        setEstabX(tmpEstab, getQuadraX(tmpQuad) + 1); // X
+                        setEstabY(tmpEstab, getQuadraY(tmpQuad) +
+                                            ((double) getEstabNum(tmpEstab) / 10) * 7); // Y
+                        break;
+                    case 4: // Oeste
+                        setEstabX(tmpEstab, getQuadraX(tmpQuad) + getQuadraWidth(tmpQuad) - 11); // X
+                        setEstabY(tmpEstab, getQuadraY(tmpQuad) + ((double) getEstabNum(tmpEstab) / 10) * 7); // Y
+                    default:
+                        break;
+                }
+            }
+            setEstabStrokeColor(tmpEstab, "black\0");
+            setEstabFillColor(tmpEstab, "lightskyblue");
+            printToBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+            killEstab(tmpEstab);
+            killQuadra(tmpQuad);
+            break;
+        case 6: // Tipo de estabelecimento
+            tmpTipoEstab = allocTipo();
+            token = strtok(NULL, " "); // codt
+            setTipoCodt(tmpTipoEstab, token);
+            btInsert(cityIndex->tipoestabeTree, hash((unsigned char *) token), ftell(cityIndex->tipoestabe));
+            setTipodDesc(tmpTipoEstab, strtok(NULL, " "));
+            printToBin(&(cityIndex->tipoestabe), getTipoSize(), tmpTipoEstab);
+            killTipo(tmpTipoEstab);
+            break;
         default:
             break;
     }
@@ -144,6 +212,8 @@ FILE **getCityFile(Cidade *cityIndex, int action) {
             return &(cityIndex->hidrantes);
         case 4: // Torres
             return &(cityIndex->torres);
+        case 5: // Estabelecimentos
+            return &(cityIndex->estabe);
         default:
             break;
     }
@@ -576,6 +646,34 @@ void printCityShapes(Cidade *cityIndex) {
         }
     }
     killTorre(tmpTorre);
+
+    // Estabelecimento
+    Estab *tmpEstab = allocEstab();
+    fseek(cityIndex->estabe, 0, SEEK_SET);
+    printf("\n\n Estabelecimentos \n");
+    while (!feof(cityIndex->estabe)) {
+        readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+        if (!feof(cityIndex->estabe)) {
+            if (checkString(getEstabCnpj(tmpEstab))) {
+                printEstab(tmpEstab);
+            }
+        }
+    }
+    killEstab(tmpEstab);
+
+    // Tipo de estabelecimento
+    Tipo *tmpTipoEstab= allocTipo();
+    fseek(cityIndex->tipoestabe, 0, SEEK_SET);
+    printf("\n\n Tipos de Estabelecimentos \n");
+    while (!feof(cityIndex->tipoestabe)) {
+        readFromBin(&(cityIndex->tipoestabe), getTipoSize(), tmpTipoEstab);
+        if (!feof(cityIndex->tipoestabe)) {
+            if (checkString(getTipoCodt(tmpTipoEstab))) {
+                printTipo(tmpTipoEstab);
+            }
+        }
+    }
+    killTipo(tmpTipoEstab);
 }
 
 // Imprime a lista de estruturas da cidade no arquivo de saida .svg
@@ -685,4 +783,24 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
         }
     }
     killTorre(tmpTorre);
+
+    // Imprimir estabelecimentos
+    Estab *tmpEstab = allocEstab();
+    fseek(cityIndex->estabe, 0, SEEK_SET);
+    while (!feof(cityIndex->estabe)) {
+        readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+        if (!feof(cityIndex->estabe)) {
+            if (checkString(getEstabCnpj(tmpEstab))) {
+                fprintf(*outputFile,
+                        "\t<rect x=\"%lf\" y=\"%lf\" width=\"10\" height=\"10\" ",
+                        getEstabX(tmpEstab),
+                        getEstabY(tmpEstab));
+                fprintf(*outputFile,
+                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
+                        getEstabStrokeColor(tmpEstab),
+                        getEstabFillColor(tmpEstab));
+            }
+        }
+    }
+    killEstab(tmpEstab);
 }

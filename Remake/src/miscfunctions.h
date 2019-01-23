@@ -14,6 +14,9 @@
 
 // Esse modulo contem funções auxiliares para o programa
 
+// Retorna um inteiro simbolizando a face
+int getFaceValue(char type[1]);
+
 // Verificar validade da string
 int checkString(char *aux);
 
@@ -191,4 +194,12 @@ void printDashCircle(FILE **outputFile, double cX, double cY, double radius);
 
 #ifndef Q_SEARCH
 #define Q_SEARCH 5862645
+#endif
+
+#ifndef EC_T
+#define EC_T 177689
+#endif
+
+#ifndef EC_E
+#define EC_E 177674
 #endif

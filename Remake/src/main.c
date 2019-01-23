@@ -114,13 +114,42 @@ int main(int argc, char *argv[]) {
 
     }
     fclose(GeoInputFile); // Fecha o arquivo .geo
-
     printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
 //    printBasicShapes(AllBasicShapes);
+
+    // Leitura da entrada .ec
+    if (getInputEcFileName(FileNames) != NULL) {
+        FILE *EcInputFile = openFile(getInputEcFileName(FileNames), "r");
+        hashResult = 0; // Resultado do hash
+
+        while (!feof(EcInputFile)) { // Loop de leitura
+            readLine(&linha, &EcInputFile); // Le uma linha do arquivo de entrada
+            if (linha == NULL) {
+                break;
+            }
+//            printThis(linha); // Imprime a linha lida
+            copyString(&tmpLinha, linha); // Copia a linha lida
+            hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
+//            printf("\nResultado do hashing : %lu", hashResult);
+
+            switch (hashResult) {
+                case EC_E:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 5); // 5 para estabelecimento
+                    break;
+                case EC_T:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 6); // 6 para tipo de estabelecimento
+                    break;
+                default:
+                    break;
+            }
+        }
+        fclose(EcInputFile);
+    }
+
     printCityShapesToSvg(Bitnopolis, &StandardSvgOutput); // Imprime as estruturas da cidade no svg
-//    printCityShapes(Bitnopolis);
-    printTagSvg(&StandardSvgOutput, 1); // Finaliza header svg
-    fclose(StandardSvgOutput); // Fecha a saida svg padrao
+    printCityShapes(Bitnopolis);
+
+    // A PARTIR DAQUI APENAS CONSULTA
 
     // Leitura da entrada .qry
     if (getInputQryFileName(FileNames) != NULL) {
@@ -165,10 +194,9 @@ int main(int argc, char *argv[]) {
                 default:
                     if (hashResult == CRD) {
                         reportStructure(Bitnopolis, linha, &StandardTxtOutput);
-                    } else
-                        if (hashResult == CRB) {
-                            closestTorres(Bitnopolis, linha, &StandardTxtOutput);
-                        }
+                    } else if (hashResult == CRB) {
+                        closestTorres(Bitnopolis, linha, &StandardTxtOutput);
+                    }
                     break;
             }
 
@@ -186,6 +214,8 @@ int main(int argc, char *argv[]) {
     killCidade(&Bitnopolis);
     killColor(ColorIndex);
     // Close files
+    printTagSvg(&StandardSvgOutput, 1); // Finaliza header svg
+    fclose(StandardSvgOutput); // Fecha a saida svg padrao
     fclose(StandardTxtOutput);
     // Free aux
     freeString(&linha);

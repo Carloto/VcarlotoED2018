@@ -1,9 +1,30 @@
 // Include
 #include "miscfunctions.h"
 
+// Retorna um inteiro simbolizando a face
+int getFaceValue(char type[1]) {
+    char aux = type[0];
+    switch (aux) {
+        case 'N':
+        case 'n':
+            return 1;
+        case 'S':
+        case 's':
+            return 2;
+        case 'L':
+        case 'l':
+            return 3;
+        case 'O':
+        case 'o':
+            return 4;
+        default:
+            break;
+    }
+}
+
 // Verificar validade da string
-int checkString(char *aux){
-    if(strcmp(aux, "deletado") == 0){
+int checkString(char *aux) {
+    if (strcmp(aux, "deletado") == 0) {
         return 0;
     }
     return 1;
