@@ -165,7 +165,10 @@ int main(int argc, char *argv[]) {
                 default:
                     if (hashResult == CRD) {
                         reportStructure(Bitnopolis, linha, &StandardTxtOutput);
-                    }
+                    } else
+                        if (hashResult == CRB) {
+                            closestTorres(Bitnopolis, linha, &StandardTxtOutput);
+                        }
                     break;
             }
 

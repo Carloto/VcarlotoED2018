@@ -10,6 +10,7 @@ struct tmpCidade { // Estruturas da cidade
     bTree semafTree; // Arvore contendo os enderecos do arquivo binario
     FILE *torres; // Arquivo binario de torres
     bTree torreTree; // Arvore contendo os enderecos do arquivo binario
+    int numTorres; // Quantidade de torres
 };
 
 // Aloca e inicializa uma struct Cidade
@@ -37,6 +38,8 @@ Cidade *allocCidade(fileArguments *source) {
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
     tmpStruct->torres = openFile(openName, "wb+");
     tmpStruct->torreTree = btCreate();
+    tmpStruct->numTorres = 0;
+
 
     freeString(&openName);
     freeString(&name);
@@ -86,6 +89,8 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
             tmpHid = allocHidrante();
             token = strtok(NULL, " "); // Id
             setHidranteId(tmpHid, token);
+//            printf("\nID = %s", token);
+//            printf("   Hash = %lu", hash((unsigned char *) token));
             btInsert(cityIndex->hidrTree, hash((unsigned char *) token), ftell(cityIndex->hidrantes));
             setHidranteX(tmpHid, newAtod(strtok(NULL, " "))); // X
             setHidranteY(tmpHid, newAtod(strtok(NULL, " "))); // Y
@@ -121,6 +126,7 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
             setTorreFillColor(tmpTorre, getTorFillColor(colorIndex));
             printToBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
             killTorre(tmpTorre);
+            cityIndex->numTorres++;
             break;
         default:
             break;
@@ -142,6 +148,31 @@ FILE **getCityFile(Cidade *cityIndex, int action) {
             break;
     }
     return NULL;
+}
+
+// Cria um vetor de pontos de certa estrutura
+Point *torreToPoint(Cidade *cityIndex) {
+    Point *listaTorre = allocPoint(cityIndex->numTorres);
+    int i = 0;
+    Torre *tmpTorre = allocTorre();
+    fseek(cityIndex->torres, 0, SEEK_SET);
+    while (!feof(cityIndex->torres)) {
+        readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+        if (!feof(cityIndex->torres)) {
+            if (checkString(getTorreId(tmpTorre))) {
+                infoToPoint(&listaTorre, i, hash((unsigned char *) getTorreId(tmpTorre)),
+                            getTorreX(tmpTorre), getTorreY(tmpTorre));
+                i++;
+            }
+        }
+    }
+    killTorre(tmpTorre);
+    return listaTorre;
+}
+
+// Retorna o numero de torres
+int getNumTorres(Cidade *cityIndex) {
+    return cityIndex->numTorres;
 }
 
 // Retorna 1 e modifica address caso encontre a estrutura
@@ -438,6 +469,7 @@ void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput,
                             deleteTorre(tmpTorre);
                             fseek(cityIndex->torres, address, SEEK_SET);
                             printToBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+                            cityIndex->numTorres--;
                             break;
 
                         default:
@@ -469,11 +501,12 @@ void torreInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, do
                             getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
 
                     switch (action) {
-                        case 2: // dle
+                        case 2: // Dle
                             btDeleteInfo(cityIndex->torreTree, hash((unsigned char *) getTorreId(tmpTorre)), &address);
                             deleteTorre(tmpTorre);
                             fseek(cityIndex->torres, address, SEEK_SET);
                             printToBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+                            cityIndex->numTorres--;
                             break;
 
                         default:

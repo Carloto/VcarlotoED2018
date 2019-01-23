@@ -29,4 +29,10 @@ void changeColor(Cidade *cityIndex, char *linha);
 // Imprime os dados da estrutura requisitada
 void reportStructure(Cidade *cityIndex, char *linha, FILE **txtOutput);
 
+// Retorna o id da posicao
+unsigned long returnPointKey(Point *P, int i);
+
+// Encontra e reporta as radio-bases mais proximas
+void closestTorres(Cidade *cityIndex, char *linha, FILE **txtOutput);
+
 #endif // QUERY_H

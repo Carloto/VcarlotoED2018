@@ -210,3 +210,44 @@ void reportStructure(Cidade *cityIndex, char *linha, FILE **txtOutput) {
         return;
     }
 }
+
+// Encontra e reporta as radio-bases mais proximas
+void closestTorres(Cidade *cityIndex, char *linha, FILE **txtOutput) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    Point *a = torreToPoint(cityIndex);
+    char *aux = (char *) calloc(6, sizeof(char));
+    sprintf(aux, "black");
+    unsigned long um, dois;
+    double distance = closest(a, getNumTorres(cityIndex), &um, &dois);
+    fprintf(*txtOutput, "Distancia = %.3lf\n", distance);
+//    printClosestPoints(a, getNumTorres(cityIndex));
+    long int address;
+    // Torre
+    Torre *tmpTorre = NULL;
+//    for (int i = 0; i < 2; i++) {
+    if (getTorreAddress(cityIndex, um, &address, &tmpTorre)) {
+        fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                getTorreId(tmpTorre), getTorreX(tmpTorre),
+                getTorreY(tmpTorre),
+                getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
+        setTorreStrokeColor(tmpTorre, aux);
+        setTorreRadius(tmpTorre, 10);
+        fseek(*getCityFile(cityIndex, 4), address, SEEK_SET);
+        printToBin(getCityFile(cityIndex, 4), getTorreSize(), tmpTorre);
+        killTorre(tmpTorre);
+    }
+    if (getTorreAddress(cityIndex, dois, &address, &tmpTorre)) {
+        fprintf(*txtOutput, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+                getTorreId(tmpTorre), getTorreX(tmpTorre),
+                getTorreY(tmpTorre),
+                getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
+        setTorreStrokeColor(tmpTorre, aux);
+        setTorreRadius(tmpTorre, 10);
+        fseek(*getCityFile(cityIndex, 4), address, SEEK_SET);
+        printToBin(getCityFile(cityIndex, 4), getTorreSize(), tmpTorre);
+        killTorre(tmpTorre);
+    }
+//    }
+    freeString(&aux);
+    free(a);
+}

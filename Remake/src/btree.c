@@ -5,7 +5,7 @@
 #include <string.h>
 #include "btree.h"
 
-#define MAX_KEYS (3)
+#define MAX_KEYS (1024)
 
 struct btNode {
     int isLeaf; // Mostra se se este nó é folha
@@ -216,7 +216,7 @@ btInsertInternal(bTree b, unsigned long key, long int addr, unsigned long *media
 }
 
 void btInsert(bTree b, unsigned long key, long int addr) {
-    bTree b1;   // nova criana a esquerda
+    bTree b1;   // nova criança a esquerda
     bTree b2;   // nova criança a deireita
     unsigned long median;
     long int medianAddress;

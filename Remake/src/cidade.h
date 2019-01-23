@@ -13,6 +13,7 @@
 #include "hidrante.h"
 #include "btree.h"
 #include "color.h"
+#include "closestpair.h"
 
 typedef struct tmpCidade Cidade; // Estruturas da cidade
 
@@ -29,6 +30,12 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
 
 // Retorna um ponteiro para o arquivo requisitado
 FILE **getCityFile(Cidade *cityIndex, int action);
+
+// Cria um vetor de pontos de certa estrutura
+Point *torreToPoint(Cidade *cityIndex);
+
+// Retorna o numero de torres
+int getNumTorres(Cidade *cityIndex);
 
 // Retorna 1 e modifica address caso encontre a estrutura
 int getQuadraAddress(Cidade *cityIndex, unsigned long id, long int *address, Quadra **aux);
