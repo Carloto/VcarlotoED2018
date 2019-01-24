@@ -44,4 +44,7 @@ void reportMoradorRect(Cidade *cityIndex, char *linha, FILE **txtOutput);
 // Imprime os dados do estabelecimento requisitado
 void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux);
 
+// Declara um morador como morto
+void ripMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, AuxFigura **tmpAux);
+
 #endif // QUERY_H

@@ -237,6 +237,9 @@ int main(int argc, char *argv[]) {
                 case DE_SEARCH:
                     reportEstab(Bitnopolis, linha, &StandardTxtOutput, 1, &headAux);
                     break;
+                case RIP:
+                    ripMorador(Bitnopolis, linha, &StandardTxtOutput, &headAux);
+                    break;
                 default: // Casos não aceitos por switch
                     // T3
                     if (hashResult == CRD) {

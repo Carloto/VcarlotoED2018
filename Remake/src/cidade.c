@@ -293,6 +293,29 @@ Point *torreToPoint(Cidade *cityIndex) {
     return listaTorre;
 }
 
+// Declara uma pessoa morta e deleta suas informações
+void ripPessoa(Cidade *cityIndex, unsigned long id) {
+    // Pessoa
+    long int address;
+    Pessoa *tmpPessoa = allocPessoa();
+    btDeleteInfo(cityIndex->pessoasTree, id, &address);
+    readFromBin(&(cityIndex->pessoas), getPessoaSize(), tmpPessoa);
+    deletePessoa(tmpPessoa);
+    fseek(cityIndex->pessoas, address, SEEK_SET);
+    printToBin(&(cityIndex->pessoas), getPessoaSize(), tmpPessoa);
+    killPessoa(tmpPessoa);
+    // Moradia
+    Moradia *tmpMoradia = allocMoradia();
+    btDeleteInfo(cityIndex->moraCpfTree, id, &address);
+    readFromBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
+    unsigned long id2 = hash((unsigned char*)getMoradiaCep(tmpMoradia));
+    deleteMoradia(tmpMoradia);
+    fseek(cityIndex->moradias, address, SEEK_SET);
+    printToBin(&(cityIndex->moradias),getMoradiaSize(), tmpMoradia);
+    btDeleteInfo(cityIndex->moraCepTree, id2, &address);
+    killMoradia(tmpMoradia);
+}
+
 // Adiciona uma figura auxiliar a partir da quadra
 void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face, int type) {
     switch (face) {

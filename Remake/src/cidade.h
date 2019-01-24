@@ -39,6 +39,9 @@ FILE **getCityFile(Cidade *cityIndex, int action);
 // Cria um vetor de pontos de certa estrutura
 Point *torreToPoint(Cidade *cityIndex);
 
+// Declara uma pessoa morta e deleta suas informações
+void ripPessoa(Cidade *cityIndex, unsigned long id);
+
 // Adiciona uma figura auxiliar a partir da quadra
 void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face,int type);
 

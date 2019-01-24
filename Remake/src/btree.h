@@ -5,6 +5,7 @@
 typedef struct btNode *bTree; // Nó da b-tree
 
 // Este modulo contem as funcoes de manipulação da b-tree
+// Cada nó contem uma chave e um endereco para a estrutura dentro do arquivo
 
 // Aloca um no da b-tree
 bTree btCreate(void);

@@ -392,6 +392,36 @@ void reportMoradorRect(Cidade *cityIndex, char *linha, FILE **txtOutput) {
     double y = newAtod(strtok(NULL, " ")); // Y
     double width = newAtod(strtok(NULL, " ")); // Width
     double height = newAtod(strtok(NULL, " ")); // Height
-    long int address;
     quadraInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 3);
+}
+
+// Declara um morador como morto
+void ripMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, AuxFigura **tmpAux) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    Pessoa *tmpPessoa = NULL;
+    Moradia *tmpMoradia = NULL;
+    Quadra *tmpQuad = NULL;
+    long int address;
+    // Moradia
+    token = strtok(NULL, " "); // Cep
+    if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia,
+                          1)) { // 2 Para busca por cpf
+        if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
+                             &tmpPessoa)) {
+            getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
+                             &tmpQuad);
+            pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 1);
+            ripPessoa(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)));
+            killMoradia(tmpMoradia);
+            killPessoa(tmpPessoa);
+            killQuadra(tmpQuad);
+        } else {
+            fprintf(*txtOutput, "Pessoa não encontrada\n");
+        }
+        return;
+    } else {
+        fprintf(*txtOutput, "Casa não encontrada\n");
+    }
+
 }
