@@ -158,10 +158,10 @@ int main(int argc, char *argv[]) {
                 freeString(&linha);
                 break;
             }
-            printThis(linha); // Imprime a linha lida
+//            printThis(linha); // Imprime a linha lida
             copyString(&tmpLinha, linha); // Copia a linha lida
             hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-            printf("\nResultado do hashing : %lu", hashResult);
+//            printf("\nResultado do hashing : %lu", hashResult);
 
             switch (hashResult) {
                 case PM_P:
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
     }
 
     printCityShapesToSvg(Bitnopolis, &StandardSvgOutput); // Imprime as estruturas da cidade no svg
-    printCityShapes(Bitnopolis);
+//    printCityShapes(Bitnopolis);
 
     // A PARTIR DAQUI APENAS CONSULTA
 
@@ -223,7 +223,18 @@ int main(int argc, char *argv[]) {
                 case CC:
                     changeColor(Bitnopolis, linha);
                     break;
-                default:
+                    // T4
+                case M_SEARCH:
+                    reportMorador(Bitnopolis, linha, &StandardTxtOutput, 1);
+                    break;
+                case MR_SEARCH:
+                    reportMoradorRect(Bitnopolis, linha, &StandardTxtOutput);
+                    break;
+                case DM_SEARCH:
+                    reportMorador(Bitnopolis, linha, &StandardTxtOutput,2);
+                    break;
+                default: // Casos não aceitos por switch
+                    // T3
                     if (hashResult == CRD) {
                         reportStructure(Bitnopolis, linha, &StandardTxtOutput);
                     } else if (hashResult == CRB) {

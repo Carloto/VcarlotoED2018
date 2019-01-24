@@ -38,11 +38,20 @@ FILE **getCityFile(Cidade *cityIndex, int action);
 // Cria um vetor de pontos de certa estrutura
 Point *torreToPoint(Cidade *cityIndex);
 
+// Imprime a pessoa e a moradia para o txt
+void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, FILE **txtOutput, int action);
+
 // Retorna o numero de torres
 int getNumTorres(Cidade *cityIndex);
 
 // Retorna 1 e modifica address caso encontre a estrutura
 int getQuadraAddress(Cidade *cityIndex, unsigned long id, long int *address, Quadra **aux);
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getMoradiaAddress(Cidade *cityIndex, unsigned long id, long int *address, Moradia **aux, int action);
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getPessoaAddress(Cidade *cityIndex, unsigned long id, long int *address, Pessoa **aux);
 
 // Retorna 1 e modifica address caso encontre a estrutura
 int getSemaforoAddress(Cidade *cityIndex, unsigned long id, long int *address, Semaforo **aux);
@@ -54,23 +63,28 @@ int getHidranteAddress(Cidade *cityIndex, unsigned long id, long int *address, H
 int getTorreAddress(Cidade *cityIndex, unsigned long id, long int *address, Torre **aux);
 
 // Verifica quais quadras estão dentro de dado retangulo
-void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
+void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                           double aWidth,
                            double aHeigth, int action);
 
 // Verifica quais quadras estão dentro de dado circulo
-void quadraInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+void quadraInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                        double radius,
                         int action);
 
 // Verifica quais semaforos estão dentro de dado retangulo
-void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
+void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                          double aWidth,
                           double aHeigth, int action);
 
 // Verifica quais semaforos estão dentro de dado circulo
-void semafInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+void semafInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                       double radius,
                        int action);
 
 // Verifica quais hidrantes estão dentro de dado retangulo
-void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
+void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                        double aWidth,
                         double aHeigth, int action);
 
 // Verifica quais hidrantes estão dentro de dado circulo
@@ -78,11 +92,13 @@ void hidInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, doub
                      int action);
 
 // Verifica quais torres estão dentro de dado retangulo
-void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
+void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                          double aWidth,
                           double aHeigth, int action);
 
 // Verifica quais torres estão dentro de dado circulo
-void torreInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double radius,
+void torreInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY,
+                       double radius,
                        int action);
 
 // Imprime as estruturas da cidade

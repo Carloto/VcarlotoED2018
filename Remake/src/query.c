@@ -251,3 +251,65 @@ void closestTorres(Cidade *cityIndex, char *linha, FILE **txtOutput) {
     freeString(&aux);
     free(a);
 }
+
+// m?
+// Imprime os dados do morador requisitado pelo cep
+void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    Pessoa *tmpPessoa = NULL;
+    Moradia *tmpMoradia = NULL;
+    long int address;
+    switch (action) {
+        case 1: // Moradia
+            token = strtok(NULL, " "); // Cep
+            if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia,
+                                  2)) { // 2 Para busca por cep
+                if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
+                                     &tmpPessoa)) {
+                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput, 1);
+                    killMoradia(tmpMoradia);
+                    killPessoa(tmpPessoa);
+                } else {
+                    fprintf(*txtOutput, "Pessoa não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Casa não encontrada\n");
+            }
+            break;
+        case 2: // Cpf
+            token = strtok(NULL, " "); // Cep
+            if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia,
+                                  1)) { // 2 Para busca por cpf
+                if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
+                                     &tmpPessoa)) {
+                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput, 1);
+                    killMoradia(tmpMoradia);
+                    killPessoa(tmpPessoa);
+                } else {
+                    fprintf(*txtOutput, "Pessoa não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Casa não encontrada\n");
+            }
+            break;
+        default:
+            break;
+    }
+
+}
+
+// mr?
+// Imprime os dados dos moradores dentro da regiao
+void reportMoradorRect(Cidade *cityIndex, char *linha, FILE **txtOutput) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    double x = newAtod(strtok(NULL, " ")); // X
+    double y = newAtod(strtok(NULL, " ")); // Y
+    double width = newAtod(strtok(NULL, " ")); // Width
+    double height = newAtod(strtok(NULL, " ")); // Height
+    long int address;
+    quadraInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 3);
+}

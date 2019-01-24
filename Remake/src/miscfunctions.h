@@ -211,3 +211,63 @@ void printDashCircle(FILE **outputFile, double cX, double cY, double radius);
 #ifndef PM_M
 #define PM_M 177682
 #endif
+
+#ifndef M_SEARCH
+#define M_SEARCH 5863569
+#endif
+
+#ifndef MR_SEARCH
+#define MR_SEARCH 193499523
+#endif
+
+#ifndef DM_SEARCH
+#define DM_SEARCH 193489557
+#endif
+
+#ifndef DE_SEARCH
+#define DE_SEARCH 193489293
+#endif
+
+#ifndef RIP
+#define RIP 193504720
+#endif
+
+#ifndef ECQ_SEARCH
+#define ECQ_SEARCH 6385182141
+#endif
+
+#ifndef ECR_SEARCH
+#define ECR_SEARCH 6385182174
+#endif
+
+#ifndef TECQ_SEARCH
+#define TECQ_SEARCH 210728857809
+#endif
+
+#ifndef TECR_SEARCH
+#define TECR_SEARCH 210728857842
+#endif
+
+#ifndef HMPE_SEARCH
+#define HMPE_SEARCH 210714928014
+#endif
+
+#ifndef HMP_SEARCH
+#define HMP_SEARCH 6385300809
+#endif
+
+#ifndef FEC
+#define FEC 193491507
+#endif
+
+#ifndef MUD
+#define MUD 193499659
+#endif
+
+#ifndef MUDEC
+#define MUDEC 210721132083
+#endif
+
+#ifndef DPR
+#define DPR 193489707
+#endif

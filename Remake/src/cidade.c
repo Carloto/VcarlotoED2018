@@ -18,7 +18,8 @@ struct tmpCidade { // Estruturas da cidade
     FILE *pessoas; // Arquivo binario de pessoa
     bTree pessoasTree; // Arvore contendo os enderecos do arquivo binario
     FILE *moradias; // Arquivo binario de tipos de moradias
-    bTree moradiasTree; // Arvore contendo os enderecos do arquivo binario
+    bTree moraCpfTree; // Arvore contendo os enderecos do arquivo binario
+    bTree moraCepTree; // Arvore contendo os enderecos do arquivo binario
 };
 
 // Aloca e inicializa uma struct Cidade
@@ -66,7 +67,8 @@ Cidade *allocCidade(fileArguments *source) {
     sprintf(name, "%s", "moradias"); // Moradias
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
     tmpStruct->moradias = openFile(openName, "wb+");
-    tmpStruct->moradiasTree = btCreate();
+    tmpStruct->moraCpfTree = btCreate();
+    tmpStruct->moraCepTree = btCreate();
 
     freeString(&openName);
     freeString(&name);
@@ -90,7 +92,8 @@ void killCidade(Cidade **cityIndex) {
     fclose((*cityIndex)->pessoas);
     btDestroy((*cityIndex)->pessoasTree);
     fclose((*cityIndex)->moradias);
-    btDestroy((*cityIndex)->moradiasTree);
+    btDestroy((*cityIndex)->moraCpfTree);
+    btDestroy((*cityIndex)->moraCepTree);
     free(*cityIndex);
 }
 
@@ -232,8 +235,10 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
             tmpMoradia = allocMoradia();
             token = strtok(NULL, " "); // Cpf
             setMoradiaCpf(tmpMoradia, token);
-            btInsert(cityIndex->moradiasTree, hash((unsigned char *) token), ftell(cityIndex->moradias));
-            setMoradiaCep(tmpMoradia, strtok(NULL, " ")); // Cep
+            btInsert(cityIndex->moraCpfTree, hash((unsigned char *) token), ftell(cityIndex->moradias));
+            token = strtok(NULL, " "); // Cep
+            setMoradiaCep(tmpMoradia, token);
+            btInsert(cityIndex->moraCepTree, hash((unsigned char *) token), ftell(cityIndex->moradias));
             setMoradiaFace(tmpMoradia, strtok(NULL, " ")); // Face
             setMoradiaNum(tmpMoradia, newAtoi(strtok(NULL, " "))); // Num
             setMoradiaComplemento(tmpMoradia, strtok(NULL, " ")); // Complemento
@@ -288,6 +293,18 @@ Point *torreToPoint(Cidade *cityIndex) {
     return listaTorre;
 }
 
+// Imprime a pessoa e a moradia para o txt
+void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, FILE **txtOutput, int action) {
+    fprintf(*txtOutput,
+            "Cpf = %s  Nome = %s  %s  Sexo = %s  Nascimento = %s \n", getPessoaCpf(tmpPessoa), getPessoaNome(tmpPessoa),
+            getPessoaSobrenome(tmpPessoa), getPessoaSexo(tmpPessoa), getPessoaNasce(tmpPessoa));
+    if (action == 1) {
+        fprintf(*txtOutput, "Quadra = %s  Num = %d  Face = %s  Complemento = %s\n",
+                getMoradiaCep(tmpMoradia),
+                getMoradiaNum(tmpMoradia), getMoradiaFace(tmpMoradia), getMoradiaComplemento(tmpMoradia));
+    }
+}
+
 // Retorna o numero de torres
 int getNumTorres(Cidade *cityIndex) {
     return cityIndex->numTorres;
@@ -299,6 +316,33 @@ int getQuadraAddress(Cidade *cityIndex, unsigned long id, long int *address, Qua
         *aux = allocQuadra();
         fseek(cityIndex->quadras, *address, SEEK_SET);
         readFromBin(&(cityIndex->quadras), getQuadraSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getMoradiaAddress(Cidade *cityIndex, unsigned long id, long int *address, Moradia **aux, int action) {
+    if (btGetAddress(cityIndex->moraCpfTree, id, address) && action == 1) { // Busca por cpf
+        *aux = allocMoradia();
+        fseek(cityIndex->moradias, *address, SEEK_SET);
+        readFromBin(&(cityIndex->moradias), getMoradiaSize(), *aux);
+        return 1;
+    } else if (btGetAddress(cityIndex->moraCepTree, id, address) && action == 2) { // Busca por cep
+        *aux = allocMoradia();
+        fseek(cityIndex->moradias, *address, SEEK_SET);
+        readFromBin(&(cityIndex->moradias), getMoradiaSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getPessoaAddress(Cidade *cityIndex, unsigned long id, long int *address, Pessoa **aux) {
+    if (btGetAddress(cityIndex->pessoasTree, id, address)) { // Busca por cpf
+        *aux = allocPessoa();
+        fseek(cityIndex->pessoas, *address, SEEK_SET);
+        readFromBin(&(cityIndex->pessoas), getPessoaSize(), *aux);
         return 1;
     }
     return 0;
@@ -340,7 +384,9 @@ int getTorreAddress(Cidade *cityIndex, unsigned long id, long int *address, Torr
 // Verifica quais quadras estão dentro de dado retangulo
 void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                            double aHeigth, int action) {
-    printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    if (action < 3) {
+        printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    }
     long int address;
     Quadra *tmpQuad = allocQuadra();
     fseek(cityIndex->quadras, 0, SEEK_SET);
@@ -350,28 +396,45 @@ void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput
             if (rectInsideRect(aX, aY, aWidth, aHeigth, getQuadraX(tmpQuad), getQuadraY(tmpQuad),
                                getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad)) == 1) {
                 if (checkString(getQuadraCep(tmpQuad))) {
-                    fprintf(*txtOutput,
-                            "Cep = %s  X = %lf  Y = %lf  Width = %lf  Height = %lf  Stroke = %s  Fill = %s\n",
-                            getQuadraCep(tmpQuad), getQuadraX(tmpQuad),
-                            getQuadraY(tmpQuad), getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad),
-                            getQuadraStrokeColor(tmpQuad), getQuadraFillColor(tmpQuad));
 
-                    switch (action) {
-                        case 2: // dq
-                            btDeleteInfo(cityIndex->quadraTree, hash((unsigned char *) getQuadraCep(tmpQuad)),
-                                         &address);
-                            deleteQuadra(tmpQuad);
-                            fseek(cityIndex->quadras, address, SEEK_SET);
-                            printToBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
-                            break;
+                    if (action == 3) {  // mr?
+                        Moradia *tmpMoradia = NULL;
+                        Pessoa *tmpPessoa = NULL;
+                        if (getMoradiaAddress(cityIndex, hash((unsigned char *) getQuadraCep(tmpQuad)), &address,
+                                              &tmpMoradia,
+                                              2)) {   // 2 Para busca por cep
+                            if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
+                                                 &tmpPessoa)) {
+                                pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput,1);
+                            }
+                            killPessoa(tmpPessoa);
+                            killMoradia(tmpMoradia);
+                        }
+                    } else {
+                        fprintf(*txtOutput,
+                                "Cep = %s  X = %lf  Y = %lf  Width = %lf  Height = %lf  Stroke = %s  Fill = %s\n",
+                                getQuadraCep(tmpQuad), getQuadraX(tmpQuad),
+                                getQuadraY(tmpQuad), getQuadraWidth(tmpQuad), getQuadraHeight(tmpQuad),
+                                getQuadraStrokeColor(tmpQuad), getQuadraFillColor(tmpQuad));
 
-                        default:
-                            break;
+                        switch (action) {
+                            case 2: // dq
+                                btDeleteInfo(cityIndex->quadraTree, hash((unsigned char *) getQuadraCep(tmpQuad)),
+                                             &address);
+                                deleteQuadra(tmpQuad);
+                                fseek(cityIndex->quadras, address, SEEK_SET);
+                                printToBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
+                                break;
+
+                            default:
+                                break;
+                        }
                     }
                 }
             }
         }
     }
+
     killQuadra(tmpQuad);
 }
 
@@ -710,7 +773,7 @@ void printCityShapes(Cidade *cityIndex) {
     killEstab(tmpEstab);
 
     // Tipo de estabelecimento
-    Tipo *tmpTipoEstab= allocTipo();
+    Tipo *tmpTipoEstab = allocTipo();
     fseek(cityIndex->tipoestabe, 0, SEEK_SET);
     printf("\n\n Tipos de Estabelecimentos \n");
     while (!feof(cityIndex->tipoestabe)) {
@@ -724,7 +787,7 @@ void printCityShapes(Cidade *cityIndex) {
     killTipo(tmpTipoEstab);
 
     // Pessoas
-    Pessoa *tmpPessoa= allocPessoa();
+    Pessoa *tmpPessoa = allocPessoa();
     fseek(cityIndex->pessoas, 0, SEEK_SET);
     printf("\n\n Pessoas\n");
     while (!feof(cityIndex->pessoas)) {
@@ -738,7 +801,7 @@ void printCityShapes(Cidade *cityIndex) {
     killPessoa(tmpPessoa);
 
     // Moradias
-    Moradia *tmpMoradia= allocMoradia();
+    Moradia *tmpMoradia = allocMoradia();
     fseek(cityIndex->moradias, 0, SEEK_SET);
     printf("\n\n Moradias\n");
     while (!feof(cityIndex->moradias)) {
