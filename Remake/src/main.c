@@ -188,6 +188,7 @@ int main(int argc, char *argv[]) {
         FILE *SvgQryOutputFile = openFile(getOutputQrySvgName(FileNames), "w");
         printTagSvg(&SvgQryOutputFile, 0); // Inicia header svg
         hashResult = 0; // Resultado do hash
+        AuxFigura *headAux = NULL; //Figuras auxiliares
 
         while (!feof(QryInputFile)) { // Loop de leitura
             readLine(&linha, &QryInputFile); // Le uma linha do arquivo de entrada
@@ -225,13 +226,16 @@ int main(int argc, char *argv[]) {
                     break;
                     // T4
                 case M_SEARCH:
-                    reportMorador(Bitnopolis, linha, &StandardTxtOutput, 1);
+                    reportMorador(Bitnopolis, linha, &StandardTxtOutput, 1, &headAux);
                     break;
                 case MR_SEARCH:
                     reportMoradorRect(Bitnopolis, linha, &StandardTxtOutput);
                     break;
                 case DM_SEARCH:
-                    reportMorador(Bitnopolis, linha, &StandardTxtOutput,2);
+                    reportMorador(Bitnopolis, linha, &StandardTxtOutput, 2, &headAux);
+                    break;
+                case DE_SEARCH:
+                    reportEstab(Bitnopolis, linha, &StandardTxtOutput, 1, &headAux);
                     break;
                 default: // Casos não aceitos por switch
                     // T3
@@ -246,7 +250,9 @@ int main(int argc, char *argv[]) {
         }
         printBasicShapesToSvg(AllBasicShapes, &SvgQryOutputFile); // Imprime todas as formas no svg
         printCityShapesToSvg(Bitnopolis, &SvgQryOutputFile); // Imprime as estruturas da cidade no svg
+        printAuxToSvg(headAux, &SvgQryOutputFile); // Imprime as estruturas auxiliares da cidade no svg
         printTagSvg(&SvgQryOutputFile, 1); // Finaliza header svg
+        killAux(&headAux);
         fclose(QryInputFile);
         fclose(SvgQryOutputFile);
     }

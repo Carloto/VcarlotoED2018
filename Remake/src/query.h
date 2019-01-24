@@ -35,12 +35,13 @@ unsigned long returnPointKey(Point *P, int i);
 // Encontra e reporta as radio-bases mais proximas
 void closestTorres(Cidade *cityIndex, char *linha, FILE **txtOutput);
 
-// m?
-// Imprime os dados do morador requisitado pelo cep
-void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action);
+// Imprime os dados do morador requisitado pelo
+void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux);
 
-// mr?
 // Imprime os dados dos moradores dentro da regiao
 void reportMoradorRect(Cidade *cityIndex, char *linha, FILE **txtOutput);
+
+// Imprime os dados do estabelecimento requisitado
+void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux);
 
 #endif // QUERY_H

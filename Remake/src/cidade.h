@@ -18,6 +18,7 @@
 #include "tipoestab.h"
 #include "pessoa.h"
 #include "moradia.h"
+#include "auxfig.h"
 
 typedef struct tmpCidade Cidade; // Estruturas da cidade
 
@@ -38,8 +39,14 @@ FILE **getCityFile(Cidade *cityIndex, int action);
 // Cria um vetor de pontos de certa estrutura
 Point *torreToPoint(Cidade *cityIndex);
 
+// Adiciona uma figura auxiliar a partir da quadra
+void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face,int type);
+
 // Imprime a pessoa e a moradia para o txt
-void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, FILE **txtOutput, int action);
+void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, Quadra *tmpQuadra, FILE **txtOutput, int action);
+
+// Imprime o estabelecimento e a quadra para o txt
+void estabQuadraTxt(Estab *tmpEstab, Tipo *tmpTipo, Quadra *tmpQuad, FILE **txtOutput, int action);
 
 // Retorna o numero de torres
 int getNumTorres(Cidade *cityIndex);
@@ -52,6 +59,12 @@ int getMoradiaAddress(Cidade *cityIndex, unsigned long id, long int *address, Mo
 
 // Retorna 1 e modifica address caso encontre a estrutura
 int getPessoaAddress(Cidade *cityIndex, unsigned long id, long int *address, Pessoa **aux);
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getEstabAddress(Cidade *cityIndex, unsigned long id, long int *address, Estab **aux);
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getTipoAddress(Cidade *cityIndex, unsigned long id, long int *address, Tipo **aux);
 
 // Retorna 1 e modifica address caso encontre a estrutura
 int getSemaforoAddress(Cidade *cityIndex, unsigned long id, long int *address, Semaforo **aux);

@@ -293,15 +293,54 @@ Point *torreToPoint(Cidade *cityIndex) {
     return listaTorre;
 }
 
+// Adiciona uma figura auxiliar a partir da quadra
+void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face, int type) {
+    switch (face) {
+        case 1: // Norte
+            addAux(tmpAux, getQuadraX(tmpQuad) + ((double) num / 10) * 11,
+                   getQuadraY(tmpQuad) + 1, 0, 0, type);
+            break;
+        case 2: // Sul
+            addAux(tmpAux, getQuadraX(tmpQuad) + ((double) num / 10) * 11,
+                   getQuadraY(tmpQuad) + getQuadraHeight(tmpQuad) - 11, 0, 0, type);
+            break;
+        case 3: // Leste
+            addAux(tmpAux, getQuadraX(tmpQuad) + 1, getQuadraY(tmpQuad) +
+                                                    ((double) num / 10) * 7, 0, 0,
+                   type);
+            break;
+        case 4: // Oeste
+            addAux(tmpAux, getQuadraX(tmpQuad) + +getQuadraWidth(tmpQuad) - 11, getQuadraY(tmpQuad) +
+                                                                                ((double) num /
+                                                                                 10) * 7, 0, 0,
+                   type);
+        default:
+            break;
+    }
+}
+
 // Imprime a pessoa e a moradia para o txt
-void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, FILE **txtOutput, int action) {
+void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, Quadra *tmpQuadra, FILE **txtOutput, int action) {
     fprintf(*txtOutput,
             "Cpf = %s  Nome = %s  %s  Sexo = %s  Nascimento = %s \n", getPessoaCpf(tmpPessoa), getPessoaNome(tmpPessoa),
             getPessoaSobrenome(tmpPessoa), getPessoaSexo(tmpPessoa), getPessoaNasce(tmpPessoa));
     if (action == 1) {
-        fprintf(*txtOutput, "Quadra = %s  Num = %d  Face = %s  Complemento = %s\n",
+        fprintf(*txtOutput, "Quadra = %s  Num = %d  Face = %s  Complemento = %s  X = %.3lf  Y = %.3lf\n",
                 getMoradiaCep(tmpMoradia),
-                getMoradiaNum(tmpMoradia), getMoradiaFace(tmpMoradia), getMoradiaComplemento(tmpMoradia));
+                getMoradiaNum(tmpMoradia), getMoradiaFace(tmpMoradia), getMoradiaComplemento(tmpMoradia),
+                getQuadraX(tmpQuadra), getQuadraY(tmpQuadra));
+    }
+}
+
+// Imprime o estabelecimento e a quadra para o txt
+void estabQuadraTxt(Estab *tmpEstab, Tipo *tmpTipo, Quadra *tmpQuad, FILE **txtOutput, int action) {
+    fprintf(*txtOutput,
+            "Cnpf = %s  Cep = %s  Face = %s  Num = %d\n", getEstabCnpj(tmpEstab), getEstabCep(tmpEstab),
+            getEstabFace(tmpEstab), getEstabNum(tmpEstab));
+    if (action == 1) {
+        fprintf(*txtOutput, "Tiṕo = %s  Descrição = %s  X = %.3lf  Y = %.3lf\n",
+                getTipoCodt(tmpTipo),
+                getTipoDesc(tmpTipo), getQuadraX(tmpQuad), getQuadraY(tmpQuad));
     }
 }
 
@@ -343,6 +382,28 @@ int getPessoaAddress(Cidade *cityIndex, unsigned long id, long int *address, Pes
         *aux = allocPessoa();
         fseek(cityIndex->pessoas, *address, SEEK_SET);
         readFromBin(&(cityIndex->pessoas), getPessoaSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getEstabAddress(Cidade *cityIndex, unsigned long id, long int *address, Estab **aux) {
+    if (btGetAddress(cityIndex->estabeTree, id, address)) { // Busca por cnpj
+        *aux = allocEstab();
+        fseek(cityIndex->estabe, *address, SEEK_SET);
+        readFromBin(&(cityIndex->estabe), getEstabSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getTipoAddress(Cidade *cityIndex, unsigned long id, long int *address, Tipo **aux) {
+    if (btGetAddress(cityIndex->tipoestabeTree, id, address)) { // Busca por tipo
+        *aux = allocTipo();
+        fseek(cityIndex->tipoestabe, *address, SEEK_SET);
+        readFromBin(&(cityIndex->tipoestabe), getTipoSize(), *aux);
         return 1;
     }
     return 0;
@@ -405,7 +466,7 @@ void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput
                                               2)) {   // 2 Para busca por cep
                             if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
                                                  &tmpPessoa)) {
-                                pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput,1);
+                                pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 1);
                             }
                             killPessoa(tmpPessoa);
                             killMoradia(tmpMoradia);

@@ -2,7 +2,7 @@
 # Matrícula : 201600560546 #
 # Makefile #
 
-deps_siguel = main.o basicshapes.o circle.o rectangle.o miscfunctions.o filehandling.o genericlist.o
+deps_siguel = main.o basicshapes.o circle.o rectangle.o miscfunctions.o filehandling.o genericlist.o btree.o cidade.o closestpair.o color.o estabelecimento.o hidrante.o moradia.o pessoa.o quadra.o query.o semaforo.o tipoestab.o torre.o
 cc = gcc -fstack-protector-all -std=c99 -pedantic -g -Wall
 
 siguel : $(deps_siguel)
@@ -28,6 +28,45 @@ filehandling.o : filehandling.c
 
 genericlist.o : genericlist.c
 	$(cc) -c genericlist.c -lm
+
+btree.o : btree.c
+	$(cc) -c btree.c -lm
+
+cidade.o : cidade.c
+	$(cc) -c cidade.c -lm
+
+closestpair.o : closestpair.c
+	$(cc) -c closestpair.c -lm
+
+color.o : color.c
+	$(cc) -c color.c -lm
+
+estabelecimento.o : estabelecimento.c
+	$(cc) -c estabelecimento.c -lm
+
+hidrante.o : hidrante.c
+	$(cc) -c hidrante.c -lm
+
+moradia.o : moradia.c
+	$(cc) -c moradia.c -lm
+
+pessoa.o : pessoa.c
+	$(cc) -c pessoa.c -lm
+
+quadra.o : quadra.c
+	$(cc) -c quadra.c -lm
+
+query.o : query.c
+	$(cc) -c query.c -lm
+
+semaforo.o : semaforo.c
+	$(cc) -c semaforo.c -lm
+
+tipoestab.o : tipoestab.c
+	$(cc) -c tipoestab.c -lm
+
+torre.o : torre.c
+	$(cc) -c torre.c -lm
 
 clean :
 	rm -f *.o

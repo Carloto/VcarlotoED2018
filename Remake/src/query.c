@@ -252,13 +252,13 @@ void closestTorres(Cidade *cityIndex, char *linha, FILE **txtOutput) {
     free(a);
 }
 
-// m?
-// Imprime os dados do morador requisitado pelo cep
-void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action) {
+// Imprime os dados do morador requisitado
+void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux) {
     fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
     char *token = strtok(linha, " "); // Comando
     Pessoa *tmpPessoa = NULL;
     Moradia *tmpMoradia = NULL;
+    Quadra *tmpQuad = NULL;
     long int address;
     switch (action) {
         case 1: // Moradia
@@ -267,7 +267,9 @@ void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action)
                                   2)) { // 2 Para busca por cep
                 if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
                                      &tmpPessoa)) {
-                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput, 1);
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
+                                     &tmpQuad);
+                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 1);
                     killMoradia(tmpMoradia);
                     killPessoa(tmpPessoa);
                 } else {
@@ -284,9 +286,14 @@ void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action)
                                   1)) { // 2 Para busca por cpf
                 if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
                                      &tmpPessoa)) {
-                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput, 1);
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
+                                     &tmpQuad);
+                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 1);
+                    addAuxQuadra(tmpQuad, tmpAux, getMoradiaNum(tmpMoradia), getFaceValue(getMoradiaFace(tmpMoradia)),
+                                 1);
                     killMoradia(tmpMoradia);
                     killPessoa(tmpPessoa);
+                    killQuadra(tmpQuad);
                 } else {
                     fprintf(*txtOutput, "Pessoa não encontrada\n");
                 }
@@ -301,7 +308,82 @@ void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action)
 
 }
 
-// mr?
+// Imprime os dados do estabelecimento requisitado
+void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    Quadra *tmpQuad = NULL;
+    Estab *tmpEstab = NULL;
+    Tipo *tmpTipo = NULL;
+    long int address;
+    switch (action) {
+        case 1: // Cnpj
+            token = strtok(NULL, " "); // Cnpj
+            if (getEstabAddress(cityIndex, hash((unsigned char *) token), &address, &tmpEstab)) {
+                if (getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address, &tmpQuad)) {
+                    getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(tmpEstab)), &address, &tmpTipo);
+                    estabQuadraTxt(tmpEstab, tmpTipo, tmpQuad, txtOutput, 1);
+                    addAuxQuadra(tmpQuad, tmpAux, getEstabNum(tmpEstab), getFaceValue(getEstabFace(tmpEstab)), 2);
+                    killQuadra(tmpQuad);
+                    killEstab(tmpEstab);
+                    killTipo(tmpTipo);
+                } else {
+                    fprintf(*txtOutput, "Pessoa não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Casa não encontrada\n");
+            }
+            break;
+            /* case 2: // Cpf
+                 token = strtok(NULL, " "); // Cep
+                 if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia,
+                                       1)) { // 2 Para busca por cpf
+                     if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
+                                          &tmpPessoa)) {
+                         pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput, 1);
+                         getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
+                                          &tmpQuad);
+                         switch (getFaceValue(getMoradiaFace(tmpMoradia))) {
+                             case 1: // Norte
+                                 addAux(tmpAux, getQuadraX(tmpQuad) + ((double) getMoradiaNum(tmpMoradia) / 10) * 11,
+                                        getQuadraY(tmpQuad) + 1, 0, 0, 1);
+                                 break;
+                             case 2: // Sul
+                                 addAux(tmpAux, getQuadraX(tmpQuad) + ((double) getMoradiaNum(tmpMoradia) / 10) * 11,
+                                        getQuadraY(tmpQuad) + getQuadraHeight(tmpQuad) - 11, 0, 0, 1);
+                                 break;
+                             case 3: // Leste
+                                 addAux(tmpAux, getQuadraX(tmpQuad) + 1, getQuadraY(tmpQuad) +
+                                                                         ((double) getMoradiaNum(tmpMoradia) / 10) * 7, 0, 0,
+                                        1);
+                                 break;
+                             case 4: // Oeste
+                                 addAux(tmpAux, getQuadraX(tmpQuad) + +getQuadraWidth(tmpQuad) - 11, getQuadraY(tmpQuad) +
+                                                                                                     ((double) getMoradiaNum(
+                                                                                                             tmpMoradia) /
+                                                                                                      10) * 7, 0, 0,
+                                        1);
+                             default:
+                                 break;
+                         }
+                         killMoradia(tmpMoradia);
+                         killPessoa(tmpPessoa);
+                         killQuadra(tmpQuad);
+                     } else {
+                         fprintf(*txtOutput, "Pessoa não encontrada\n");
+                     }
+                     return;
+                 } else {
+                     fprintf(*txtOutput, "Casa não encontrada\n");
+                 }
+                 break;*/
+        default:
+            break;
+    }
+
+}
+
 // Imprime os dados dos moradores dentro da regiao
 void reportMoradorRect(Cidade *cityIndex, char *linha, FILE **txtOutput) {
     fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
