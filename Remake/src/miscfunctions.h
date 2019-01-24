@@ -203,3 +203,11 @@ void printDashCircle(FILE **outputFile, double cX, double cY, double radius);
 #ifndef EC_E
 #define EC_E 177674
 #endif
+
+#ifndef PM_P
+#define PM_P 177685
+#endif
+
+#ifndef PM_M
+#define PM_M 177682
+#endif

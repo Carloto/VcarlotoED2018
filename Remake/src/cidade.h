@@ -16,6 +16,8 @@
 #include "closestpair.h"
 #include "estabelecimento.h"
 #include "tipoestab.h"
+#include "pessoa.h"
+#include "moradia.h"
 
 typedef struct tmpCidade Cidade; // Estruturas da cidade
 

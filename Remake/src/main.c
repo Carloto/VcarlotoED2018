@@ -125,6 +125,7 @@ int main(int argc, char *argv[]) {
         while (!feof(EcInputFile)) { // Loop de leitura
             readLine(&linha, &EcInputFile); // Le uma linha do arquivo de entrada
             if (linha == NULL) {
+                freeString(&linha);
                 break;
             }
 //            printThis(linha); // Imprime a linha lida
@@ -146,6 +147,36 @@ int main(int argc, char *argv[]) {
         fclose(EcInputFile);
     }
 
+    // Leitura da entrada .pm
+    if (getInputPmFileName(FileNames) != NULL) {
+        FILE *PmInputFile = openFile(getInputPmFileName(FileNames), "r");
+        hashResult = 0; // Resultado do hash
+
+        while (!feof(PmInputFile)) { // Loop de leitura
+            readLine(&linha, &PmInputFile); // Le uma linha do arquivo de entrada
+            if (linha == NULL) {
+                freeString(&linha);
+                break;
+            }
+            printThis(linha); // Imprime a linha lida
+            copyString(&tmpLinha, linha); // Copia a linha lida
+            hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
+            printf("\nResultado do hashing : %lu", hashResult);
+
+            switch (hashResult) {
+                case PM_P:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 7); // 7 para pessoa
+                    break;
+                case PM_M:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 8); // 8 para moradia
+                    break;
+                default:
+                    break;
+            }
+        }
+        fclose(PmInputFile);
+    }
+
     printCityShapesToSvg(Bitnopolis, &StandardSvgOutput); // Imprime as estruturas da cidade no svg
     printCityShapes(Bitnopolis);
 
@@ -161,6 +192,7 @@ int main(int argc, char *argv[]) {
         while (!feof(QryInputFile)) { // Loop de leitura
             readLine(&linha, &QryInputFile); // Le uma linha do arquivo de entrada
             if (linha == NULL) {
+                freeString(&linha);
                 break;
             }
 //            printThis(linha); // Imprime a linha lida

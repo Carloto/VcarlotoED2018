@@ -5,7 +5,7 @@ struct tmpEstab { // Estabelecimento
     char cnpj[50]; // Id da Estab
     char codt[25]; // Endereço do tipo
     char cep[50]; // Cep da quadra
-    char face[1]; // Face da quadra
+    char face[2]; // Face da quadra
     int num; // Numero do endereço
     char nome[50]; // Nome do estabelecimento
     double xCoord; // X do canto superior esquerdo

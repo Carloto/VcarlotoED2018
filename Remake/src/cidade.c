@@ -15,6 +15,10 @@ struct tmpCidade { // Estruturas da cidade
     bTree estabeTree; // Arvore contendo os enderecos do arquivo binario
     FILE *tipoestabe; // Arquivo binario de tipos de estabelecimentos
     bTree tipoestabeTree; // Arvore contendo os enderecos do arquivo binario
+    FILE *pessoas; // Arquivo binario de pessoa
+    bTree pessoasTree; // Arvore contendo os enderecos do arquivo binario
+    FILE *moradias; // Arquivo binario de tipos de moradias
+    bTree moradiasTree; // Arvore contendo os enderecos do arquivo binario
 };
 
 // Aloca e inicializa uma struct Cidade
@@ -54,6 +58,16 @@ Cidade *allocCidade(fileArguments *source) {
     tmpStruct->tipoestabe = openFile(openName, "wb+");
     tmpStruct->tipoestabeTree = btCreate();
 
+    sprintf(name, "%s", "pessoas"); // Pessoas
+    strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
+    tmpStruct->pessoas = openFile(openName, "wb+");
+    tmpStruct->pessoasTree = btCreate();
+
+    sprintf(name, "%s", "moradias"); // Moradias
+    strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
+    tmpStruct->moradias = openFile(openName, "wb+");
+    tmpStruct->moradiasTree = btCreate();
+
     freeString(&openName);
     freeString(&name);
     return tmpStruct;
@@ -73,6 +87,10 @@ void killCidade(Cidade **cityIndex) {
     btDestroy((*cityIndex)->estabeTree);
     fclose((*cityIndex)->tipoestabe);
     btDestroy((*cityIndex)->tipoestabeTree);
+    fclose((*cityIndex)->pessoas);
+    btDestroy((*cityIndex)->pessoasTree);
+    fclose((*cityIndex)->moradias);
+    btDestroy((*cityIndex)->moradiasTree);
     free(*cityIndex);
 }
 
@@ -84,6 +102,8 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
     Torre *tmpTorre = NULL;
     Estab *tmpEstab = NULL;
     Tipo *tmpTipoEstab = NULL;
+    Pessoa *tmpPessoa = NULL;
+    Moradia *tmpMoradia = NULL;
     char *token = strtok(inputLine, " ");// Comando
     if (token == NULL) {
         return;
@@ -196,6 +216,30 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
             printToBin(&(cityIndex->tipoestabe), getTipoSize(), tmpTipoEstab);
             killTipo(tmpTipoEstab);
             break;
+        case 7: // Pessoa
+            tmpPessoa = allocPessoa();
+            token = strtok(NULL, " "); // Cpf
+            setPessoaCpf(tmpPessoa, token);
+            btInsert(cityIndex->pessoasTree, hash((unsigned char *) token), ftell(cityIndex->pessoas));
+            setPessoaNome(tmpPessoa, strtok(NULL, " ")); // Nome
+            setPessoaSobrenome(tmpPessoa, strtok(NULL, " ")); // Sobrenome
+            setPessoaSexo(tmpPessoa, strtok(NULL, " ")); // Sexo
+            setPessoaNasce(tmpPessoa, strtok(NULL, " ")); // Nascimento
+            printToBin(&(cityIndex->pessoas), getPessoaSize(), tmpPessoa);
+            killPessoa(tmpPessoa);
+            break;
+        case 8: // Moradia
+            tmpMoradia = allocMoradia();
+            token = strtok(NULL, " "); // Cpf
+            setMoradiaCpf(tmpMoradia, token);
+            btInsert(cityIndex->moradiasTree, hash((unsigned char *) token), ftell(cityIndex->moradias));
+            setMoradiaCep(tmpMoradia, strtok(NULL, " ")); // Cep
+            setMoradiaFace(tmpMoradia, strtok(NULL, " ")); // Face
+            setMoradiaNum(tmpMoradia, newAtoi(strtok(NULL, " "))); // Num
+            setMoradiaComplemento(tmpMoradia, strtok(NULL, " ")); // Complemento
+            printToBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
+            killMoradia(tmpMoradia);
+            break;
         default:
             break;
     }
@@ -214,6 +258,10 @@ FILE **getCityFile(Cidade *cityIndex, int action) {
             return &(cityIndex->torres);
         case 5: // Estabelecimentos
             return &(cityIndex->estabe);
+        case 6: // Pessoa
+            return &(cityIndex->pessoas);
+        case 7: // Moradia
+            return &(cityIndex->moradias);
         default:
             break;
     }
@@ -674,6 +722,34 @@ void printCityShapes(Cidade *cityIndex) {
         }
     }
     killTipo(tmpTipoEstab);
+
+    // Pessoas
+    Pessoa *tmpPessoa= allocPessoa();
+    fseek(cityIndex->pessoas, 0, SEEK_SET);
+    printf("\n\n Pessoas\n");
+    while (!feof(cityIndex->pessoas)) {
+        readFromBin(&(cityIndex->pessoas), getPessoaSize(), tmpPessoa);
+        if (!feof(cityIndex->pessoas)) {
+            if (checkString(getPessoaCpf(tmpPessoa))) {
+                printPessoa(tmpPessoa);
+            }
+        }
+    }
+    killPessoa(tmpPessoa);
+
+    // Moradias
+    Moradia *tmpMoradia= allocMoradia();
+    fseek(cityIndex->moradias, 0, SEEK_SET);
+    printf("\n\n Moradias\n");
+    while (!feof(cityIndex->moradias)) {
+        readFromBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
+        if (!feof(cityIndex->moradias)) {
+            if (checkString(getMoradiaCpf(tmpMoradia))) {
+                printMoradia(tmpMoradia);
+            }
+        }
+    }
+    killMoradia(tmpMoradia);
 }
 
 // Imprime a lista de estruturas da cidade no arquivo de saida .svg

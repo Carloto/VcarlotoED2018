@@ -9,11 +9,13 @@ struct tmp_fileArguments {
     char *input_f; // Argumento do comando -f
     char *input_q; // Argumento do comando -q
     char *input_ec; // Argumento do comando -ec
+    char *input_pm; // Argumento do comando -pm
     char *output_o; // Argumento do comando -o
     char *path_bd; // Argumento do comando -bd
     char *inputGeoFileName; // Nome completo do arquivo .geo
     char *inputQryFileName; // Nome completo do arquivo .qry
     char *inputEcFileName; // Nome completo do arquivo .ec
+    char *inputPmFileName; // Nome completo do arquivo .pm
     char *inputGeoName; // Nome isolado do arquivo .geo
     char *outputQrySvgName; // Nome isolado do arquivo .geo
     char *outputSvgStandardFileName; // Arquivo de saida .svg principal
@@ -28,11 +30,13 @@ fileArguments *createFileArguments() {
     create_struct->input_f = NULL;
     create_struct->input_q = NULL;
     create_struct->input_ec = NULL;
+    create_struct->input_pm = NULL;
     create_struct->output_o = NULL;
     create_struct->path_bd = NULL;
     create_struct->inputGeoFileName = NULL;
     create_struct->inputQryFileName = NULL;
     create_struct->inputEcFileName = NULL;
+    create_struct->inputPmFileName = NULL;
     create_struct->inputGeoName = NULL;
     create_struct->outputQrySvgName = NULL;
     create_struct->outputSvgStandardFileName = NULL;
@@ -47,11 +51,13 @@ void killFileArguments(fileArguments **kill_struct) {
     freeString(&(*kill_struct)->input_f);
     freeString(&(*kill_struct)->input_q);
     freeString(&(*kill_struct)->input_ec);
+    freeString(&(*kill_struct)->input_pm);
     freeString(&(*kill_struct)->output_o);
     freeString(&(*kill_struct)->path_bd);
     freeString(&(*kill_struct)->inputGeoFileName);
     freeString(&(*kill_struct)->inputQryFileName);
     freeString(&(*kill_struct)->inputEcFileName);
+    freeString(&(*kill_struct)->inputPmFileName);
     freeString(&(*kill_struct)->inputGeoName);
     freeString(&(*kill_struct)->outputQrySvgName);
     freeString(&(*kill_struct)->outputSvgStandardFileName);
@@ -65,11 +71,14 @@ void printInputArguments(fileArguments *print_struct) {
     printThis(print_struct->input_e);
     printThis(print_struct->input_f);
     printThis(print_struct->input_q);
+    printThis(print_struct->input_ec);
+    printThis(print_struct->input_pm);
     printThis(print_struct->output_o);
     printThis(print_struct->path_bd);
     printThis(print_struct->inputGeoFileName);
     printThis(print_struct->inputQryFileName);
     printThis(print_struct->inputEcFileName);
+    printThis(print_struct->inputPmFileName);
     printThis(print_struct->inputGeoName);
     printThis(print_struct->outputQrySvgName);
     printThis(print_struct->outputSvgStandardFileName);
@@ -100,6 +109,10 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
         if (strcmp("-ec", argv[i]) == 0) {
             i++;
             copyString(&(*set_struct)->input_ec, argv[i]);
+        }
+        if (strcmp("-pm", argv[i]) == 0) {
+            i++;
+            copyString(&(*set_struct)->input_pm, argv[i]);
         }
         if (strcmp("-bd", argv[i]) == 0) {
             i++;
@@ -166,6 +179,20 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
         }
     }
 
+    // Verificar se existe pm
+    if ((*set_struct)->input_pm != NULL) {
+        // Verificar se -pm possui "." e concatenar nome do arquivo pm
+        if ((*set_struct)->input_pm != NULL) {
+            if ((*set_struct)->input_pm[0] == '.') {
+                removeFirstChar(&(*set_struct)->input_pm);
+            }
+            strcatFileName((&(*set_struct)->inputPmFileName), (*set_struct)->input_e, &(*set_struct)->input_pm,
+                           "\0");
+        } else {
+            copyString(&(*set_struct)->inputPmFileName, (*set_struct)->input_pm);
+        }
+    }
+
     // Concatenar nome do arquivo de saida .txt
     strcatFileName(&(*set_struct)->outputTxtFileName, (*set_struct)->output_o, &(*set_struct)->inputGeoName,
                    ".txt\0");
@@ -228,6 +255,11 @@ char *getInputQryFileName(fileArguments *tmpStructs) {
 // Retorna o nome de do arquivo de entrada .ec
 char *getInputEcFileName(fileArguments *tmpStructs) {
     return tmpStructs->inputEcFileName;
+}
+
+// Retorna o nome de do arquivo de entrada .pm
+char *getInputPmFileName(fileArguments *tmpStructs) {
+    return tmpStructs->inputPmFileName;
 }
 
 // Retorna o nome de do arquivo de saida .svg do qry

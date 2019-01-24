@@ -2,7 +2,7 @@
 #include "miscfunctions.h"
 
 // Retorna um inteiro simbolizando a face
-int getFaceValue(char type[1]) {
+int getFaceValue(char type[2]) {
     char aux = type[0];
     switch (aux) {
         case 'N':

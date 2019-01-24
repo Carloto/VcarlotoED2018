@@ -1,6 +1,6 @@
 // Define
-#ifndef REMAKE_TIPOESTAB_H
-#define REMAKE_TIPOESTAB_H
+#ifndef TIPOESTAB_H
+#define TIPOESTAB_H
 
 // Include
 #include <stdio.h>
