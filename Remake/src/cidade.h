@@ -53,6 +53,9 @@ void Best_Caminho(char *line, Cidade *cityIndex, FILE **txtOutput, FILE **svgOut
 void
 Best_Direcao_Caminho(char *line, Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput);
 
+// Adiciona uma nova estrutura no arquivo binario e na b-tree, a partir do arquivo lido
+void newCityShapeFromBin(Cidade *cityIndex);
+
 Vertice *Vertice_Perto_X_Y(List *verts, ponto data);
 
 void Repr_Caminho(Grafo *grafo, int *caminho, int size, FILE *arqtxt);

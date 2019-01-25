@@ -35,87 +35,93 @@ int main(int argc, char *argv[]) {
     char *tmpLinha = NULL; // Copia para strtok
     unsigned long int hashResult = 0; // Resultado do hash
 
-    // Leitura de .geo
-    FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
-    if (GeoInputFile == NULL) { // Verificar se foi aberto corretamente
-        printf("\nFalha na abertura do arquivo!");
-        killFileArguments(&FileNames);
-        return -1;
-    }
 
     // Cria arquivo de saida svg
     FILE *StandardSvgOutput = openFile(getOutputSvgStandardFileName(FileNames), "w"); // Arquivo de saida svg padrão
     FILE *StandardTxtOutput = openFile(getOutputTxtFileName(FileNames), "w");
     printTagSvg(&StandardSvgOutput, 0); // Inicia header svg
 
-    // Leitura da entrada .geo
-    int controle = 1; // Controle permite a execução da leitura, e # muda seu valor para 0
+    if (getInputGeoFileName(FileNames)!=NULL) {
 
-    while (!feof(GeoInputFile) && controle == 1) { // Loop de leitura
-        readLine(&linha, &GeoInputFile); // Le uma linha do arquivo de entrada
+        // Leitura de .geo
+        FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
+        if (GeoInputFile == NULL) { // Verificar se foi aberto corretamente
+            printf("\nFalha na abertura do arquivo!");
+            killFileArguments(&FileNames);
+            return -1;
+        }
+        // Leitura da entrada .geo
+        int controle = 1; // Controle permite a execução da leitura, e # muda seu valor para 0
+
+        while (!feof(GeoInputFile) && controle == 1) { // Loop de leitura
+            readLine(&linha, &GeoInputFile); // Le uma linha do arquivo de entrada
 //        printThis(linha); // Imprime a linha lida
-        copyString(&tmpLinha, linha); // Copia a linha lida
-        hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
+            copyString(&tmpLinha, linha); // Copia a linha lida
+            hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
 //        printf("\nResultado do hashing : %lu", hashResult);
 
-        switch (hashResult) { // Switch dos comandos lidos
-            // T2
-            case CMD_NX: // Comando desnecessario nessa implementacao
-                break;
-            case CMD_A:
-                linesFromId(AllBasicShapes, linha, FileNames); // Traça linhas a partir do id
-                break;
-            case CMD_D:
-                distanceBasicShapes(AllBasicShapes, linha, &StandardTxtOutput); // Calcula a distancia entre figuras
-                break;
-            case CMD_I:
-                insideBasicShapes(AllBasicShapes, linha, &StandardTxtOutput); // Verifica se um ponto é interno a figura
-                break;
-            case CMD_O:
-                overlapBasicShapes(AllBasicShapes, linha, &StandardTxtOutput, &StandardSvgOutput); // Sobreposicao
-                break;
-            case FIG_C:
-                newShapeFromFile(AllBasicShapes, linha, 1); // 1 para circulo
-                break;
-            case FIG_R:
-                newShapeFromFile(AllBasicShapes, linha, 2); // 2 para retangulo
-                break;
-            case CMD_FIM: // Final da leitura
-                controle = 0;
-                break;
-                // T3
-            case FIG_Q:
-                newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 1); // 1 para quadra
-                break;
-            case FIG_H:
-                newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 2); // 2 para hidrante
-                break;
-            case FIG_S:
-                newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 3); // 3 para semaforo
-                break;
-            case FIG_T:
-                newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 4); // 4 para torre
-                break;
-            case COR_Q:
-                newColorFromFile(ColorIndex, linha, 1);
-                break;
-            case COR_H:
-                newColorFromFile(ColorIndex, linha, 2);
-                break;
-            case COR_S:
-                newColorFromFile(ColorIndex, linha, 3);
-                break;
-            case COR_T:
-                newColorFromFile(ColorIndex, linha, 4);
-                break;
-            default:
-                break;
-        }
+            switch (hashResult) { // Switch dos comandos lidos
+                // T2
+                case CMD_NX: // Comando desnecessario nessa implementacao
+                    break;
+                case CMD_A:
+                    linesFromId(AllBasicShapes, linha, FileNames); // Traça linhas a partir do id
+                    break;
+                case CMD_D:
+                    distanceBasicShapes(AllBasicShapes, linha, &StandardTxtOutput); // Calcula a distancia entre figuras
+                    break;
+                case CMD_I:
+                    insideBasicShapes(AllBasicShapes, linha,
+                                      &StandardTxtOutput); // Verifica se um ponto é interno a figura
+                    break;
+                case CMD_O:
+                    overlapBasicShapes(AllBasicShapes, linha, &StandardTxtOutput, &StandardSvgOutput); // Sobreposicao
+                    break;
+                case FIG_C:
+                    newShapeFromFile(AllBasicShapes, linha, 1); // 1 para circulo
+                    break;
+                case FIG_R:
+                    newShapeFromFile(AllBasicShapes, linha, 2); // 2 para retangulo
+                    break;
+                case CMD_FIM: // Final da leitura
+                    controle = 0;
+                    break;
+                    // T3
+                case FIG_Q:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 1); // 1 para quadra
+                    break;
+                case FIG_H:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 2); // 2 para hidrante
+                    break;
+                case FIG_S:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 3); // 3 para semaforo
+                    break;
+                case FIG_T:
+                    newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 4); // 4 para torre
+                    break;
+                case COR_Q:
+                    newColorFromFile(ColorIndex, linha, 1);
+                    break;
+                case COR_H:
+                    newColorFromFile(ColorIndex, linha, 2);
+                    break;
+                case COR_S:
+                    newColorFromFile(ColorIndex, linha, 3);
+                    break;
+                case COR_T:
+                    newColorFromFile(ColorIndex, linha, 4);
+                    break;
+                default:
+                    break;
+            }
 
-    }
-    fclose(GeoInputFile); // Fecha o arquivo .geo
-    printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
+        }
+        fclose(GeoInputFile); // Fecha o arquivo .geo
+        printBasicShapesToSvg(AllBasicShapes, &StandardSvgOutput); // Imprime todas as formas no svg
 //    printBasicShapes(AllBasicShapes);
+    } else {
+        newCityShapeFromBin(Bitnopolis);
+    }
 
     // Leitura da entrada .ec
     if (getInputEcFileName(FileNames) != NULL) {
@@ -217,10 +223,10 @@ int main(int argc, char *argv[]) {
                 freeString(&linha);
                 break;
             }
-            printThis(linha); // Imprime a linha lida
+//            printThis(linha); // Imprime a linha lida
             copyString(&tmpLinha, linha); // Copia a linha lida
             hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-            printf("\nResultado do hashing : %lu", hashResult);
+//            printf("\nResultado do hashing : %lu", hashResult);
 
             switch (hashResult) { // Switch dos comandos lidos
                 // T3

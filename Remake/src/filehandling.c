@@ -156,6 +156,9 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
         } else {
             copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
         }
+    } else {
+        strcatFileName(&(*set_struct)->outputSvgStandardFileName, (*set_struct)->output_o, &(*set_struct)->path_bd, ".svg");
+        copyString(&(*set_struct)->inputGeoName, (*set_struct)->path_bd);
     }
 
     // Verificar se existe qry

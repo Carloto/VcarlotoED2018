@@ -334,59 +334,65 @@ void putPonto(Cidade *cityIndex, float x, float y, int i) {
 // Aloca e inicializa uma struct Cidade
 Cidade *allocCidade(fileArguments *source) {
     Cidade *tmpStruct = (Cidade *) calloc(1, sizeof(Cidade));
+    char abre[5];
+    if (getInputGeoFileName(source) == NULL) {
+        sprintf(abre, "rb+");
+    } else {
+        sprintf(abre, "wb+");
+    }
     char *openName = NULL; // Nome de abertura do arquivo
     char *name = (char *) calloc(50, sizeof(char)); // Nome da estrutura
 
     sprintf(name, "%s", "quadra"); // Quadra
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->quadras = openFile(openName, "wb+");
+    tmpStruct->quadras = openFile(openName, abre);
     tmpStruct->quadraTree = btCreate();
 
     sprintf(name, "%s", "hidrante"); // Hidrante
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->hidrantes = openFile(openName, "wb+");
+    tmpStruct->hidrantes = openFile(openName, abre);
     tmpStruct->hidrTree = btCreate();
 
     sprintf(name, "%s", "semaforo"); // Semaforo
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->semaforos = openFile(openName, "wb+");
+    tmpStruct->semaforos = openFile(openName, abre);
     tmpStruct->semafTree = btCreate();
 
     sprintf(name, "%s", "torre"); // Torre
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->torres = openFile(openName, "wb+");
+    tmpStruct->torres = openFile(openName, abre);
     tmpStruct->torreTree = btCreate();
     tmpStruct->numTorres = 0;
 
     sprintf(name, "%s", "estabelecimento"); // Estabelecimento
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->estabe = openFile(openName, "wb+");
+    tmpStruct->estabe = openFile(openName, abre);
     tmpStruct->estabeTree = btCreate();
 
     sprintf(name, "%s", "tipoestabelecimento"); // Tipo de estabelecimento
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->tipoestabe = openFile(openName, "wb+");
+    tmpStruct->tipoestabe = openFile(openName, abre);
     tmpStruct->tipoestabeTree = btCreate();
 
     sprintf(name, "%s", "pessoas"); // Pessoas
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->pessoas = openFile(openName, "wb+");
+    tmpStruct->pessoas = openFile(openName, abre);
     tmpStruct->pessoasTree = btCreate();
 
     sprintf(name, "%s", "carros"); // Pessoas
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->carros = openFile(openName, "wb+");
+    tmpStruct->carros = openFile(openName, abre);
     tmpStruct->carrosTree = btCreate();
 
     sprintf(name, "%s", "moradias"); // Moradias
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->moradias = openFile(openName, "wb+");
+    tmpStruct->moradias = openFile(openName, abre);
     tmpStruct->moraCpfTree = btCreate();
     tmpStruct->moraCepTree = btCreate();
 
     sprintf(name, "%s", "vias"); // Vias
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
-    tmpStruct->vias = openFile(openName, "wb+");
+    tmpStruct->vias = openFile(openName, abre);
 
     tmpStruct->matrizTempo = NULL;
     tmpStruct->matrizDist = NULL;
@@ -676,6 +682,102 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
         default:
             break;
     }
+}
+
+// Adiciona uma nova estrutura no arquivo binario e na b-tree, a partir do arquivo lido
+void newCityShapeFromBin(Cidade *cityIndex) {
+    // Imprimir quadras
+    Quadra *tmpQuad = allocQuadra();
+    fseek(cityIndex->quadras, 0, SEEK_SET);
+    while (!feof(cityIndex->quadras)) {
+        readFromBin(&(cityIndex->quadras), getQuadraSize(), tmpQuad);
+        if (!feof(cityIndex->quadras)) {
+            btInsert(cityIndex->quadraTree, hash((unsigned char *) getQuadraCep(tmpQuad)), ftell(cityIndex->quadras));
+        }
+    }
+    killQuadra(tmpQuad);
+
+    // Imprimir hidrantes
+    Hidrante *tmpHid = allocHidrante();
+    fseek(cityIndex->hidrantes, 0, SEEK_SET);
+    while (!feof(cityIndex->hidrantes)) {
+        readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
+        if (!feof(cityIndex->hidrantes)) {
+            btInsert(cityIndex->hidrTree, hash((unsigned char *) getHidranteId(tmpHid)), ftell(cityIndex->hidrantes));
+        }
+    }
+    killHidrante(tmpHid);
+
+    // Imprimir semaforo
+    Semaforo *tmpSemaf = allocSemaforo();
+    fseek(cityIndex->semaforos, 0, SEEK_SET);
+    while (!feof(cityIndex->semaforos)) {
+        readFromBin(&(cityIndex->semaforos), getSemaforoSize(), tmpSemaf);
+        if (!feof(cityIndex->semaforos)) {
+            btInsert(cityIndex->semafTree, hash((unsigned char *) getSemaforoId(tmpSemaf)),
+                     ftell(cityIndex->semaforos));
+        }
+    }
+    killSemaforo(tmpSemaf);
+
+    // Imprimir torres
+    Torre *tmpTorre = allocTorre();
+    fseek(cityIndex->torres, 0, SEEK_SET);
+    while (!feof(cityIndex->torres)) {
+        readFromBin(&(cityIndex->torres), getTorreSize(), tmpTorre);
+        if (!feof(cityIndex->torres)) {
+            btInsert(cityIndex->torreTree, hash((unsigned char *) getTorreId(tmpTorre)), ftell(cityIndex->torres));
+        }
+    }
+    killTorre(tmpTorre);
+
+    // Imprimir estab
+    Estab *tmpEstab = allocEstab();
+    fseek(cityIndex->estabe, 0, SEEK_SET);
+    while (!feof(cityIndex->estabe)) {
+        readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+        if (!feof(cityIndex->estabe)) {
+            btInsert(cityIndex->estabeTree, hash((unsigned char *) getEstabCnpj(tmpEstab)), ftell(cityIndex->estabe));
+        }
+    }
+    killEstab(tmpEstab);
+
+    // Imprimir moradia
+    Moradia *tmpMoradia = allocMoradia();
+    fseek(cityIndex->moradias, 0, SEEK_SET);
+    while (!feof(cityIndex->moradias)) {
+        readFromBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
+        if (!feof(cityIndex->moradias)) {
+            btInsert(cityIndex->moraCpfTree, hash((unsigned char *) getMoradiaCpf(tmpMoradia)),
+                     ftell(cityIndex->moradias));
+            btInsert(cityIndex->moraCepTree, hash((unsigned char *) getMoradiaCep(tmpMoradia)),
+                     ftell(cityIndex->moradias));
+        }
+    }
+    killMoradia(tmpMoradia);
+
+    // Imprimir tipo
+    Tipo *tmpTipo = allocTipo();
+    fseek(cityIndex->tipoestabe, 0, SEEK_SET);
+    while (!feof(cityIndex->tipoestabe)) {
+        readFromBin(&(cityIndex->tipoestabe), getTipoSize(), tmpTipo);
+        if (!feof(cityIndex->tipoestabe)) {
+            btInsert(cityIndex->tipoestabeTree, hash((unsigned char *) getTipoCodt(tmpTipo)),
+                     ftell(cityIndex->tipoestabe));
+        }
+    }
+    killTipo(tmpTipo);
+
+    // Imprimir carros
+    Carro *tmpCarro = allocCarro();
+    fseek(cityIndex->carros, 0, SEEK_SET);
+    while (!feof(cityIndex->carros)) {
+        readFromBin(&(cityIndex->carros), getCarroSize(), tmpCarro);
+        if (!feof(cityIndex->carros)) {
+            btInsert(cityIndex->carrosTree, hash((unsigned char *) getCarroplaca(tmpCarro)), ftell(cityIndex->carros));
+        }
+    }
+    killCarro(tmpCarro);
 }
 
 // Retorna um ponteiro para o arquivo requisitado
@@ -1026,7 +1128,7 @@ int getMoradiaAddress(Cidade *cityIndex, unsigned long id, long int *address, Mo
 }
 
 // Retorna 1 e modifica address caso encontre a estrutura
-int getCarroAddress(Cidade *cityIndex, unsigned long id, long int *address, Carro**aux) {
+int getCarroAddress(Cidade *cityIndex, unsigned long id, long int *address, Carro **aux) {
     if (btGetAddress(cityIndex->carrosTree, id, address)) { // Busca por placa
         *aux = allocCarro();
         fseek(cityIndex->carros, *address, SEEK_SET);
