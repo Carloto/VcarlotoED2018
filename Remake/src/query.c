@@ -335,53 +335,29 @@ void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, A
                 fprintf(*txtOutput, "Casa não encontrada\n");
             }
             break;
-            /* case 2: // Cpf
-                 token = strtok(NULL, " "); // Cep
-                 if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia,
-                                       1)) { // 2 Para busca por cpf
-                     if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
-                                          &tmpPessoa)) {
-                         pessoaMoradiaTxt(tmpMoradia, tmpPessoa, txtOutput, 1);
-                         getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
-                                          &tmpQuad);
-                         switch (getFaceValue(getMoradiaFace(tmpMoradia))) {
-                             case 1: // Norte
-                                 addAux(tmpAux, getQuadraX(tmpQuad) + ((double) getMoradiaNum(tmpMoradia) / 10) * 11,
-                                        getQuadraY(tmpQuad) + 1, 0, 0, 1);
-                                 break;
-                             case 2: // Sul
-                                 addAux(tmpAux, getQuadraX(tmpQuad) + ((double) getMoradiaNum(tmpMoradia) / 10) * 11,
-                                        getQuadraY(tmpQuad) + getQuadraHeight(tmpQuad) - 11, 0, 0, 1);
-                                 break;
-                             case 3: // Leste
-                                 addAux(tmpAux, getQuadraX(tmpQuad) + 1, getQuadraY(tmpQuad) +
-                                                                         ((double) getMoradiaNum(tmpMoradia) / 10) * 7, 0, 0,
-                                        1);
-                                 break;
-                             case 4: // Oeste
-                                 addAux(tmpAux, getQuadraX(tmpQuad) + +getQuadraWidth(tmpQuad) - 11, getQuadraY(tmpQuad) +
-                                                                                                     ((double) getMoradiaNum(
-                                                                                                             tmpMoradia) /
-                                                                                                      10) * 7, 0, 0,
-                                        1);
-                             default:
-                                 break;
-                         }
-                         killMoradia(tmpMoradia);
-                         killPessoa(tmpPessoa);
-                         killQuadra(tmpQuad);
-                     } else {
-                         fprintf(*txtOutput, "Pessoa não encontrada\n");
-                     }
-                     return;
-                 } else {
-                     fprintf(*txtOutput, "Casa não encontrada\n");
-                 }
-                 break;*/
+        case 2: // Cep (ecq?)
+            token = strtok(NULL, " "); // Cep
+            if (getQuadraAddress(cityIndex, hash((unsigned char *) token), &address,
+                                 &tmpQuad)) {
+                reportEstabCep(cityIndex, hash((unsigned char *) getQuadraCep(tmpQuad)), txtOutput,1);
+                killQuadra(tmpQuad);
+            } else {
+                fprintf(*txtOutput, "Cep não encontrada\n");;
+            }
+            break;
+        case 3: // Tipo (ecr?)
+            token = strtok(NULL, " "); // Tipo
+            if (getTipoAddress(cityIndex, hash((unsigned char *) token), &address,
+                               &tmpTipo)) {
+                reportEstabCep(cityIndex, hash((unsigned char *) getQuadraCep(tmpQuad)), txtOutput, 1);
+                killQuadra(tmpQuad);
+            } else {
+                fprintf(*txtOutput, "Tipo não encontrada\n");;
+            }
+            break;
         default:
             break;
     }
-
 }
 
 // Imprime os dados dos moradores dentro da regiao
@@ -406,12 +382,13 @@ void ripMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, AuxFigura **tm
     // Moradia
     token = strtok(NULL, " "); // Cep
     if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia,
-                          1)) { // 2 Para busca por cpf
+                          1)) { // 1 Para busca por cpf
         if (getPessoaAddress(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)), &address,
                              &tmpPessoa)) {
             getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
                              &tmpQuad);
-            pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 1);
+            pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 4);
+            addAuxQuadra(tmpQuad, tmpAux, getMoradiaNum(tmpMoradia), getFaceValue(getMoradiaFace(tmpMoradia)), 3);
             ripPessoa(cityIndex, hash((unsigned char *) getMoradiaCpf(tmpMoradia)));
             killMoradia(tmpMoradia);
             killPessoa(tmpPessoa);

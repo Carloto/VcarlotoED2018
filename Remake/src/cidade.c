@@ -308,12 +308,37 @@ void ripPessoa(Cidade *cityIndex, unsigned long id) {
     Moradia *tmpMoradia = allocMoradia();
     btDeleteInfo(cityIndex->moraCpfTree, id, &address);
     readFromBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
-    unsigned long id2 = hash((unsigned char*)getMoradiaCep(tmpMoradia));
+    unsigned long id2 = hash((unsigned char *) getMoradiaCep(tmpMoradia));
     deleteMoradia(tmpMoradia);
     fseek(cityIndex->moradias, address, SEEK_SET);
-    printToBin(&(cityIndex->moradias),getMoradiaSize(), tmpMoradia);
+    printToBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
     btDeleteInfo(cityIndex->moraCepTree, id2, &address);
     killMoradia(tmpMoradia);
+}
+
+// Lista os estabelecimentos dentro de certa quadra
+void reportEstabCep(Cidade *cityIndex, unsigned long id, FILE **txtOutput, int action) {
+    // Estabelecimento
+    Estab *tmpEstab = allocEstab();
+    Quadra *tmpQuad = NULL;
+    Tipo *tmpTipo = NULL;
+    long int address;
+    fseek(cityIndex->estabe, 0, SEEK_SET);
+    while (!feof(cityIndex->estabe)) {
+        readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+        if (!feof(cityIndex->estabe)) {
+            if (checkString(getEstabCnpj(tmpEstab))) {
+                if (hash((unsigned char *) getEstabCep(tmpEstab)) == id) {
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address, &tmpQuad);
+                    getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(tmpEstab)), &address, &tmpTipo);
+                    estabQuadraTxt(tmpEstab, tmpTipo, tmpQuad, txtOutput, 1);
+                    killQuadra(tmpQuad);
+                    killTipo(tmpTipo);
+                }
+            }
+        }
+    }
+    killEstab(tmpEstab);
 }
 
 // Adiciona uma figura auxiliar a partir da quadra
@@ -344,6 +369,15 @@ void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face, int ty
 
 // Imprime a pessoa e a moradia para o txt
 void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, Quadra *tmpQuadra, FILE **txtOutput, int action) {
+    if (action == 4) {
+        fprintf(*txtOutput,
+                "RIP : %s %s do sexo  %s, nascido em  %s \n", getPessoaNome(tmpPessoa),
+                getPessoaSobrenome(tmpPessoa), getPessoaSexo(tmpPessoa), getPessoaNasce(tmpPessoa));
+        fprintf(*txtOutput,
+                "Residia no cep %s de num %d de face %s \n", getMoradiaCep(tmpMoradia), getMoradiaNum(tmpMoradia),
+                getMoradiaFace(tmpMoradia));
+        return;
+    }
     fprintf(*txtOutput,
             "Cpf = %s  Nome = %s  %s  Sexo = %s  Nascimento = %s \n", getPessoaCpf(tmpPessoa), getPessoaNome(tmpPessoa),
             getPessoaSobrenome(tmpPessoa), getPessoaSexo(tmpPessoa), getPessoaNasce(tmpPessoa));
@@ -358,10 +392,11 @@ void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, Quadra *tmpQuadra,
 // Imprime o estabelecimento e a quadra para o txt
 void estabQuadraTxt(Estab *tmpEstab, Tipo *tmpTipo, Quadra *tmpQuad, FILE **txtOutput, int action) {
     fprintf(*txtOutput,
-            "Cnpf = %s  Cep = %s  Face = %s  Num = %d\n", getEstabCnpj(tmpEstab), getEstabCep(tmpEstab),
+            "Cnpf = %s  Nome = %s  Cep = %s  Face = %s  Num = %d\n", getEstabCnpj(tmpEstab), getEstabNome(tmpEstab),
+            getEstabCep(tmpEstab),
             getEstabFace(tmpEstab), getEstabNum(tmpEstab));
     if (action == 1) {
-        fprintf(*txtOutput, "Tiṕo = %s  Descrição = %s  X = %.3lf  Y = %.3lf\n",
+        fprintf(*txtOutput, "Tipo = %s  Descrição = %s  X = %.3lf  Y = %.3lf\n",
                 getTipoCodt(tmpTipo),
                 getTipoDesc(tmpTipo), getQuadraX(tmpQuad), getQuadraY(tmpQuad));
     }

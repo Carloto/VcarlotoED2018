@@ -246,6 +246,8 @@ int main(int argc, char *argv[]) {
                         reportStructure(Bitnopolis, linha, &StandardTxtOutput);
                     } else if (hashResult == CRB) {
                         closestTorres(Bitnopolis, linha, &StandardTxtOutput);
+                    } else if (hashResult == ECQ_SEARCH) {
+                        reportEstab(Bitnopolis, linha, &StandardTxtOutput, 2, &headAux);
                     }
                     break;
             }
