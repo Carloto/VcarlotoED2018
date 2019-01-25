@@ -23,6 +23,7 @@ struct tmp_fileArguments {
     char *outputSvgStandardFileName; // Arquivo de saida .svg principal
     char *outputTxtFileName; // Arquivo de saida .txt
     char *full_path_bd; // Path completo do banco de dados
+    int gui;
 };
 
 // Inicializar fileArguments
@@ -46,6 +47,7 @@ fileArguments *createFileArguments() {
     create_struct->outputSvgStandardFileName = NULL;
     create_struct->outputTxtFileName = NULL;
     create_struct->full_path_bd = NULL;
+    create_struct->gui = 0;
     return create_struct;
 }
 
@@ -130,6 +132,10 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
             i++;
             copyString(&(*set_struct)->path_bd, argv[i]);
         }
+        if (strcmp("-gui", argv[i]) == 0) {
+            i++;
+            (*set_struct)->gui = 1;
+        }
     }
 
     // Concatenar path do banco de dados
@@ -157,7 +163,8 @@ void setFileArguments(fileArguments **set_struct, int argc, char **argv) {
             copyString(&(*set_struct)->inputGeoFileName, (*set_struct)->input_f);
         }
     } else {
-        strcatFileName(&(*set_struct)->outputSvgStandardFileName, (*set_struct)->output_o, &(*set_struct)->path_bd, ".svg");
+        strcatFileName(&(*set_struct)->outputSvgStandardFileName, (*set_struct)->output_o, &(*set_struct)->path_bd,
+                       ".svg");
         copyString(&(*set_struct)->inputGeoName, (*set_struct)->path_bd);
     }
 
@@ -299,6 +306,11 @@ char *getInputViaFileName(fileArguments *tmpStructs) {
 // Retorna o nome de do arquivo de saida .svg do qry
 char *getOutputQrySvgName(fileArguments *tmpStructs) {
     return tmpStructs->outputQrySvgName;
+}
+
+// Retorna o nome de do arquivo de saida .svg do qry
+int getGui(fileArguments *tmpStructs) {
+    return tmpStructs->gui;
 }
 
 // Retorna o nome do arquivo de saida .svg padrão

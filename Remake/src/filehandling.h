@@ -71,6 +71,9 @@ char *getOutputSvgStandardFileName(fileArguments *tmpStructs);
 // Retorna o nome do arquivo de saida .txt padrão
 char *getOutputTxtFileName(fileArguments *tmpStructs);
 
+// Retorna o nome de do arquivo de saida .svg do qry
+int getGui(fileArguments *tmpStructs);
+
 // Retorna o nome base
 char *getBaseName(fileArguments *tmpStructs);
 

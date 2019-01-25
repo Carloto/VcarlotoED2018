@@ -10,6 +10,15 @@
 #include "cidade.h"
 #include "color.h"
 #include "query.h"
+#include <gtk/gtk.h>
+
+GtkWidget *janela;
+
+void boton_clic(GtkButton *wboton, GtkEntry *entrada) {
+    const char *nombre;
+    nombre = gtk_entry_get_text(entrada);
+    printf("\n%s", nombre);
+}
 
 // Main
 int main(int argc, char *argv[]) {
@@ -24,6 +33,47 @@ int main(int argc, char *argv[]) {
     fileArguments *FileNames = createFileArguments();
     setFileArguments(&FileNames, argc, argv);
     printInputArguments(FileNames);
+
+
+    if (getGui(FileNames)) {
+        const char *saida;
+        char aux[50];
+        GtkWidget *entrada;
+        GtkWidget *conteudo;
+        GtkWidget *label_entrada;
+        GtkWidget *botao;
+
+        gtk_init(&argc, &argv);
+
+        janela = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        gtk_window_set_position(GTK_WINDOW(janela), GTK_WIN_POS_CENTER);
+
+        conteudo = gtk_vbox_new(FALSE, 0);
+        gtk_container_add(GTK_CONTAINER(janela), conteudo);
+
+        label_entrada = gtk_label_new("Digite o comando -e (v para vazio)");
+        gtk_box_pack_start(GTK_BOX(conteudo), label_entrada, FALSE, FALSE, 0);
+        entrada = gtk_entry_new();
+        gtk_box_pack_start(GTK_BOX(conteudo), entrada, FALSE, FALSE, 0);
+
+        botao = gtk_button_new_with_label("Entra");
+        gtk_box_pack_start(GTK_BOX(conteudo), botao, FALSE, FALSE, 0);
+        g_signal_connect (botao, "clicked", G_CALLBACK(boton_clic), entrada);
+
+//        saida = gtk_entry_get_text(GTK_ENTRY(entrada));
+//        sprintf(aux, "%s", saida);
+//        printf("\n%s",aux);
+//        if(strcmp(aux, "v")!= 0){
+//            printf("\n%s",aux);
+//        }
+
+/*
+        label_saida = gtk_label_new("ºC = ºF");
+        gtk_box_pack_start(GTK_BOX(conteudo), label_saida, FALSE, FALSE, 0);*/
+
+
+
+    }
 
     // Estruturas de Bitnopolis
     BasicShapes *AllBasicShapes = allocBasicShapes();
@@ -41,7 +91,7 @@ int main(int argc, char *argv[]) {
     FILE *StandardTxtOutput = openFile(getOutputTxtFileName(FileNames), "w");
     printTagSvg(&StandardSvgOutput, 0); // Inicia header svg
 
-    if (getInputGeoFileName(FileNames)!=NULL) {
+    if (getInputGeoFileName(FileNames) != NULL) {
 
         // Leitura de .geo
         FILE *GeoInputFile = openFile(getInputGeoFileName(FileNames), "r");
@@ -338,6 +388,14 @@ int main(int argc, char *argv[]) {
     freeString(&tmpLinha);
 
 // End main
+    if (getGui(FileNames)) {
+
+        g_signal_connect(G_OBJECT(janela), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+
+        gtk_widget_show_all(janela);
+
+        gtk_main();
+    }
     return 0;
 
 }
