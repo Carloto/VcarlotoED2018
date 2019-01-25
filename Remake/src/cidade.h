@@ -39,14 +39,38 @@ FILE **getCityFile(Cidade *cityIndex, int action);
 // Cria um vetor de pontos de certa estrutura
 Point *torreToPoint(Cidade *cityIndex);
 
+// Encontra o hidrante mais proximo e reporta a distancia
+void closestHidrante(Cidade *cityIndex, FILE **outputTxt, unsigned long id, double x, double y, int action,
+                     AuxFigura **tmpAux);
+
+// Imprime o hidrante no txt
+void hidranteTxt(Hidrante *tmpHid, FILE **outputTxt);
+
+// Muda a pessoa de endereço
+void mudaPessoa(Cidade *cityIndex, char cpf[25], char cep[50], char face[2], char complemento[50], int num);
+
+// Muda o estabelecimento de endereco
+void mudaEstab(Cidade*cityIndex, char cnpj[50], char cep[50], char face[2],int num);
+
+// Imprime a torre no txt
+void torreTxt(Torre *tmpTorre, FILE **outputTxt);
+
 // Declara uma pessoa morta e deleta suas informações
 void ripPessoa(Cidade *cityIndex, unsigned long id);
+
+// Declara um estabelecimento fechado deleta suas informações
+void ripEstab(Cidade *cityIndex, unsigned long id);
 
 // Lista os estabelecimentos dentro de certa quadra
 void reportEstabCep(Cidade *cityIndex, unsigned long id, FILE **txtOutput, int action);
 
+// Lista os estabelecimentos dentro de certo perimetro
+void
+reportEstabInside(Cidade *cityIndex, unsigned long id, FILE **txtOutput, int action, double x, double y, double width,
+                  double height);
+
 // Adiciona uma figura auxiliar a partir da quadra
-void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face,int type);
+void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face, int type);
 
 // Imprime a pessoa e a moradia para o txt
 void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, Quadra *tmpQuadra, FILE **txtOutput, int action);

@@ -3,8 +3,8 @@
 
 struct auxf {               // Codigos de tipo
     double x1;              // 1 para circulo de moradia, 2 para circulo de estab
-    double x2;              // 4 para losango com cruz
-    double y1;
+    double x2;              // 3 para losango com cruz, 5 para X com linha tracejada
+    double y1;              // 6 para apenas linha 7 com outra cor
     double y2;
     int tipo;
     struct auxf *next;
@@ -77,6 +77,27 @@ void printAuxToSvg(AuxFigura *head, FILE **svgOutput) {
                 fprintf(*svgOutput,
                         "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"white\" style=\"stroke-width:1\" />\n",
                         tmpAux->x1 + 4.5, tmpAux->y1 + 4, tmpAux->x1 + 10.5, tmpAux->y1 + 4);
+                break;
+            case 5:
+                fprintf(*svgOutput,
+                        "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" style=\"stroke-width:3\"  />\n",
+                        tmpAux->x1 - 10, tmpAux->y1 - 10, tmpAux->x1 + 10, tmpAux->y1 + 10);
+                fprintf(*svgOutput,
+                        "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" style=\"stroke-width:3\" ) />\n",
+                        tmpAux->x1 - 10, tmpAux->y1 + 10, tmpAux->x1 + 10, tmpAux->y1 - 10);
+                fprintf(*svgOutput,
+                        "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-dasharray=\"10,10\" style=\"stroke-width:3\" />\n",
+                        tmpAux->x1, tmpAux->y1, tmpAux->x2, tmpAux->y2);
+                break;
+            case 6:
+                fprintf(*svgOutput,
+                        "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"violet\" stroke-dasharray=\"10,10\" style=\"stroke-width:3\" />\n",
+                        tmpAux->x1, tmpAux->y1, tmpAux->x2, tmpAux->y2);
+                break;
+            case 7:
+                fprintf(*svgOutput,
+                        "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"orange\" stroke-dasharray=\"10,10\" style=\"stroke-width:3\" />\n",
+                        tmpAux->x1, tmpAux->y1, tmpAux->x2, tmpAux->y2);
                 break;
             default:
                 break;

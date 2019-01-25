@@ -256,9 +256,13 @@ void closestTorres(Cidade *cityIndex, char *linha, FILE **txtOutput) {
 void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux) {
     fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
     char *token = strtok(linha, " "); // Comando
+    char *cpf = NULL, *cep = NULL, *compl = NULL, *face = NULL;
+    int num;
     Pessoa *tmpPessoa = NULL;
     Moradia *tmpMoradia = NULL;
+    Moradia *moradiaAux = NULL;
     Quadra *tmpQuad = NULL;
+    Quadra *quadraAux = NULL;
     long int address;
     switch (action) {
         case 1: // Moradia
@@ -270,6 +274,7 @@ void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action,
                     getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
                                      &tmpQuad);
                     pessoaMoradiaTxt(tmpMoradia, tmpPessoa, tmpQuad, txtOutput, 1);
+                    killQuadra(tmpQuad);
                     killMoradia(tmpMoradia);
                     killPessoa(tmpPessoa);
                 } else {
@@ -302,6 +307,46 @@ void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action,
                 fprintf(*txtOutput, "Casa não encontrada\n");
             }
             break;
+        case 3: // Mud
+            cpf = strtok(NULL, " "); // Cpf
+            cep = strtok(NULL, " "); // Cep
+            face = strtok(NULL, " "); // Face
+            num = newAtoi(strtok(NULL, " ")); // Num
+            compl = strtok(NULL, " "); // Compl
+            if (getMoradiaAddress(cityIndex, hash((unsigned char *) cpf), &address, &tmpMoradia,
+                                  1)) { // 2 Para busca por cpf
+                if (getPessoaAddress(cityIndex, hash((unsigned char *) cpf), &address,
+                                     &tmpPessoa)) {
+                    getQuadraAddress(cityIndex, hash((unsigned char *) cep), &address,
+                                     &tmpQuad);
+                    getMoradiaAddress(cityIndex, hash((unsigned char *) getPessoaCpf(tmpPessoa)), &address, &moradiaAux,
+                                      1);
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(moradiaAux)), &address,
+                                     &quadraAux);
+                    pessoaMoradiaTxt(tmpMoradia, tmpPessoa, quadraAux, txtOutput, 1);
+                    addAux(tmpAux, getQuadraX(tmpQuad), getQuadraY(tmpQuad), getQuadraX(quadraAux),
+                           getQuadraY(quadraAux), 6);
+                    mudaPessoa(cityIndex, cpf, cep, face, compl, num);
+                    killMoradia(moradiaAux);
+                    killQuadra(quadraAux);
+                    getMoradiaAddress(cityIndex, hash((unsigned char *) getPessoaCpf(tmpPessoa)), &address, &moradiaAux,
+                                      1);
+                    getQuadraAddress(cityIndex, hash((unsigned char *) cep), &address,
+                                     &quadraAux);
+                    pessoaMoradiaTxt(moradiaAux, tmpPessoa, quadraAux, txtOutput, 1);
+                    killMoradia(moradiaAux);
+                    killMoradia(tmpMoradia);
+                    killPessoa(tmpPessoa);
+                    killQuadra(tmpQuad);
+                    killQuadra(quadraAux);
+                } else {
+                    fprintf(*txtOutput, "Pessoa não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Casa não encontrada\n");
+            }
+            break;
         default:
             break;
     }
@@ -312,8 +357,10 @@ void reportMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, int action,
 void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux) {
     fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
     char *token = strtok(linha, " "); // Comando
-    Quadra *tmpQuad = NULL;
-    Estab *tmpEstab = NULL;
+    char *cnpj = NULL, *cep = NULL, *face = NULL;
+    int num;
+    Quadra *tmpQuad = NULL, *quadraAux = NULL;
+    Estab *tmpEstab = NULL, *estabAux = NULL;
     Tipo *tmpTipo = NULL;
     long int address;
     switch (action) {
@@ -339,7 +386,7 @@ void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, A
             token = strtok(NULL, " "); // Cep
             if (getQuadraAddress(cityIndex, hash((unsigned char *) token), &address,
                                  &tmpQuad)) {
-                reportEstabCep(cityIndex, hash((unsigned char *) getQuadraCep(tmpQuad)), txtOutput,1);
+                reportEstabCep(cityIndex, hash((unsigned char *) getQuadraCep(tmpQuad)), txtOutput, 1);
                 killQuadra(tmpQuad);
             } else {
                 fprintf(*txtOutput, "Cep não encontrada\n");;
@@ -349,10 +396,83 @@ void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, A
             token = strtok(NULL, " "); // Tipo
             if (getTipoAddress(cityIndex, hash((unsigned char *) token), &address,
                                &tmpTipo)) {
-                reportEstabCep(cityIndex, hash((unsigned char *) getQuadraCep(tmpQuad)), txtOutput, 1);
-                killQuadra(tmpQuad);
+                token = strtok(NULL, " "); // X (se presente)
+                if (token != NULL) {
+                    double x = newAtod(token);
+                    double y = newAtod(strtok(NULL, " "));
+                    double width = newAtod(strtok(NULL, " "));
+                    double height = newAtod(strtok(NULL, " "));
+                    reportEstabInside(cityIndex, hash((unsigned char *) getTipoCodt(tmpTipo)), txtOutput, 2, x, y,
+                                      width, height);
+                } else {
+                    reportEstabCep(cityIndex, hash((unsigned char *) getTipoCodt(tmpTipo)), txtOutput, 2);
+                }
+                killTipo(tmpTipo);
             } else {
                 fprintf(*txtOutput, "Tipo não encontrada\n");;
+            }
+            break;
+        case 4: // Tipo (tecr?)
+            token = strtok(NULL, " "); // Tipo
+            double x = newAtod(token); // X
+            double y = newAtod(strtok(NULL, " "));// Y
+            double width = newAtod(strtok(NULL, " ")); // Width
+            double height = newAtod(strtok(NULL, " ")); // Heigth
+            reportEstabInside(cityIndex, 0, txtOutput, 5, x, y,
+                              width, height);
+            break;
+        case 5: // fec
+            token = strtok(NULL, " "); // Cnpj
+            if (getEstabAddress(cityIndex, hash((unsigned char *) token), &address, &tmpEstab)) {
+                if (getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address, &tmpQuad)) {
+                    getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(tmpEstab)), &address, &tmpTipo);
+                    estabQuadraTxt(tmpEstab, tmpTipo, tmpQuad, txtOutput, 1);
+                    ripEstab(cityIndex, hash((unsigned char *) getEstabCnpj(tmpEstab)));
+                    killQuadra(tmpQuad);
+                    killEstab(tmpEstab);
+                    killTipo(tmpTipo);
+                } else {
+                    fprintf(*txtOutput, "Cep não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Cnpj não encontrada\n");
+            }
+            break;
+        case 6: // Mudec
+            cnpj = strtok(NULL, " "); // Cnpj
+            cep = strtok(NULL, " "); // Cep
+            face = strtok(NULL, " "); // Face
+            num = newAtoi(strtok(NULL, " ")); // Num
+            if (getEstabAddress(cityIndex, hash((unsigned char *) cnpj), &address, &tmpEstab)) {
+                if (getQuadraAddress(cityIndex, hash((unsigned char *) cep), &address,
+                                     &tmpQuad)) {
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address,
+                                     &quadraAux);
+                    getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(tmpEstab)), &address, &tmpTipo);
+                    estabQuadraTxt(tmpEstab, tmpTipo, quadraAux, txtOutput, 1);
+                    addAux(tmpAux, getQuadraX(tmpQuad), getQuadraY(tmpQuad), getQuadraX(quadraAux),
+                           getQuadraY(quadraAux), 7);
+                    mudaEstab(cityIndex, cnpj, cep, face, num);
+                    killEstab(estabAux);
+                    killTipo(tmpTipo);
+                    killQuadra(quadraAux);
+                    getEstabAddress(cityIndex, hash((unsigned char *) cnpj), &address, &estabAux);
+                    getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(estabAux)), &address, &tmpTipo);
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(estabAux)), &address,
+                                     &quadraAux);
+                    estabQuadraTxt(estabAux, tmpTipo, quadraAux, txtOutput, 1);
+                    killEstab(estabAux);
+                    killEstab(tmpEstab);
+                    killTipo(tmpTipo);
+                    killQuadra(quadraAux);
+                    killQuadra(tmpQuad);
+                } else {
+                    fprintf(*txtOutput, "Pessoa não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Casa não encontrada\n");
             }
             break;
         default:
@@ -401,4 +521,76 @@ void ripMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, AuxFigura **tm
         fprintf(*txtOutput, "Casa não encontrada\n");
     }
 
+}
+
+// Reporta o hidrante mais proximo de determinada estrutura
+void reportHid(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    Quadra *tmpQuad = NULL;
+    Torre *tmpTorre = NULL;
+    int face, num;
+    long int address;
+    switch (action) {
+        case 1: // Hidrante mais proximo do endereço (hmpe?)
+            token = strtok(NULL, " "); // Cep
+            getQuadraAddress(cityIndex, hash((unsigned char *) token), &address, &tmpQuad);
+            face = getFaceValue(strtok(NULL, " ")); // Face
+            num = newAtoi(strtok(NULL, " ")); // Num
+            double x = getQuadraX(tmpQuad); // X
+            double y = getQuadraY(tmpQuad);// Y
+            double width = getQuadraWidth(tmpQuad); // Width
+            double height = getQuadraHeight(tmpQuad); // Heigth
+            switch (face) {
+                case 1: // Norte
+                    x = x + width / 2;
+                    break;
+                case 2: // Sul
+                    x = x + width / 2;
+                    y = y + height;
+                    break;
+                case 3: // Leste
+                    y = y + height / 2;
+                    break;
+                case 4: // Oeste
+                    x = x + width;
+                    y = y + height / 2;
+                default:
+                    break;
+            }
+            closestHidrante(cityIndex, txtOutput, 0, x, y, 1, tmpAux);
+            killQuadra(tmpQuad);
+            break;
+        case 2: // Hidrante mais proximo da torre (hmp?)
+            token = strtok(NULL, " "); // Id
+            if (getTorreAddress(cityIndex, hash((unsigned char *) token), &address, &tmpTorre)) {
+                double x1 = getTorreX(tmpTorre); // X
+                double y1 = getTorreY(tmpTorre); // Y
+                closestHidrante(cityIndex, txtOutput, hash((unsigned char *) getTorreId(tmpTorre)), x1, y1, 2, tmpAux);
+                killTorre(tmpTorre);
+            } else {
+                fprintf(*txtOutput, "Id não encontrada\n");
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+// Elimina as estruturas dentro da região
+void dpr(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    Quadra *tmpQuad = NULL;
+    Torre *tmpTorre = NULL;
+    int face, num;
+    long int address;
+    double x = newAtod(strtok(NULL, " "));
+    double y = newAtod(strtok(NULL, " "));
+    double width = newAtod(strtok(NULL, " "));
+    double height = newAtod(strtok(NULL, " "));
+    quadraInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 4);
+    semafInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 4);
+    hidInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 4);
+    torreInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 4);
 }

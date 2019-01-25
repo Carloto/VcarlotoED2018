@@ -47,4 +47,10 @@ void reportEstab(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, A
 // Declara um morador como morto
 void ripMorador(Cidade *cityIndex, char *linha, FILE **txtOutput, AuxFigura **tmpAux);
 
+// Reporta o hidrante mais proximo de determinada estrutura
+void reportHid(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux);
+
+// Elimina as estruturas dentro da região
+void dpr(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux);
+
 #endif // QUERY_H

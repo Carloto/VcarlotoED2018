@@ -293,6 +293,126 @@ Point *torreToPoint(Cidade *cityIndex) {
     return listaTorre;
 }
 
+// Encontra o hidrante mais proximo e reporta a distancia
+void closestHidrante(Cidade *cityIndex, FILE **outputTxt, unsigned long id, double x, double y, int action,
+                     AuxFigura **tmpAux) {
+
+    if (action == 2) {
+        // Hidrante
+        Torre *tmpTorre = NULL;
+        Hidrante *tmpHid = allocHidrante();
+        Hidrante *auxHid = NULL;
+        unsigned long id2 = 0;
+        long int address;
+        double distance = DBL_MAX;
+        fseek(cityIndex->hidrantes, 0, SEEK_SET);
+        while (!feof(cityIndex->hidrantes)) {
+            readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
+            if (!feof(cityIndex->hidrantes)) {
+                if (checkString(getHidranteId(tmpHid))) {
+                    if (findDistance(x, y, getHidranteX(tmpHid), getHidranteY(tmpHid)) < distance) {
+                        distance = findDistance(x, y, getHidranteX(tmpHid), getHidranteY(tmpHid));
+                        id2 = hash((unsigned char *) getHidranteId(tmpHid));
+                    }
+                }
+            }
+        }
+        killHidrante(tmpHid);
+        getTorreAddress(cityIndex, id, &address, &tmpTorre);
+        getHidranteAddress(cityIndex, id2, &address, &auxHid);
+        addAux(tmpAux, x, y, getHidranteX(auxHid), getHidranteY(auxHid), 6);
+        fprintf(*outputTxt, "Distancia = %lf\n", distance);
+        torreTxt(tmpTorre, outputTxt);
+        hidranteTxt(auxHid, outputTxt);
+        killTorre(tmpTorre);
+        killHidrante(auxHid);
+        return;
+    }
+
+    // Hidrante
+    Hidrante *tmpHid = allocHidrante();
+    Hidrante *auxHid = NULL;
+    unsigned long id2 = 0;
+    long int address;
+    double distance = DBL_MAX;
+    fseek(cityIndex->hidrantes, 0, SEEK_SET);
+    while (!feof(cityIndex->hidrantes)) {
+        readFromBin(&(cityIndex->hidrantes), getHidranteSize(), tmpHid);
+        if (!feof(cityIndex->hidrantes)) {
+            if (checkString(getHidranteId(tmpHid))) {
+                if (findDistance(x, y, getHidranteX(tmpHid), getHidranteY(tmpHid)) < distance) {
+                    distance = findDistance(x, y, getHidranteX(tmpHid), getHidranteY(tmpHid));
+                    id2 = hash((unsigned char *) getHidranteId(tmpHid));
+                }
+            }
+        }
+    }
+    killHidrante(tmpHid);
+    getHidranteAddress(cityIndex, id2, &address, &auxHid);
+    addAux(tmpAux, x, y, getHidranteX(auxHid), getHidranteY(auxHid), 5);
+    fprintf(*outputTxt, "Distancia = %lf\n", distance);
+    hidranteTxt(auxHid, outputTxt);
+    killHidrante(auxHid);
+}
+
+// Imprime o hidrante no txt
+void hidranteTxt(Hidrante *tmpHid, FILE **outputTxt) {
+    fprintf(*outputTxt, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+            getHidranteId(tmpHid), getHidranteX(tmpHid),
+            getHidranteY(tmpHid),
+            getHidranteStrokeColor(tmpHid), getHidranteFillColor(tmpHid));
+}
+
+// Muda a pessoa de endereço
+void mudaPessoa(Cidade *cityIndex, char cpf[25], char cep[50], char face[2], char complemento[50], int num) {
+    Moradia *tmpMoradia = allocMoradia();
+    long int address;
+    readFromBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
+    btGetAddress(cityIndex->moraCpfTree, hash((unsigned char *) cpf), &address);
+    setMoradiaCep(tmpMoradia, cep);
+    setMoradiaComplemento(tmpMoradia, complemento);
+    setMoradiaFace(tmpMoradia, face);
+    setMoradiaNum(tmpMoradia, num);
+    fseek(cityIndex->moradias, address, SEEK_SET);
+    printToBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
+    killMoradia(tmpMoradia);
+}
+
+// Muda o estabelecimento de endereco
+void mudaEstab(Cidade*cityIndex, char cnpj[50], char cep[50], char face[2],int num){
+    Estab *tmpEstab= allocEstab();
+    long int address;
+    readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+    btGetAddress(cityIndex->estabeTree, hash((unsigned char *) cnpj), &address);
+    setEstabCep(tmpEstab, cep);
+    setEstabFace(tmpEstab, face);
+    setEstabNum(tmpEstab, num);
+    fseek(cityIndex->estabe, address, SEEK_SET);
+    printToBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+    killEstab(tmpEstab);
+}
+
+// Imprime a torre no txt
+void torreTxt(Torre *tmpTorre, FILE **outputTxt) {
+    fprintf(*outputTxt, "Id = %s  X = %lf  Y = %lf  Stroke = %s  Fill = %s\n",
+            getTorreId(tmpTorre), getTorreX(tmpTorre),
+            getTorreY(tmpTorre),
+            getTorreStrokeColor(tmpTorre), getTorreFillColor(tmpTorre));
+}
+
+// Declara um estabelecimento fechado deleta suas informações
+void ripEstab(Cidade *cityIndex, unsigned long id) {
+    // establecimento
+    long int address;
+    Estab *tmpEstab = allocEstab();
+    readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+    btDeleteInfo(cityIndex->estabeTree, id, &address);
+    deleteEstab(tmpEstab);
+    fseek(cityIndex->estabe, address, SEEK_SET);
+    printToBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+    killEstab(tmpEstab);
+}
+
 // Declara uma pessoa morta e deleta suas informações
 void ripPessoa(Cidade *cityIndex, unsigned long id) {
     // Pessoa
@@ -323,17 +443,60 @@ void reportEstabCep(Cidade *cityIndex, unsigned long id, FILE **txtOutput, int a
     Quadra *tmpQuad = NULL;
     Tipo *tmpTipo = NULL;
     long int address;
+    unsigned long id2;
     fseek(cityIndex->estabe, 0, SEEK_SET);
     while (!feof(cityIndex->estabe)) {
         readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
         if (!feof(cityIndex->estabe)) {
             if (checkString(getEstabCnpj(tmpEstab))) {
-                if (hash((unsigned char *) getEstabCep(tmpEstab)) == id) {
+                if (action == 2) {
+                    id2 = hash((unsigned char *) getEstabCodt(tmpEstab));
+                } else {
+                    id2 = hash((unsigned char *) getEstabCep(tmpEstab));
+                }
+                if (id2 == id) {
                     getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address, &tmpQuad);
                     getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(tmpEstab)), &address, &tmpTipo);
-                    estabQuadraTxt(tmpEstab, tmpTipo, tmpQuad, txtOutput, 1);
+                    estabQuadraTxt(tmpEstab, tmpTipo, tmpQuad, txtOutput, action);
                     killQuadra(tmpQuad);
                     killTipo(tmpTipo);
+                }
+            }
+        }
+    }
+    killEstab(tmpEstab);
+}
+
+// Lista os estabelecimentos dentro de certo perimetro
+void
+reportEstabInside(Cidade *cityIndex, unsigned long id, FILE **txtOutput, int action, double x, double y, double width,
+                  double height) {
+    // Estabelecimento
+    Estab *tmpEstab = allocEstab();
+    Quadra *tmpQuad = NULL;
+    Tipo *tmpTipo = NULL;
+    long int address;
+    unsigned long id2;
+    fseek(cityIndex->estabe, 0, SEEK_SET);
+    while (!feof(cityIndex->estabe)) {
+        readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
+        if (!feof(cityIndex->estabe)) {
+            if (checkString(getEstabCnpj(tmpEstab))) {
+                if (action == 5) {
+                    id2 = id;
+                } else if (action == 2) {
+                    id2 = hash((unsigned char *) getEstabCodt(tmpEstab));
+                } else {
+                    id2 = hash((unsigned char *) getEstabCep(tmpEstab));
+                }
+                if (id2 == id) {
+                    getQuadraAddress(cityIndex, hash((unsigned char *) getEstabCep(tmpEstab)), &address, &tmpQuad);
+                    if (pointInsideRectangle(getQuadraX(tmpQuad), getQuadraY(tmpQuad), x, y, width, height) == 1) {
+                        getTipoAddress(cityIndex, hash((unsigned char *) getEstabCodt(tmpEstab)), &address, &tmpTipo);
+                        estabQuadraTxt(tmpEstab, tmpTipo, tmpQuad, txtOutput, 1);
+                        killTipo(tmpTipo);
+                    }
+                    killQuadra(tmpQuad);
                 }
             }
         }
@@ -358,9 +521,9 @@ void addAuxQuadra(Quadra *tmpQuad, AuxFigura **tmpAux, int num, int face, int ty
                    type);
             break;
         case 4: // Oeste
-            addAux(tmpAux, getQuadraX(tmpQuad) + +getQuadraWidth(tmpQuad) - 11, getQuadraY(tmpQuad) +
-                                                                                ((double) num /
-                                                                                 10) * 7, 0, 0,
+            addAux(tmpAux, getQuadraX(tmpQuad) + getQuadraWidth(tmpQuad) - 11, getQuadraY(tmpQuad) +
+                                                                               ((double) num /
+                                                                                10) * 7, 0, 0,
                    type);
         default:
             break;
@@ -392,7 +555,7 @@ void pessoaMoradiaTxt(Moradia *tmpMoradia, Pessoa *tmpPessoa, Quadra *tmpQuadra,
 // Imprime o estabelecimento e a quadra para o txt
 void estabQuadraTxt(Estab *tmpEstab, Tipo *tmpTipo, Quadra *tmpQuad, FILE **txtOutput, int action) {
     fprintf(*txtOutput,
-            "Cnpf = %s  Nome = %s  Cep = %s  Face = %s  Num = %d\n", getEstabCnpj(tmpEstab), getEstabNome(tmpEstab),
+            "Cnpj = %s  Nome = %s  Cep = %s  Face = %s  Num = %d\n", getEstabCnpj(tmpEstab), getEstabNome(tmpEstab),
             getEstabCep(tmpEstab),
             getEstabFace(tmpEstab), getEstabNum(tmpEstab));
     if (action == 1) {
@@ -538,6 +701,7 @@ void quadraInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput
 
                         switch (action) {
                             case 2: // dq
+                            case 4:
                                 btDeleteInfo(cityIndex->quadraTree, hash((unsigned char *) getQuadraCep(tmpQuad)),
                                              &address);
                                 deleteQuadra(tmpQuad);
@@ -602,7 +766,9 @@ void quadraInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, d
 // Verifica quais semaforos estão dentro de dado retangulo
 void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                           double aHeigth, int action) {
-    printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    if (action < 3) {
+        printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    }
     long int address;
     Semaforo *tmpSemaf = allocSemaforo();
     fseek(cityIndex->semaforos, 0, SEEK_SET);
@@ -619,6 +785,7 @@ void semafInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput,
 
                     switch (action) {
                         case 2: // dle
+                        case 4:
                             btDeleteInfo(cityIndex->semafTree, hash((unsigned char *) getSemaforoId(tmpSemaf)),
                                          &address);
                             deleteSemaforo(tmpSemaf);
@@ -676,7 +843,9 @@ void semafInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, do
 // Verifica quais hidrantes estão dentro de dado retangulo
 void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                         double aHeigth, int action) {
-    printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    if (action < 3) {
+        printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    }
     long int address;
     Hidrante *tmpHid = allocHidrante();
     fseek(cityIndex->hidrantes, 0, SEEK_SET);
@@ -693,6 +862,7 @@ void hidInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, d
 
                     switch (action) {
                         case 2: // dle
+                        case 4:
                             btDeleteInfo(cityIndex->hidrTree, hash((unsigned char *) getHidranteId(tmpHid)), &address);
                             deleteHidrante(tmpHid);
                             fseek(cityIndex->hidrantes, address, SEEK_SET);
@@ -748,7 +918,9 @@ void hidInsideCircle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, doub
 // Verifica quais torres estão dentro de dado retangulo
 void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput, double aX, double aY, double aWidth,
                           double aHeigth, int action) {
-    printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    if (action < 3) {
+        printDashRectangle(svgOutput, aX, aY, aWidth, aHeigth);
+    }
     long int address;
     Torre *tmpTorre = allocTorre();
     fseek(cityIndex->torres, 0, SEEK_SET);
@@ -765,6 +937,7 @@ void torreInsideRectangle(Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput,
 
                     switch (action) {
                         case 2: // dle
+                        case 4:
                             btDeleteInfo(cityIndex->torreTree, hash((unsigned char *) getTorreId(tmpTorre)), &address);
                             deleteTorre(tmpTorre);
                             fseek(cityIndex->torres, address, SEEK_SET);
@@ -1042,23 +1215,4 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
     }
     killTorre(tmpTorre);
 
-    // Imprimir estabelecimentos
-    Estab *tmpEstab = allocEstab();
-    fseek(cityIndex->estabe, 0, SEEK_SET);
-    while (!feof(cityIndex->estabe)) {
-        readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
-        if (!feof(cityIndex->estabe)) {
-            if (checkString(getEstabCnpj(tmpEstab))) {
-                fprintf(*outputFile,
-                        "\t<rect x=\"%lf\" y=\"%lf\" width=\"10\" height=\"10\" ",
-                        getEstabX(tmpEstab),
-                        getEstabY(tmpEstab));
-                fprintf(*outputFile,
-                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" fill-opacity=\"0.7\" stroke-opacity=\"0.7\" />\n",
-                        getEstabStrokeColor(tmpEstab),
-                        getEstabFillColor(tmpEstab));
-            }
-        }
-    }
-    killEstab(tmpEstab);
 }

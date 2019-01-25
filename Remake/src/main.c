@@ -240,6 +240,15 @@ int main(int argc, char *argv[]) {
                 case RIP:
                     ripMorador(Bitnopolis, linha, &StandardTxtOutput, &headAux);
                     break;
+                case FEC:
+                    reportEstab(Bitnopolis, linha, &StandardTxtOutput, 5, &headAux);
+                    break;
+                case MUD:
+                    reportMorador(Bitnopolis, linha, &StandardTxtOutput, 3, &headAux);
+                    break;
+                case DPR:
+                    dpr(Bitnopolis, linha, &StandardTxtOutput, 1, &headAux);
+                    break;
                 default: // Casos não aceitos por switch
                     // T3
                     if (hashResult == CRD) {
@@ -248,6 +257,18 @@ int main(int argc, char *argv[]) {
                         closestTorres(Bitnopolis, linha, &StandardTxtOutput);
                     } else if (hashResult == ECQ_SEARCH) {
                         reportEstab(Bitnopolis, linha, &StandardTxtOutput, 2, &headAux);
+                    } else if (hashResult == ECR_SEARCH) {
+                        reportEstab(Bitnopolis, linha, &StandardTxtOutput, 3, &headAux);
+                    } else if (hashResult == TECQ_SEARCH) {
+                        reportEstab(Bitnopolis, linha, &StandardTxtOutput, 2, &headAux);
+                    } else if (hashResult == TECR_SEARCH) {
+                        reportEstab(Bitnopolis, linha, &StandardTxtOutput, 4, &headAux);
+                    } else if (hashResult == HMPE_SEARCH) {
+                        reportHid(Bitnopolis, linha, &StandardTxtOutput, 1, &headAux);
+                    } else if (hashResult == HMP_SEARCH) {
+                        reportHid(Bitnopolis, linha, &StandardTxtOutput, 2, &headAux);
+                    } else if (hashResult == MUDEC) {
+                        reportEstab(Bitnopolis, linha, &StandardTxtOutput, 6, &headAux);
                     }
                     break;
             }
@@ -262,20 +283,20 @@ int main(int argc, char *argv[]) {
         fclose(SvgQryOutputFile);
     }
 
-    // Free structs
+// Free structs
     killFileArguments(&FileNames);
     killBasicShapes(&AllBasicShapes);
     killCidade(&Bitnopolis);
     killColor(ColorIndex);
-    // Close files
+// Close files
     printTagSvg(&StandardSvgOutput, 1); // Finaliza header svg
     fclose(StandardSvgOutput); // Fecha a saida svg padrao
     fclose(StandardTxtOutput);
-    // Free aux
+// Free aux
     freeString(&linha);
     freeString(&tmpLinha);
 
-    // End main
+// End main
     return 0;
 
 }
