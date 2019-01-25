@@ -594,3 +594,109 @@ void dpr(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura
     hidInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 4);
     torreInsideRectangle(cityIndex, txtOutput, NULL, x, y, width, height, 4);
 }
+
+// Armazena os registradores
+void getRegistradores(Cidade *cityIndex, char *linha, FILE **txtOutput, int action) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    char *reg = NULL, *cep = NULL, *face = NULL;
+    int num;
+    Quadra *tmpQuad = NULL, *quadraAux = NULL;
+    Estab *tmpEstab = NULL, *estabAux = NULL;
+    Moradia *tmpMoradia = NULL;
+    Semaforo *tmpSemaf = NULL;
+    Hidrante *tmpHid = NULL;
+    Torre *tmpTorre = NULL;
+    Tipo *tmpTipo = NULL;
+    long int address;
+    switch (action) {
+        case 1: // (m?)
+            reg = strtok(NULL, " "); // R
+            token = strtok(NULL, " "); // Cpf
+            if (getMoradiaAddress(cityIndex, hash((unsigned char *) token), &address, &tmpMoradia, 1)) {
+                if (getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
+                                     &tmpQuad)) {
+                    removeFirstChar(&reg);
+                    num = newAtoi(reg);
+                    putPonto(cityIndex, getQuadraX(tmpQuad), getQuadraY(tmpQuad), num);
+                    killQuadra(tmpQuad);
+                    killMoradia(tmpMoradia);
+                } else {
+                    fprintf(*txtOutput, "Quadra não encontrada\n");
+                }
+                return;
+            } else {
+                fprintf(*txtOutput, "Pessoa não encontrada\n");
+            }
+            break;
+        case 2: // (e?)
+            reg = strtok(NULL, " "); // R
+            token = strtok(NULL, " "); // Cep
+            if (getQuadraAddress(cityIndex, hash((unsigned char *) getMoradiaCep(tmpMoradia)), &address,
+                                 &tmpQuad)) {
+                removeFirstChar(&reg);
+                num = newAtoi(reg);
+                putPonto(cityIndex, getQuadraX(tmpQuad), getQuadraY(tmpQuad), num);
+                killQuadra(tmpQuad);
+                return;
+            } else {
+                fprintf(*txtOutput, "Quadra não encontrada\n");
+            }
+            break;
+        case 3: // (g?)
+            reg = strtok(NULL, " "); // R
+            token = strtok(NULL, " "); // Id
+            if (getSemaforoAddress(cityIndex, hash((unsigned char *) token), &address, &tmpSemaf)) {
+                removeFirstChar(&reg);
+                num = newAtoi(reg);
+                putPonto(cityIndex, getSemaforoX(tmpSemaf), getSemaforoY(tmpSemaf), num);
+                killSemaforo(tmpSemaf);
+                return;
+            } else if (getHidranteAddress(cityIndex, hash((unsigned char *) token), &address, &tmpHid)) {
+                removeFirstChar(&reg);
+                num = newAtoi(reg);
+                putPonto(cityIndex, getHidranteX(tmpHid), getHidranteY(tmpHid), num);
+                killHidrante(tmpHid);
+                return;
+            } else if (getTorreAddress(cityIndex, hash((unsigned char *) token), &address, &tmpTorre)) {
+                removeFirstChar(&reg);
+                num = newAtoi(reg);
+                putPonto(cityIndex, getTorreX(tmpTorre), getTorreY(tmpTorre), num);
+                killTorre(tmpTorre);
+                return;
+            } else {
+                fprintf(*txtOutput, "id não encontrada\n");
+            }
+            break;
+        case 4: // (e?)
+            reg = strtok(NULL, " "); // R
+            token = strtok(NULL, " "); // Cep
+
+                removeFirstChar(&reg);
+                double x = newAtod(strtok(NULL, " "));
+                double y = newAtod(strtok(NULL, " "));
+                num = newAtoi(reg);
+                putPonto(cityIndex, x, y, num);
+            break;
+        default:
+            break;
+    }
+}
+
+void rau(Cidade *cityIndex, char *linha, FILE **txtOutput, AuxFigura **tmpAux) {
+    fprintf(*txtOutput, "%s\n", linha); // Imprime a requisição no txt
+    char *token = strtok(linha, " "); // Comando
+    Carro *tmpCarro;
+    long int address;
+    // Carro
+    token = strtok(NULL, " "); // Placa
+    if (getCarroAddress(cityIndex, hash((unsigned char *) token), &address, &tmpCarro)) { // 1 Para busca por cpf
+        fprintf(*txtOutput, "Placa = %s  X = %lf  Y = %lf\n", getCarroplaca(tmpCarro), getCarroX(tmpCarro),
+                getCarroY(tmpCarro));
+        ripcarro(cityIndex, hash((unsigned char *) token));
+        killCarro(tmpCarro);
+    } else {
+        fprintf(*txtOutput, "Pessoa não encontrada\n");
+    }
+
+}

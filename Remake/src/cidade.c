@@ -17,10 +17,319 @@ struct tmpCidade { // Estruturas da cidade
     bTree tipoestabeTree; // Arvore contendo os enderecos do arquivo binario
     FILE *pessoas; // Arquivo binario de pessoa
     bTree pessoasTree; // Arvore contendo os enderecos do arquivo binario
+    FILE *carros; // Arquivo binario de carro
+    bTree carrosTree; // Arvore contendo os enderecos do arquivo binario
     FILE *moradias; // Arquivo binario de tipos de moradias
     bTree moraCpfTree; // Arvore contendo os enderecos do arquivo binario
     bTree moraCepTree; // Arvore contendo os enderecos do arquivo binario
+    FILE *vias; // Arquivo binario de .via
+    float **matrizTempo;
+    float **matrizDist;
+    Grafo *grafo;
+    ponto pontos[10];
 };
+
+void Best_Caminho(char *line, Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput) {
+    char *token; //procura o melhor caminho a ser tomado
+    char *info;
+    int indexSrc;
+    int indexDest;
+    char *cor = NULL;
+    int size = Tamanho(cityIndex->grafo->verts);
+    int *caminho = (int *) malloc(sizeof(int) * size);
+    char *svgfinal = NULL;
+    token = strtok(line, " ");
+    token = strtok(NULL, "R");
+    info = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(info, token);
+    token = strtok(NULL, " ");
+    indexSrc = atoi(token);
+    token = strtok(NULL, " ");
+    if (token[1] == '1') {
+        if (token[2] == '0') {
+            indexDest = 10;
+        } else indexDest = 1;
+    } else {
+        indexDest = token[1] - '0';
+    }
+    token = strtok(NULL, "\n");
+    if (token != NULL) {
+        cor = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+        strcpy(cor, token);
+    }
+    token = strtok(info, " ");
+    int picOrText;
+    char *sufixo = NULL;
+    int DorT;
+    if (token[0] == 't') {
+        picOrText = 1;
+        token = strtok(NULL, " ");
+        if (token[0] == 'T') {
+            DorT = 1;
+        } else {
+            DorT = 0;
+        }
+    } else if (token[0] == 'p') {
+        picOrText = 0;
+        token = strtok(NULL, " ");
+        sufixo = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+        strcpy(sufixo, token);
+        token = strtok(NULL, " ");
+        if (token[0] == 'T') {
+            DorT = 1;
+        } else {
+            DorT = 0;
+        }
+    }
+    Vertice *vert1 = NULL;
+    vert1 = Vertice_Perto_X_Y(cityIndex->grafo->verts, cityIndex->pontos[indexSrc]);
+    Vertice *vert2 = NULL;
+    vert2 = Vertice_Perto_X_Y(cityIndex->grafo->verts, cityIndex->pontos[indexDest]);
+    if (DorT == 1) {
+        caminho = Dijkstra(vert1->numericID, vert2->numericID, cityIndex->matrizTempo, size, caminho);
+    }
+    if (DorT == 0) {
+        caminho = Dijkstra(vert1->numericID, vert2->numericID, cityIndex->matrizDist, size, caminho);
+    }
+    if (picOrText == 1) {
+        Repr_Caminho(cityIndex->grafo, caminho, size, *txtOutput);
+    } else if (picOrText == 0) {
+        fprintf(*svgOutput, "<svg>\n");
+        fprintf(*svgOutput, "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"stroke:%s;stroke-width:3\" />\n",
+                cityIndex->pontos[indexSrc].x, cityIndex->pontos[indexSrc].y, vert1->Ponto.x, vert1->Ponto.y, cor);
+        fprintf(*svgOutput, "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"stroke:%s;stroke-width:3\" />\n",
+                cityIndex->pontos[indexDest].x, cityIndex->pontos[indexDest].y, vert2->Ponto.x, vert2->Ponto.y, cor);
+    }
+}
+
+void
+Best_Direcao_Caminho(char *line, Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput) {
+    int size = Tamanho(cityIndex->grafo->verts);
+    char *token;
+    char *info;
+    int *indices;
+    int qtd;
+    char *cor1 = NULL;
+    char *cor2 = NULL;
+    char *cor;
+    int *caminho = (int *) malloc(sizeof(int) * size);
+    char *svgfinal;
+    token = strtok(line, " ");
+    token = strtok(NULL, "R");
+    info = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(info, token);
+    qtd = info[strlen(info) - 2] - '0';
+    token = strtok(NULL, " ");
+    indices = (int *) malloc(sizeof(int) * qtd);
+    indices[0] = atoi(token);
+    for (int i = 1; i < qtd; i++) {
+        token = strtok(NULL, " ");
+        indices[i] = token[strlen(token) - 1] - '0';
+    }
+    token = strtok(NULL, " ");
+    cor1 = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(cor1, token);
+    token = strtok(NULL, " ");
+    cor2 = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(cor2, token);
+    token = strtok(info, " ");
+    int picOrText;
+    char *sufixo = NULL;
+    int DorT;
+    if (token[0] == 't') {
+        picOrText = 1;
+        token = strtok(NULL, " ");
+        if (token[0] == 'T') {
+            DorT = 1;
+        } else {
+            DorT = 0;
+        }
+    } else if (token[0] == 'p') {
+        picOrText = 0;
+        token = strtok(NULL, " ");
+        sufixo = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+        strcpy(sufixo, token);
+        token = strtok(NULL, " ");
+        if (token[0] == 'T') {
+            DorT = 1;
+        } else {
+            DorT = 0;
+        }
+    }
+    if (DorT == 1) {
+        for (int i = 0; i < qtd - 1; i++) {
+            int index1, index2;
+            index1 = indices[i];
+            index2 = indices[i + 1];
+            Vertice *vert1 = Vertice_Perto_X_Y(cityIndex->grafo->verts, cityIndex->pontos[index1]);
+            Vertice *vert2 = Vertice_Perto_X_Y(cityIndex->grafo->verts, cityIndex->pontos[index2]);
+            caminho = Dijkstra(vert1->numericID, vert2->numericID, cityIndex->matrizTempo, size, caminho);
+            if (picOrText == 0) {
+                if (i % 2 == 0) {
+                    cor = (char *) malloc(sizeof(char) * strlen(cor1));
+                    strcpy(cor, cor1);
+                } else if (i % 2 == 1) {
+                    cor = (char *) malloc(sizeof(char) * strlen(cor2));
+                    strcpy(cor, cor2);
+                }
+                fprintf(*svgOutput,
+                        "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"stroke:%s;stroke-width:3\" />\n",
+                        cityIndex->pontos[index1].x, cityIndex->pontos[index1].y, vert1->Ponto.x, vert1->Ponto.y, cor);
+                fprintf(*svgOutput,
+                        "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"stroke:%s;stroke-width:3\" />\n",
+                        cityIndex->pontos[index2].x, cityIndex->pontos[index2].y, vert2->Ponto.x, vert2->Ponto.y, cor);
+            } else if (picOrText == 1) {
+                Repr_Caminho(cityIndex->grafo, caminho, size, *txtOutput);
+            }
+        }
+    } else if (DorT == 0) {
+        for (int i = 0; i < qtd - 1; i++) {
+            int index1, index2;
+            index1 = indices[i];
+            index2 = indices[i + 1];
+            Vertice *vert1 = Vertice_Perto_X_Y(cityIndex->grafo->verts, cityIndex->pontos[index1]);
+            Vertice *vert2 = Vertice_Perto_X_Y(cityIndex->grafo->verts, cityIndex->pontos[index2]);
+            caminho = Dijkstra(vert1->numericID, vert2->numericID, cityIndex->matrizDist, size, caminho);
+            if (picOrText == 0) {
+                if (i % 2 == 0) {
+                    cor = (char *) malloc(sizeof(char) * strlen(cor1));
+                    strcpy(cor, cor1);
+                } else if (i % 2 == 1) {
+                    cor = (char *) malloc(sizeof(char) * strlen(cor2));
+                    strcpy(cor, cor2);
+                }
+                fprintf(*svgOutput,
+                        "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"stroke:%s;stroke-width:3\" />\n",
+                        cityIndex->pontos[index1].x, cityIndex->pontos[index1].y, vert1->Ponto.x, vert1->Ponto.y, cor);
+                fprintf(*svgOutput,
+                        "<line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"stroke:%s;stroke-width:3\" />\n",
+                        cityIndex->pontos[index2].x, cityIndex->pontos[index2].y, vert2->Ponto.x, vert2->Ponto.y, cor);
+            }
+            if (picOrText == 1) {
+                Repr_Caminho(cityIndex->grafo, caminho, size, *txtOutput);
+            }
+        }
+    }
+}
+
+Vertice *Vertice_Index(List *verts, int index) { //index do vertice
+    Vertice *vertFinal = NULL;
+    Node *node = verts->head;
+    while (node != NULL) {
+        Vertice *vert = (Vertice *) node->data;
+        if (vert->numericID == index) {
+            vertFinal = vert;
+        }
+        node = node->next;
+    }
+    return vertFinal;
+}
+
+
+void Repr_Caminho(Grafo *grafo, int *caminho, int size, FILE *arqtxt) { //printa o caminho a ser seguido
+
+    if (arqtxt != NULL) {
+        int index1, index2;
+        Vertice *vert1, *vert2;
+
+        for (int i = 0; i < size - 1; i++) {
+            index1 = caminho[i];
+            i++;
+            index2 = caminho[i];
+
+            if (index1 != index2) {
+                vert1 = Vertice_Index(grafo->verts, index1);
+                vert2 = Vertice_Index(grafo->verts, index2);
+                if (vert1 != NULL && vert2 != NULL) {
+                    Aresta *aresta = ArestaFinal(vert1, vert2);
+                    if (aresta != NULL) {
+                        fprintf(arqtxt, "siga pela rua %s\n", aresta->nome);
+                    }
+                }
+            }
+        }
+    }
+}
+
+Vertice *Vertice_Perto_X_Y(List *verts, ponto data) { //acha o vertice mais proximo em X e Y
+    Node *node = verts->head;
+    Vertice *vertFinal;
+    float min = 999999;
+    float d;
+    while (node != NULL) {
+        Vertice *vert = (Vertice *) node->data;
+        d = sqrt(pow(vert->Ponto.x - data.x, 2) + pow(vert->Ponto.y - data.y, 2));
+        Node *nodeAresta = vert->arestas->head;
+        while (nodeAresta != NULL) {
+            Aresta *aresta = (Aresta *) nodeAresta->data;
+            if (d < min && (strlen(aresta->lesq) > 3 && strlen(aresta->ldir) > 3)) {
+                vertFinal = vert;
+                min = d;
+            }
+            nodeAresta = nodeAresta->next;
+        }
+        node = node->next;
+    }
+    return vertFinal;
+}
+
+int *Dijkstra(int indexSrc, int indexDest, float **matriz, int size, int *caminho) {
+    int i = 0;
+    int j = 0;
+    int u = 0;
+    int cont = 0;
+    int pesos[size];
+    caminho = (int *) malloc(sizeof(int) * (size + 1));
+    int visitados[size];
+    for (i = 0; i < size; i++) {
+        pesos[i] = 9999;
+        caminho[i] = -1;
+        visitados[i] = 0;
+    }
+    pesos[indexSrc] = 0;
+    for (cont = 0; cont < size - 1; cont++) {
+        u = Menor_Distancia(pesos, visitados, size);
+        visitados[u] = 1;
+        for (j = 0; j < size; j++) {
+            if ((visitados[j] == 0) && (matriz[u][j] != -1) && (pesos[u] != 9999) &&
+                (pesos[u] + matriz[u][j] < pesos[j])) {
+                pesos[j] = matriz[u][j] + pesos[u];
+                caminho[j] = u;
+            }
+        }
+    }
+    int *Final_Path = (int *) malloc(sizeof(int) * size);
+    for (int z = 0; z < size; z++) {
+        Final_Path[z] = -1;
+    }
+    int z = 1;
+    Final_Path[0] = indexDest;
+    int indexSearch = caminho[indexDest];
+    while (indexSearch != 0) {
+        Final_Path[z] = indexSearch;
+        indexSearch = caminho[indexSearch];
+        z++;
+    }
+    return Final_Path;
+}
+
+int Menor_Distancia(int *pesos, int *visitados, int size) { //menor distancia
+    int i = 0;
+    int min = 9999;
+    int indexmin = -1;
+    for (i = 0; i < size; i++) {
+        if ((visitados[i] == 0) && (pesos[i] <= min)) {
+            min = pesos[i];
+            indexmin = i;
+        }
+    }
+    return indexmin;
+}
+
+void putPonto(Cidade *cityIndex, float x, float y, int i) {
+    cityIndex->pontos[i].x = x;
+    cityIndex->pontos[i].y = y;
+}
 
 // Aloca e inicializa uma struct Cidade
 Cidade *allocCidade(fileArguments *source) {
@@ -64,11 +373,24 @@ Cidade *allocCidade(fileArguments *source) {
     tmpStruct->pessoas = openFile(openName, "wb+");
     tmpStruct->pessoasTree = btCreate();
 
+    sprintf(name, "%s", "carros"); // Pessoas
+    strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
+    tmpStruct->carros = openFile(openName, "wb+");
+    tmpStruct->carrosTree = btCreate();
+
     sprintf(name, "%s", "moradias"); // Moradias
     strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
     tmpStruct->moradias = openFile(openName, "wb+");
     tmpStruct->moraCpfTree = btCreate();
     tmpStruct->moraCepTree = btCreate();
+
+    sprintf(name, "%s", "vias"); // Vias
+    strcatFileName(&openName, getFullPathBd(source), &name, ".bin\0");
+    tmpStruct->vias = openFile(openName, "wb+");
+
+    tmpStruct->matrizTempo = NULL;
+    tmpStruct->matrizDist = NULL;
+    tmpStruct->grafo = Novo_Grafo();
 
     freeString(&openName);
     freeString(&name);
@@ -91,10 +413,103 @@ void killCidade(Cidade **cityIndex) {
     btDestroy((*cityIndex)->tipoestabeTree);
     fclose((*cityIndex)->pessoas);
     btDestroy((*cityIndex)->pessoasTree);
+    fclose((*cityIndex)->carros);
+    btDestroy((*cityIndex)->carrosTree);
     fclose((*cityIndex)->moradias);
     btDestroy((*cityIndex)->moraCpfTree);
     btDestroy((*cityIndex)->moraCepTree);
+    fclose((*cityIndex)->vias);
     free(*cityIndex);
+}
+
+// Guarda as vias no arquivo binario
+void viasToBin(Cidade *cityIndex, char linha[200]) {
+    printToBin(&(cityIndex->vias), sizeof(char[200]), linha);
+}
+
+// Le as vias no arquivo bin
+void readVias(Cidade *cityIndex, FILE **svgOutput) {
+    char linha[200], line_full[200], *token;
+    fseek(cityIndex->vias, 0, SEEK_SET);
+    int vertCont = 0;
+    while (!feof(cityIndex->vias)) {
+        readFromBin(&(cityIndex->vias), sizeof(char[200]), linha);
+        if (!feof(cityIndex->vias)) {
+            strcpy(line_full, linha);
+            token = strtok(linha, " ");
+            if (strcmp(token, "v") == 0 || strcmp(token, "v\n") == 0) {
+                Adicao_Vertices(cityIndex->grafo, line_full, vertCont);
+                vertCont++;
+            }
+            if (strcmp(token, "e") == 0 || strcmp(token, "e\n") == 0) {
+                Adicao_Arestas(cityIndex->grafo, line_full);
+            }
+        }
+
+        Insere_Variaveis_Vertices(cityIndex->grafo);
+        cityIndex->matrizTempo = Insere_Var_Matriz((cityIndex->grafo)->verts, cityIndex->matrizTempo);
+        cityIndex->matrizDist = Insere_Distancias_Mat((cityIndex->grafo)->verts, cityIndex->matrizDist);
+    }
+    print_Vertices(svgOutput, cityIndex->grafo);
+}
+
+void print_Vertices(FILE **f, Grafo *grafo) {
+    List *verts = grafo->verts;
+    Node *node = verts->head;
+    while (node != NULL) {
+        Vertice *vert = (Vertice *) node->data;
+        fprintf(*f, "<text x=\"%f\" y=\"%f\" fill=\"black\" >%d </text>\n", vert->Ponto.x, vert->Ponto.y,
+                vert->numericID);
+        node = node->next;
+    }
+}
+
+void Adicao_Vertices(Grafo *grafo, char *line, int numericID) { //adiciona vertices
+    char *token;
+    char *id;
+    float x;
+    float y;
+    token = strtok(line, " ");
+    token = strtok(NULL, " ");
+    id = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(id, token);
+    token = strtok(NULL, " ");
+    x = atol(token);
+    token = strtok(NULL, " ");
+    y = atol(token);
+    Coloca_Vertices(id, x, y, grafo, numericID);
+}
+
+void Adicao_Arestas(Grafo *grafo, char *line) { //adiciona arestas
+    char *token;
+    char *src;
+    char *dest;
+    char *ldir;
+    char *lesq;
+    float cmp;
+    float vm;
+    char *nome;
+    token = strtok(line, " ");
+    token = strtok(NULL, " ");
+    src = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(src, token);
+    token = strtok(NULL, " ");
+    dest = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(dest, token);
+    token = strtok(NULL, " ");
+    ldir = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(ldir, token);
+    token = strtok(NULL, " ");
+    lesq = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(lesq, token);
+    token = strtok(NULL, " ");
+    cmp = atol(token);
+    token = strtok(NULL, " ");
+    vm = atol(token);
+    token = strtok(NULL, " ");
+    nome = (char *) malloc(sizeof(char) * (strlen(token) + 1));
+    strcpy(nome, token);
+    Coloca_Aresta(src, dest, ldir, lesq, cmp, vm, nome, grafo);
 }
 
 // Adiciona uma nova estrutura no arquivo binario e na b-tree, a partir do arquivo lido
@@ -107,6 +522,7 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
     Tipo *tmpTipoEstab = NULL;
     Pessoa *tmpPessoa = NULL;
     Moradia *tmpMoradia = NULL;
+    Carro *tmpCarro = NULL;
     char *token = strtok(inputLine, " ");// Comando
     if (token == NULL) {
         return;
@@ -245,6 +661,18 @@ void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex,
             printToBin(&(cityIndex->moradias), getMoradiaSize(), tmpMoradia);
             killMoradia(tmpMoradia);
             break;
+        case 9: // Carro
+            tmpCarro = allocCarro();
+            token = strtok(NULL, " "); // Placa
+            setCarroPlaca(tmpCarro, token);
+            btInsert(cityIndex->carrosTree, hash((unsigned char *) token), ftell(cityIndex->carros));
+            setCarroX(tmpCarro, newAtod(strtok(NULL, " ")));
+            setCarroY(tmpCarro, newAtod(strtok(NULL, " ")));
+            setCarroWidth(tmpCarro, newAtod(strtok(NULL, " ")));
+            setCarroHeight(tmpCarro, newAtod(strtok(NULL, " ")));
+            printToBin(&(cityIndex->carros), getCarroSize(), tmpCarro);
+            killCarro(tmpCarro);
+            break;
         default:
             break;
     }
@@ -379,8 +807,8 @@ void mudaPessoa(Cidade *cityIndex, char cpf[25], char cep[50], char face[2], cha
 }
 
 // Muda o estabelecimento de endereco
-void mudaEstab(Cidade*cityIndex, char cnpj[50], char cep[50], char face[2],int num){
-    Estab *tmpEstab= allocEstab();
+void mudaEstab(Cidade *cityIndex, char cnpj[50], char cep[50], char face[2], int num) {
+    Estab *tmpEstab = allocEstab();
     long int address;
     readFromBin(&(cityIndex->estabe), getEstabSize(), tmpEstab);
     btGetAddress(cityIndex->estabeTree, hash((unsigned char *) cnpj), &address);
@@ -595,6 +1023,30 @@ int getMoradiaAddress(Cidade *cityIndex, unsigned long id, long int *address, Mo
         return 1;
     }
     return 0;
+}
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getCarroAddress(Cidade *cityIndex, unsigned long id, long int *address, Carro**aux) {
+    if (btGetAddress(cityIndex->carrosTree, id, address)) { // Busca por placa
+        *aux = allocCarro();
+        fseek(cityIndex->carros, *address, SEEK_SET);
+        readFromBin(&(cityIndex->carros), getCarroSize(), *aux);
+        return 1;
+    }
+    return 0;
+}
+
+// Declara uma pessoa morta e deleta suas informações
+void ripcarro(Cidade *cityIndex, unsigned long id) {
+    // carro
+    long int address;
+    Carro *tmpCarro = allocCarro();
+    btDeleteInfo(cityIndex->carrosTree, id, &address);
+    readFromBin(&(cityIndex->carros), getCarroSize(), tmpCarro);
+    deleteCarro(tmpCarro);
+    fseek(cityIndex->carros, address, SEEK_SET);
+    printToBin(&(cityIndex->carros), getCarroSize(), tmpCarro);
+    killCarro(tmpCarro);
 }
 
 // Retorna 1 e modifica address caso encontre a estrutura
@@ -1214,5 +1666,30 @@ void printCityShapesToSvg(Cidade *cityIndex, FILE **outputFile) {
         }
     }
     killTorre(tmpTorre);
+
+    // Imprimir carros
+    Carro *tmpCarro = allocCarro();
+    fseek(cityIndex->carros, 0, SEEK_SET);
+    while (!feof(cityIndex->carros)) {
+        readFromBin(&(cityIndex->carros), getCarroSize(), tmpCarro);
+        if (!feof(cityIndex->carros)) {
+            if (checkString(getCarroplaca(tmpCarro))) {
+                fprintf(*outputFile,
+                        "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" ",
+                        getCarroX(tmpCarro),
+                        getCarroY(tmpCarro),
+                        getCarroWidth(tmpCarro),
+                        getCarroHeight(tmpCarro));
+                fprintf(*outputFile,
+                        "stroke=\"%s\" fill=\"%s\" style=\"stroke-width: 3;\" />\n", "black", "white");
+                fprintf(*outputFile,
+                        "\t<text x=\"%lf\" y=\"%lf\" fill=\"white\" stroke=\"black\" text-anchor=\"middle\" alignment-baseline=\"central\" style=\"stroke-width: 0.5;\" >%s</text>\n",
+                        (getCarroWidth(tmpCarro) / 2) + getCarroX(tmpCarro),
+                        (getCarroHeight(tmpCarro) / 2) + getCarroY(tmpCarro),
+                        getCarroplaca(tmpCarro));
+            }
+        }
+    }
+    killCarro(tmpCarro);
 
 }

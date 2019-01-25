@@ -58,6 +58,10 @@ char *getInputEcFileName(fileArguments *tmpStructs);
 // Retorna o nome de do arquivo de entrada .pm
 char *getInputPmFileName(fileArguments *tmpStructs);
 
+// Retorna o nome de do arquivo de entrada .via
+char *getInputViaFileName(fileArguments *tmpStructs);
+
+
 // Retorna o nome de do arquivo de saida .svg do qry
 char *getOutputQrySvgName(fileArguments *tmpStructs);
 

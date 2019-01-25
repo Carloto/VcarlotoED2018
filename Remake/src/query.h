@@ -53,4 +53,7 @@ void reportHid(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, Aux
 // Elimina as estruturas dentro da região
 void dpr(Cidade *cityIndex, char *linha, FILE **txtOutput, int action, AuxFigura **tmpAux);
 
+// Armazena os registradores
+void getRegistradores(Cidade *cityIndex, char *linha, FILE **txtOutput, int action);
+
 #endif // QUERY_H

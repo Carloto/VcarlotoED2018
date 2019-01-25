@@ -19,6 +19,8 @@
 #include "pessoa.h"
 #include "moradia.h"
 #include "auxfig.h"
+#include "grafo.h"
+#include "carro.h"
 
 typedef struct tmpCidade Cidade; // Estruturas da cidade
 
@@ -30,8 +32,42 @@ Cidade *allocCidade(fileArguments *source);
 // Libera a memoria de toda a Cidade
 void killCidade(Cidade **tmpBitnopolis);
 
+// Guarda as vias no arquivo binario
+void viasToBin(Cidade *cityIndex, char linha[200]);
+
+
+// Declara uma pessoa morta e deleta suas informações
+void ripcarro(Cidade *cityIndex, unsigned long id);
+
+// Retorna 1 e modifica address caso encontre a estrutura
+int getCarroAddress(Cidade *cityIndex, unsigned long id, long int *address, Carro **aux);
+
+// Le as vias no arquivo bin
+void readVias(Cidade *cityIndex, FILE **svgOutput);
+
 // Adiciona uma nova estrutura no arquivo binario e na b-tree, a partir do arquivo lido
 void newCityShapeFromFile(Cidade *cityIndex, char *inputLine, Color *colorIndex, int typeOfData);
+
+void Best_Caminho(char *line, Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput);
+
+void
+Best_Direcao_Caminho(char *line, Cidade *cityIndex, FILE **txtOutput, FILE **svgOutput);
+
+Vertice *Vertice_Perto_X_Y(List *verts, ponto data);
+
+void Repr_Caminho(Grafo *grafo, int *caminho, int size, FILE *arqtxt);
+
+int *Dijkstra(int indexSrc, int indexDest, float **matriz, int size, int *caminho);
+
+int Menor_Distancia(int *pesos, int *visitados, int size);
+
+void putPonto(Cidade *cityIndex, float x, float y, int i);
+
+void Adicao_Vertices(Grafo *grafo, char *line, int numericID);
+
+void Adicao_Arestas(Grafo *grafo, char *line);
+
+void print_Vertices(FILE **f, Grafo *grafo);
 
 // Retorna um ponteiro para o arquivo requisitado
 FILE **getCityFile(Cidade *cityIndex, int action);
@@ -50,7 +86,7 @@ void hidranteTxt(Hidrante *tmpHid, FILE **outputTxt);
 void mudaPessoa(Cidade *cityIndex, char cpf[25], char cep[50], char face[2], char complemento[50], int num);
 
 // Muda o estabelecimento de endereco
-void mudaEstab(Cidade*cityIndex, char cnpj[50], char cep[50], char face[2],int num);
+void mudaEstab(Cidade *cityIndex, char cnpj[50], char cep[50], char face[2], int num);
 
 // Imprime a torre no txt
 void torreTxt(Torre *tmpTorre, FILE **outputTxt);

@@ -271,3 +271,51 @@ void printDashCircle(FILE **outputFile, double cX, double cY, double radius);
 #ifndef DPR
 #define DPR 193489707
 #endif
+
+#ifndef VIA_V
+#define VIA_V 177691
+#endif
+
+#ifndef VIA_E
+#define VIA_E 177674
+#endif
+
+#ifndef M_A_SEARCH
+#define M_A_SEARCH 193450353
+#endif
+
+#ifndef E_SEARCH
+#define E_SEARCH 193450089
+#endif
+
+#ifndef G_SEARCH
+#define G_SEARCH 193450155
+#endif
+
+#ifndef XY
+#define XY 193450774
+#endif
+
+#ifndef TP
+#define TP 6383870952
+#endif
+
+#ifndef P_SEARCH
+#define P_SEARCH 5863668
+#endif
+
+#ifndef SP
+#define SP 193505991
+#endif
+
+#ifndef AU
+#define AU 5863227
+#endif
+
+#ifndef DC
+#define DC 5863308
+#endif
+
+#ifndef RAU
+#define RAU 193504461
+#endif

@@ -177,6 +177,27 @@ int main(int argc, char *argv[]) {
         fclose(PmInputFile);
     }
 
+    // Leitura da entrada .via
+    if (getInputViaFileName(FileNames) != NULL) {
+        FILE *ViaInputFile = openFile(getInputViaFileName(FileNames), "r");
+        hashResult = 0; // Resultado do hash
+
+        while (!feof(ViaInputFile)) { // Loop de leitura
+            readLine(&linha, &ViaInputFile); // Le uma linha do arquivo de entrada
+            if (linha == NULL) {
+                freeString(&linha);
+                break;
+            }
+//            printThis(linha); // Imprime a linha lida
+            copyString(&tmpLinha, linha); // Copia a linha lida
+            hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
+//            printf("\nResultado do hashing : %lu", hashResult);
+            viasToBin(Bitnopolis, linha);
+        }
+        readVias(Bitnopolis, &StandardSvgOutput);
+        fclose(ViaInputFile);
+    }
+
     printCityShapesToSvg(Bitnopolis, &StandardSvgOutput); // Imprime as estruturas da cidade no svg
 //    printCityShapes(Bitnopolis);
 
@@ -196,10 +217,10 @@ int main(int argc, char *argv[]) {
                 freeString(&linha);
                 break;
             }
-//            printThis(linha); // Imprime a linha lida
+            printThis(linha); // Imprime a linha lida
             copyString(&tmpLinha, linha); // Copia a linha lida
             hashResult = hash((unsigned char *) strtok(tmpLinha, " ")); // Extrai o comando
-//            printf("\nResultado do hashing : %lu", hashResult);
+            printf("\nResultado do hashing : %lu", hashResult);
 
             switch (hashResult) { // Switch dos comandos lidos
                 // T3
@@ -269,10 +290,24 @@ int main(int argc, char *argv[]) {
                         reportHid(Bitnopolis, linha, &StandardTxtOutput, 2, &headAux);
                     } else if (hashResult == MUDEC) {
                         reportEstab(Bitnopolis, linha, &StandardTxtOutput, 6, &headAux);
+                    } else if (hashResult == M_A_SEARCH) {
+                        getRegistradores(Bitnopolis, linha, &StandardTxtOutput, 1);
+                    } else if (hashResult == E_SEARCH) {
+                        getRegistradores(Bitnopolis, linha, &StandardTxtOutput, 2);
+                    } else if (hashResult == G_SEARCH) {
+                        getRegistradores(Bitnopolis, linha, &StandardTxtOutput, 3);
+                    } else if (hashResult == XY) {
+                        getRegistradores(Bitnopolis, linha, &StandardTxtOutput, 4);
+                    } else if (hashResult == P_SEARCH) {
+                        Best_Caminho(linha, Bitnopolis, &StandardTxtOutput, &StandardSvgOutput);
+                    } else if (hashResult == SP) {
+                        Best_Direcao_Caminho(linha, Bitnopolis, &StandardTxtOutput, &StandardSvgOutput);
+                    } else if (hashResult == AU) {
+                        newCityShapeFromFile(Bitnopolis, linha, ColorIndex, 9); // 7 para pessoa
+                        break;
                     }
-                    break;
-            }
 
+            }
         }
         printBasicShapesToSvg(AllBasicShapes, &SvgQryOutputFile); // Imprime todas as formas no svg
         printCityShapesToSvg(Bitnopolis, &SvgQryOutputFile); // Imprime as estruturas da cidade no svg
